@@ -3,7 +3,7 @@ from flask.globals import current_app
 from sqlalchemy.sql import exists
 from sqlalchemy.sql.functions import user
 from app import db
-
+from app.admin.forms import LoginForm, RegisterForm
 
 
 from app.admin.models import User
@@ -13,7 +13,8 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 @admin.route('/home/')
 def home():
-    return render_template('admin/index.html')
+    form = LoginForm()
+    return render_template('admin/index.html',form=form)
 
 @admin.route('/login/', methods=['GET', 'POST'])
 def login():

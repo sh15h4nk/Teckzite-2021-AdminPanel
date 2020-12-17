@@ -1,14 +1,21 @@
 
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-	
+
+{% block title %}
+Admin
+{% endblock %}
+
+
 {% block content %}
 
-	<center><h1>Login</h1></center>
-	<div>
-		<hr>
-		{{ wtf.quick_form(LoginForm) }}
-		<hr>
+	<div class="container">
+		<form method="POST" action="/">
+			<dl>
+				{{ wtf.quick_form(form) }}
+				<input class="btn btn-primary" type="submit" value="login">
+			</dl>
+		</form>
 	</div>
 
 
