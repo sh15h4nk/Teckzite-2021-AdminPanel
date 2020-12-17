@@ -1,3 +1,4 @@
+from enum import unique
 from app import db
 from sqlalchemy import Column, String, SmallInteger, DateTime
 
@@ -9,14 +10,15 @@ class Base(db.Model):
 
 
 class User(Base):
+    sid = Column(String(128), nullable=False, unique=True)
     name = Column(String(128), nullable=False)
     email = Column(String(128), nullable=False, unique=True)
     password = Column(String(192), nullable=False)
     role = Column(SmallInteger, nullable=False)
 
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
+    def __init__(self, sid, password, role):
+        self.sid = sid
+        self.role = role
         self.password = password
 
     def __repr__(self):
