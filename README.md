@@ -1,2 +1,2 @@
 # panel
-admin panel for teckzite 2021
+Admin panel for teckzite 2021
