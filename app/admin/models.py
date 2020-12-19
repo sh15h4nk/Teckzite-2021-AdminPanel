@@ -4,17 +4,17 @@ from sqlalchemy import Column, String, SmallInteger, DateTime
 
 class Base(db.Model):
     __abstract__ = True
-    id = Column(String(7), primary_key=True)
-    date_created = Column(DateTime, default=db.func.current_timestamp())
-    date_modified = Column(DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    id = db.Column(String(7), primary_key=True)
+    date_created = db.Column(DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
 
 class User(Base):
-    sid = Column(String(128), nullable=False, unique=True)
-    name = Column(String(128), nullable=False)
-    email = Column(String(128), nullable=False, unique=True)
-    password = Column(String(192), nullable=False)
-    role = Column(SmallInteger, nullable=False)
+    sid = db.Column(String(128), nullable=False, unique=True)
+    name = db.Column(String(128), nullable=False)
+    email = db.Column(String(128), nullable=False, unique=True)
+    password = db.Column(String(192), nullable=False)
+    role = db.Column(SmallInteger, nullable=False)
 
     def __init__(self, sid, password, role):
         self.sid = sid
