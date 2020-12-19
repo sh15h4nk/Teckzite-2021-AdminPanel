@@ -1,0 +1,23 @@
+# register form here
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+<h1>
+	Registration
+</h1>
+<hr>
+<div class="container">
+	<form method="POST" action="/">
+		<dl>
+			{{ wtf.quick_form(form) }}
+			<input class="btn btn-primary" type="submit" value="submit">
+		</dl>
+	</form>
+	
+</div>

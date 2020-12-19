@@ -1,13 +1,7 @@
 from flask import url_for, redirect, request, render_template, Blueprint, session
-from flask.globals import current_app
-from sqlalchemy.sql import exists
-from sqlalchemy.sql.functions import user
-from app import db
-from app.admin.forms import LoginForm, RegisterForm
-
-
 from app.admin.models import User
 from app.admin.forms import LoginForm, RegisterForm
+from app import db
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -18,16 +12,20 @@ def home():
 
 @admin.route('/login/', methods=['GET', 'POST'])
 def login():
-    form = LoginForm(request.form)
-    if form.validate_on_submit():
-        user = User.query.filter_by(sid=form.sid.data)
-        if user and user.password == form.password.data:
-            session['sid'] = user.sid
-            session['role'] = user.role
-        
-            return "Login Successfull"
-        return "Email or password wrong!"
-    return render_template('admin/login.html', form=form)
+
+    if request.method == "POST":
+        form = LoginForm(request.form)
+        if form.validate_on_submit():
+            user = User.query.filter_by(sid=form.sid.data).first()
+            if user and user.password == form.password.data:
+                session['sid'] = user.sid
+                session['role'] = user.role
+            
+                return "Login Successfull"
+            return "Email or password wrong!"
+    
+    form = LoginForm()
+    return render_template('admin/index.html', form=form)
         
 @admin.route('/register/', methods=['GET', 'POST'])
 def register():

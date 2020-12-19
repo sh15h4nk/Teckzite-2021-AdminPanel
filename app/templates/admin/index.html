@@ -8,9 +8,13 @@ Admin
 
 
 {% block content %}
+	<div>
+		<h1>Login</h1>
+	</div>
 
+	<hr>
 	<div class="container">
-		<form method="POST" action="/">
+		<form method="POST">
 			<dl>
 				{{ wtf.quick_form(form) }}
 				<input class="btn btn-primary" type="submit" value="login">
