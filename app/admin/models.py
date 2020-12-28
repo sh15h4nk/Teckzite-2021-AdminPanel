@@ -25,6 +25,7 @@ class User(Base):
         return '<User %r>' % (self.name)
 
 user = User.query.filter_by(sid="N170076").first()
+
 if not user:
     user = User("N170076", "p@ss", 1)
     db.session.add(user)

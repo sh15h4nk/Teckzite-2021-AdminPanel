@@ -1,12 +1,12 @@
 
-{% extends "bootstrap/base.html" %}
+{% extends "admin/base.html" %}
 
 {% block title %}
 Register
 {% endblock %}
 
 {% block content %}
-
+{{ super() }}
 <div class="container">
 	<h1>
 		Welcome to admin Panel
@@ -32,16 +32,6 @@ Register
 
 <div class="container">
 	<br>
-
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-			<ul class="flashes">
-			{% for message in messages %}
-				<li>{{ message }}</li>
-			{% endfor %}
-			</ul>
-		{% endif %}
-	{% endwith %}
 
 	<h3>Register a new user</h3>
 

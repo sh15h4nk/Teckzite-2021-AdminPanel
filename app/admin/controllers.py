@@ -40,8 +40,8 @@ def login():
         
         flash("Wrong ID or Password")
         
-            
-    return render_template("admin/login.html")
+    form = LoginForm()       
+    return render_template("admin/login.html",form= form)
     
         
 
@@ -69,8 +69,8 @@ def register():
             db.session.commit()
             session['sid'] = form.sid.data
             flash("You Registered a User Succesfully")
-
-        flash("Not Authorised or User already exists")    
+        else:
+            flash("Not Authorised or User already exists")    
     
     return render_template('admin/register.html', current_user=current_user)
    
