@@ -63,14 +63,15 @@ def register():
 
         user = User.query.filter_by(sid = form.sid.data).first()
 
-        if not user and session['role'] < form.role.data or session['role'] == 1:
+        if not user and ( session['role'] < form.role.data or session['role'] == 1) :
             user = User(form.sid.data, form.password.data, form.role.data)
             db.session.add(user)
             db.session.commit()
             session['sid'] = form.sid.data
             flash("You Registered a User Succesfully")
 
-        flash("Not Authorised or User already exists")    
+        else:
+            flash("Not Authorised or User already exists")    
     
     return render_template('admin/register.html', current_user=current_user)
    
