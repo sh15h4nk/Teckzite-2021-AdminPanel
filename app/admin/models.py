@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, SmallInteger, DateTime
 
 class Base(db.Model):
     __abstract__ = True
-    sid = db.Column(String(7), primary_key=True)
+    sid = db.Column(String(7), nullable=False, primary_key=True)
     date_created = db.Column(DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
