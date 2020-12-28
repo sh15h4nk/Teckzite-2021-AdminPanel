@@ -1,23 +1,78 @@
-# register form here
 
 {% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
 Register
 {% endblock %}
 
 {% block content %}
-<h1>
-	Registration
-</h1>
-<hr>
+
 <div class="container">
-	<form method="POST" action="/">
-		<dl>
-			{{ wtf.quick_form(form) }}
-			<input class="btn btn-primary" type="submit" value="submit">
-		</dl>
-	</form>
+	<h1>
+		Welcome to admin Panel
+	</h1>
+
+	<div>
+		<strong>User Details</strong> <br><br>
+		User ID: <b>{{current_user.sid}}</b>  <br>
+		Role : <b>{{current_user.role}}<b> 	<br><br>
+	
+	</div>
+	
+
+	
+	
+	<div>
+		<a href="/admin/logout/" class="btn btn-info" role="button">Logout</a> 
+	</div>
 	
 </div>
+
+
+
+<div class="container">
+	<br>
+
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+
+	<h3>Register a new user</h3>
+
+	
+	<form method="POST" action="">
+		<div class="form-group">
+		  <label for="exampleInputEmail1">Student ID</label>
+		  <input type="text" name="sid" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Id">
+		</div>
+		<div class="form-group">
+		  <label for="exampleInputPassword1">Password</label>
+		  <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+		</div>
+
+		<label for="">Role</label> <span><i>(You can only register a user under your previlage)</i></span>
+		
+		<div class="radio">
+			<label><input type="radio" name="role" value=1 checked>Admin</label>
+		  </div>
+		  <div class="radio">
+			<label><input type="radio" name="role" value=2 >Cordinator</label>
+		  </div>
+		  <div class="radio">
+			<label><input type="radio" name="role" value=3 >Organiser</label>
+		</div> 
+
+
+
+		<button type="submit" class="btn btn-primary">Submit</button>	
+	  </form>
+</div>
+
+
+{% endblock %}
