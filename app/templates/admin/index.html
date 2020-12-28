@@ -1,6 +1,5 @@
 
 {% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
 Admin
@@ -8,20 +7,23 @@ Admin
 
 
 {% block content %}
-	<div>
-		<h1>Login</h1>
-	</div>
 
-	<hr>
-	<div class="container">
-		<form method="POST">
-			<dl>
-				{{ wtf.quick_form(form) }}
-				<input class="btn btn-primary" type="submit" value="login">
-			</dl>
-		</form>
-	</div>
+	<center>
+		<h1>Go to Admin panel</h1>
 
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		{% endwith %}
 
-
+	
+		<a class="btn btn-primary" href="login/" role="button">Login</a>
+	</center>
+	
+	
 {% endblock %}
