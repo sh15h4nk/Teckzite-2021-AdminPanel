@@ -1,5 +1,20 @@
-{% extends bootstrap/base.html %}
+{% extends "admin/base.html" %}
 
 {% block title %}
 Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1> Welcome to the Admin Panel</h1>
+    <p>{{ current_user.id }}</p>
+    <p>{{ current_user.name }}</p>
+    <p>{{ current_user.role }}</p>
+
+    <!-- baa logout button inka user details mottma  nav lo include cheddam ba -->
+    <a href="{{ url_for('admin.logout') }}"> Logout</a>
+    <a href="{{ url_for('admin.register') }}"> Register</a>
+
+</div>
+
 {% endblock %}

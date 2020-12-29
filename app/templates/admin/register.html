@@ -1,13 +1,13 @@
 
 {% extends "admin/base.html" %}
-
 {% block title %}
 Register
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-<div class="container">
+<!-- <div class="container">
+	 Baa idi dashboard lo peddammm baaaa
 	<h1>
 		Welcome to admin Panel
 	</h1>
@@ -26,7 +26,7 @@ Register
 		<a href="/admin/logout/" class="btn btn-info" role="button">Logout</a> 
 	</div>
 	
-</div>
+</div> -->
 
 
 
@@ -36,31 +36,20 @@ Register
 	<h3>Register a new user</h3>
 
 	
-	<form method="POST" action="">
-		<div class="form-group">
-		  <label for="exampleInputEmail1">Student ID</label>
-		  <input type="text" name="sid" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Id">
-		</div>
-		<div class="form-group">
-		  <label for="exampleInputPassword1">Password</label>
-		  <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-		</div>
+	<form method="POST">
+		{{ form.hidden_tag() }}
+		{{ wtf.form_errors(form, hiddens="only") }}
 
-		<label for="">Role</label> <span><i>(You can only register a user under your previlage)</i></span>
-		
-		<div class="radio">
-			<label><input type="radio" name="role" value=1 checked>Admin</label>
-		  </div>
-		  <div class="radio">
-			<label><input type="radio" name="role" value=2 >Cordinator</label>
-		  </div>
-		  <div class="radio">
-			<label><input type="radio" name="role" value=3 >Organiser</label>
-		</div> 
+		{{ wtf.form_field(form.id) }}
+		{{ wtf.form_field(form.password) }}
 
-
-
-		<button type="submit" class="btn btn-primary">Submit</button>	
+		{% if current_user.role == 1 %}
+			<h3>Role:</h3>
+			<input type="radio" name="role" value=1>Admin<br>
+			<input type="radio" name="role" value=2>Coordinator<br> 
+			<input type="radio" name="role" value=3>Organiser<br>
+		{% endif %}
+		<input type="submit" value="submit">
 	  </form>
 </div>
 
