@@ -5,7 +5,6 @@ from flask_bootstrap import Bootstrap
 from flask_session import Session
 
 
-
 app = Flask(__name__)
 
 app.config.from_object('config')
