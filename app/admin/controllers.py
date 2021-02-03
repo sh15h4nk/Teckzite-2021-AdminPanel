@@ -6,11 +6,15 @@ from app import db
 from app import app
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
+from app.admin.mynav import nav
+
+nav.init_app(app)
+
+admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'admin.login'
 
-admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 
 @login_manager.user_loader
