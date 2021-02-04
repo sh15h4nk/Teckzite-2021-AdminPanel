@@ -1,3 +1,5 @@
+from operator import iadd
+from typing import ItemsView
 from flask import session, url_for
 from flask_nav import Nav
 from flask_nav.elements import Navbar, Subgroup, View
@@ -16,28 +18,28 @@ def my_nav():
 
 	dashboard = View("Dashboard",'admin.dashboard')
 
-	view_admin = View("Admin",'admin.dashboard')
+	view_admin = View("Admin", 'admin.retriveAdminRows', role=1)
 	add_admin = View("Add Admin",'admin.register')
 	admin_menu = Subgroup("Admins",view_admin,add_admin)
 
 
-	view_coord = View("Co-ordinators",'admin.dashboard')
+	view_coord = View("Co-ordinators",'admin.retriveAdminRows', role=2)
 	add_coord = View("Add Co-ordinators",'admin.register')
 	coord_menu = Subgroup("Co-ordinators",view_coord,add_coord)
 
 
-	view_orag = View("organisers",'admin.dashboard')
+	view_orag = View("organisers",'admin.retriveAdminRows', role=3)
 	add_orag = View("Add organisers",'admin.register')	#consider dept while extracting from database
 	orag_menu = Subgroup("Organisers",view_orag,add_orag)
 
 
-	view_events = View("Event",'admin.dashboard')			
+	view_events = View("Event",'admin.retriveEvents')			
 	add_event = View("Add Event",'admin.dashboard')	#consider dept while extracting from database
 	event_menu = Subgroup("Events",view_events,add_event)
 
 
-	add_workshop = View("Add WorkShop",'admin.dashboard')
-	view_workshops = View("Workshops",'admin.dashboard')	
+	add_workshop = View("Add WorkShop",'admin.retriveWorkshops')
+	view_workshops = View("Workshops",'admin.dashboard')
 	workshop_menu = Subgroup("Workshops",view_workshops,add_workshop)
 
 	view_tz_users = View("Users",'admin.dashboard')

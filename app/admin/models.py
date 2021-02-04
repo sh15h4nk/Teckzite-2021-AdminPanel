@@ -22,6 +22,7 @@ class User(Base):
     email = db.Column(String(128), nullable=True, unique=True)
     password = db.Column(String(192), nullable=False)
     role = db.Column(SmallInteger, nullable=False)
+    
 
     event_organised_id = db.Column(Integer, ForeignKey('event.id'))
     event_coordinated_id = db.Column(Integer, ForeignKey("event.id"))
