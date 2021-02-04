@@ -1,4 +1,5 @@
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
+from flask.ctx import after_this_request
 from flask.globals import current_app
 from app.admin.models import User
 from app.admin.forms import LoginForm, RegisterForm
@@ -8,14 +9,14 @@ from flask_login import current_user, login_required, logout_user, login_user, L
 from app.admin import roles
 from app.admin.mynav import nav
 
+from app.admin.functions import getAdmins, getEvents, getWorkshops
+
 nav.init_app(app)
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'admin.login'
-
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -95,3 +96,26 @@ def register():
 @login_required
 def dashboard():
     return render_template("admin/dashboard.html",current_user = current_user)
+
+
+@admin.route('/admindata/<role>')
+@login_required
+def retriveAdminRows(role):
+    if current_user.role != 1: 
+        if current_user.role < role:
+            return "403"
+    data = getAdmins(int(role))
+    return data
+    
+
+@admin.route('/eventsdata')
+@login_required
+def retriveEvents():
+    data = getEvents()
+    return data
+
+@admin.route('/eventsdata')
+@login_required
+def retriveWorkshops():
+    data = getWorkshops()
+    return data
