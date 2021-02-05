@@ -34,7 +34,7 @@ def my_nav():
 
 
 	view_events = View("Event",'admin.retriveEvents')			
-	add_event = View("Add Event",'admin.dashboard')	#consider dept while extracting from database
+	add_event = View("Add Event",'admin.addEvent')	#consider dept while extracting from database
 	event_menu = Subgroup("Events",view_events,add_event)
 
 
