@@ -9,7 +9,7 @@ from flask_login import current_user, login_required, logout_user, login_user, L
 from app.admin import roles
 from app.admin.mynav import nav
 
-from app.admin.functions import getAdmins, getEvents, getWorkshops
+from app.admin.functions import addEventToDb, getAdmins, getEvents, getWorkshops
 
 nav.init_app(app)
 
@@ -98,7 +98,7 @@ def dashboard():
     return render_template("admin/dashboard.html",current_user = current_user)
 
 
-@admin.route('/admindata/<role>')
+@admin.route('/admin/show/<role>')
 @login_required
 def retriveAdminRows(role):
     if current_user.role != 1: 
@@ -108,14 +108,31 @@ def retriveAdminRows(role):
     return data
     
 
-@admin.route('/eventsdata')
+@admin.route('/event/show')
 @login_required
 def retriveEvents():
     data = getEvents()
     return data
 
-@admin.route('/eventsdata')
+@admin.route('/event/add', methods=['GET', 'POST'])
+@login_required
+def addEvent():
+    if request.method == 'GET':
+        return render_template("admin/event.html")
+
+    else:
+        eventId = request.form.get('eventid')
+        eventName = request.form.get('eventname')
+        teamSize = request.form.get('teamsize')
+        data = request.form.get('text')
+
+        addEventToDb(eventId, eventName, teamSize, data)
+
+        return redirect(url_for('admin.addEvent'))
+
+@admin.route('/workshop/show')
 @login_required
 def retriveWorkshops():
     data = getWorkshops()
     return data
+

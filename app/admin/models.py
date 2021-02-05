@@ -44,11 +44,17 @@ class User(Base):
 class Event(Base):
     name = db.Column(String(128), nullable=False)
     
-    details = db.Column(String(256))
+    details = db.Column(String(2000))
     teamsize = db.Column(SmallInteger, nullable=False)
     organiser = db.relationship("User", backref="org_event", foreign_keys=[User.event_organised_id], uselist=False)         # backreference from User to retiieve user hosted event ORGANISER
     coordinator =  db.relationship("User", backref="cord_event",foreign_keys=[User.event_coordinated_id], uselist=False)     # backreference from User to retiieve user hosted event COORDINATOR
     # teams = db.relationship("Team", backref="event")
+
+    def __init__(self, id, name, teamsize, details) -> None:
+        self.id = id
+        self.name = name
+        self.teamsize = teamsize
+        self.details = details
 
 class Workshop(Base):
     name = db.Column(String(128), nullable=False)

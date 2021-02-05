@@ -16,7 +16,7 @@ def getAdmins(role):
 
 def getEvents():
     rows = Event.query.filter_by().all()
-    rows = [(row.name, row.details, row.teamsize) for row in rows]
+    rows = [(row.id, row.name, row.details) for row in rows]
 
     no_rows = len(rows)
     try:
@@ -25,6 +25,14 @@ def getEvents():
         no_cols = 0
 
     return {"rows": rows, "no_rows": no_rows, "no_cols": no_cols}
+
+def addEventToDb(eventId, eventName, teamSize ,html):
+        
+    event = Event(eventId, eventName, teamSize, html)
+
+    db.session.add(event)
+    db.session.commit()
+
 
 def getWorkshops():
     rows = Event.query.filter_by().all()

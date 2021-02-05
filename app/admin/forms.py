@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from sqlalchemy.sql.sqltypes import String
 
 from wtforms import TextField, PasswordField, IntegerField, SubmitField
+from wtforms.fields.simple import TextAreaField
 
 from wtforms.validators import Required, Email, EqualTo
 
@@ -20,3 +21,4 @@ class RegisterForm(FlaskForm):
     role = IntegerField('Role', [
                 Required(message='Must provide a role. ;-)')])
     submit = SubmitField("submit")
+
