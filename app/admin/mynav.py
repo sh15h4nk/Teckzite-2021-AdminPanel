@@ -58,7 +58,7 @@ def my_nav():
 	if current_user.role == 1:
 		return Navbar('Teckzite\'21',dashboard,admin_menu,coord_menu,orag_menu,event_menu,workshop_menu,tz_users_menu,profile_menu,logout)
 	elif current_user.role == 2:
-		return Navbar('Teckzite\'21',dashboard,view_orag,event_menu,profile_menu,logout)
+		return Navbar('Teckzite\'21',dashboard,event_menu,profile_menu,logout)
 	elif current_user.role == 3:
 		return Navbar('Teckzite\'21',dashboard,profile_menu,logout)
 

@@ -112,13 +112,16 @@ def retriveAdminRows(role):
 @login_required
 def retriveEvents():
     data = getEvents()
-    return data
+    # res = data['no_cols']
+    # return data
+    return render_template("admin/events.html",data = data)
+
 
 @admin.route('/event/add', methods=['GET', 'POST'])
 @login_required
 def addEvent():
     if request.method == 'GET':
-        return render_template("admin/event.html")
+        return render_template("admin/add_event.html")
 
     else:
         eventId = request.form.get('eventid')
@@ -129,6 +132,7 @@ def addEvent():
         addEventToDb(eventId, eventName, teamSize, data)
 
         return redirect(url_for('admin.addEvent'))
+
 
 @admin.route('/workshop/show')
 @login_required

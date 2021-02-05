@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+Events
+{% endblock %}
+
+<!-- {% block style %}
+{{ super() }}
+	<style type="text/css">
+		table, th, td {
+			width: 100%;
+	  		border: 1px solid black;
+	  		border-collapse: collapse;
+		}
+	</style>
+{% endblock %} -->
+
+{% block content %}
+{{ super() }}
+
+<div class="container">
+
+	<table class="table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for row in data['rows'] %}
+			<tr>
+				<td>{{ row[0] }}</td>
+				<td>{{ row[1] }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+
+</div>
+
+{% endblock %}
