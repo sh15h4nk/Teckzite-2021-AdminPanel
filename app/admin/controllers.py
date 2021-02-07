@@ -1,33 +1,21 @@
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask.ctx import after_this_request
 from flask.globals import current_app
-from app.admin.models import User
-from app.admin.forms import LoginForm, RegisterForm
+from app.models import User
+from app.admin.forms import RegisterForm
+from app.forms import LoginForm
 from app import db
 from app import app
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
-from app.admin.mynav import nav
 
+from app.admin import admin
 from app.admin.functions import addEventToDb, getAdmins, getEvents, getWorkshops
+from app.controllers import login_manager
+from app.mynav import mynav
 
-nav.init_app(app)
+mynav.init_app(app)
 
-admin = Blueprint('admin', __name__, url_prefix='/admin')
-
-login_manager = LoginManager(app)
-login_manager.login_view = 'admin.login'
-
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id is not None:
-        return User.query.get(user_id)
-    return None
-
-@login_manager.unauthorized_handler
-def unauthorized():
-    flash("You must login ")
-    return redirect(url_for('admin.login'))
 
 
 @admin.route('/')
@@ -40,7 +28,8 @@ def logout():
     session.pop('id', None)
     session.pop('_flashes', None)
     flash("You have been logged out")
-    return redirect(url_for('admin.home'))
+    return redirect(url_for('index'))
+
 
 @admin.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -56,16 +45,17 @@ def login():
         user = User.query.filter_by(id=form.id.data).first()
 
         if user and user.password == form.password.data:
-            login_user(user)
-            session['id'] = form.id.data
-            session['role'] = user.role
-            flash("Login successful")
-            return redirect(url_for("admin.dashboard"))
+            if user.role == 1:
+                login_user(user)
+                session['id'] = form.id.data
+                session['role'] = user.role
+                flash("Login successful")
+                return redirect(url_for("admin.dashboard"))
         
         flash("Wrong ID or Password")
         
     form = LoginForm()       
-    return render_template("admin/login.html",form= form)
+    return render_template("login.html",form= form)
     
         
 

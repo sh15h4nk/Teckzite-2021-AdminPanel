@@ -6,13 +6,9 @@ from wtforms.fields.simple import TextAreaField
 
 from wtforms.validators import Required, Email, EqualTo
 
-
-class RegisterForm(FlaskForm):
+class LoginForm(FlaskForm):
     id = TextField('Student ID', [
-                Required(message='Forgot your college ID')])    
+                Required(message='Forgot your college ID')])
     password = PasswordField('Password', [
                 Required(message='Must provide a password. ;-)')])
-    role = IntegerField('Role', [
-                Required(message='Must provide a role. ;-)')])
-    submit = SubmitField("submit")
-
+    submit = SubmitField('Login')

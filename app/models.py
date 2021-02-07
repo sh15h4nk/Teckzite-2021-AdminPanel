@@ -98,10 +98,10 @@ class Workshop(Base):
 
 db.create_all()
 
-user = User.query.filter_by(id="N170076").first()
+user = User.query.filter_by(id="admin").first()
 
 if not user:
-    user = User("N170076", "p@ss", 1)
+    user = User("admin", "admin", 1)
     db.session.add(user)
     db.session.commit()
 

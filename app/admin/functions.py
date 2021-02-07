@@ -1,6 +1,6 @@
 from app import db
 
-from app.admin.models import User, Event
+from app.models import User, Event
 
 def getAdmins(role):
     rows = User.query.filter_by(role=role).all()
