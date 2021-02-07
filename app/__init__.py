@@ -16,6 +16,13 @@ Session(app)
 
 from app.admin.controllers import admin as admin_module
 app.register_blueprint(admin_module)
+
+from app.coordinate.controllers import coordinate as coordinate_module
+app.register_blueprint(coordinate_module)
+
+from app.organiser.controllers import organiser as organiser_module
+app.register_blueprint(organiser_module)
+
 Bootstrap(app)
 
 db.create_all()
