@@ -5,7 +5,7 @@ from app.models import User
 
 login_manager = LoginManager(app)
 
-login_manager.login_view = 'app.index'
+login_manager.login_view = 'index'
 
 
 
