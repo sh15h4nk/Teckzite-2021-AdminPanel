@@ -1,5 +1,6 @@
 from enum import unique
 from typing import Tuple
+from flask_migrate import branches
 
 from sqlalchemy.orm import backref
 from sqlalchemy.sql.schema import ForeignKey
@@ -22,6 +23,8 @@ class User(Base):
     email = db.Column(String(128), nullable=True, unique=True)
     password = db.Column(String(192), nullable=False)
     role = db.Column(SmallInteger, nullable=False)
+    branch = db.Column(String(5), nullable=False)
+    
     
 
     event_organised_id = db.Column(Integer, ForeignKey('event.id'))
@@ -46,6 +49,7 @@ class Event(Base):
     
     details = db.Column(String(2000))
     teamsize = db.Column(SmallInteger, nullable=False)
+    department = db.Column(String(256))
     organiser = db.relationship("User", backref="org_event", foreign_keys=[User.event_organised_id], uselist=False)         # backreference from User to retiieve user hosted event ORGANISER
     coordinator =  db.relationship("User", backref="cord_event",foreign_keys=[User.event_coordinated_id], uselist=False)     # backreference from User to retiieve user hosted event COORDINATOR
     # teams = db.relationship("Team", backref="event")
@@ -58,7 +62,7 @@ class Event(Base):
 
 class Workshop(Base):
     name = db.Column(String(128), nullable=False)
-    
+    department = db.Column(String(256))
     details = db.Column(String(256))
     organiser = db.relationship("User", backref="org_workshop" ,foreign_keys=[User.workshop_organised_id] ,uselist=False)
     coordinator =  db.relationship("User", backref="cord_workshop", foreign_keys=[User.workshop_coordinated_id], uselist=False)
@@ -98,12 +102,7 @@ class Workshop(Base):
 
 db.create_all()
 
-user = User.query.filter_by(id="admin").first()
 
-if not user:
-    user = User("admin", "admin", 1)
-    db.session.add(user)
-    db.session.commit()
 
 
  

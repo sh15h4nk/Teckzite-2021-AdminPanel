@@ -3,13 +3,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_session import Session
-
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db, render_as_batch=True)
 
 app.config['SESSION_SQLALCHEMY'] = db
 Session(app)
@@ -25,4 +26,4 @@ app.register_blueprint(organiser_module)
 
 Bootstrap(app)
 
-db.create_all()
+# db.create_all()
