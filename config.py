@@ -8,7 +8,7 @@ SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASE_DIR, 'app.db')
 DATABASE_CONNECT_OPTIONS = {}
 
 SESSION_TYPE = 'sqlalchemy'
-
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 THREADS_PER_PAGE = 2
 
