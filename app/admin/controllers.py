@@ -117,21 +117,22 @@ def dashboard():
 @admin_authenticated
 def getAdminsView():
     data = getAdmins()
-    return data
+    return render_template("users.html",role = "Admin",data = data)
     
 @admin.route('/coordinaters/')
 @login_required
 @admin_authenticated
 def getCoordinatersView():
     data = getCoordinaters()
-    return data
+    return render_template("users.html", role= "Coordinator",data = data)
 
 @admin.route('/organisers/<dept>')
 @login_required
 @admin_authenticated
 def getOrganisersView(dept):
     data = getOrganisers(dept)
-    return data
+    return render_template("users.html", role= dept+" Organiser",data = data)
+    
 
 
 @admin.route('/events/<dept>')
@@ -141,7 +142,7 @@ def getEventsView(dept):
     data = getEvents(dept)
     # res = data['no_cols']
     # return data
-    return render_template("events.html",data = data)
+    return render_template("events.html",role=dept+" Events",data = data)
 
 
 @admin.route('/event/add', methods=['GET', 'POST'])

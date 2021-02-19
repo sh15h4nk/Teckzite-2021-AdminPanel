@@ -1,4 +1,4 @@
-dbuser="sql12393842"
-dbpasswd="pYJirJb5Wd"
+dbuser="sql12393986"
+dbpasswd="YIFndNW5xJ"
 dbhost="sql12.freemysqlhosting.net"
-dbname="sql12393842"
+dbname="sql12393986"
