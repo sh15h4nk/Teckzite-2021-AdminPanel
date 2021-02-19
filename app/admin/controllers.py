@@ -141,7 +141,7 @@ def getEventsView(dept):
     data = getEvents(dept)
     # res = data['no_cols']
     # return data
-    return render_template("admin/events.html",data = data)
+    return render_template("events.html",data = data)
 
 
 @admin.route('/event/add', methods=['GET', 'POST'])
@@ -159,7 +159,7 @@ def addEventView():
 
         addEvent(eventId, eventName, teamSize, data)
 
-        return redirect(url_for('admin.addEvent'))
+        return redirect(url_for('admin.addEventView'))
 
 
 @admin.route('/workshop/show')
