@@ -1,9 +1,8 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 
 {% block title %}
-Events
+{{ role }}
 {% endblock %}
-
 
 
 {% block content %}
@@ -12,7 +11,6 @@ Events
 	<center><h1>{{ role }}'s</h1></center>
 </div>
 
-
 <div class="container">
 
 	<table class="table">
@@ -20,6 +18,7 @@ Events
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
+			<th>E-mail</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -27,6 +26,7 @@ Events
 			<tr>
 				<td>{{ row[0] }}</td>
 				<td>{{ row[1] }}</td>
+				<td>{{ row[2] }}</td>
 			</tr>
 		{% endfor %}
 		</tbody>
@@ -34,5 +34,6 @@ Events
 
 
 </div>
+
 
 {% endblock %}
