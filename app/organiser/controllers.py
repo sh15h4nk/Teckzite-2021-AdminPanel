@@ -7,9 +7,7 @@ from app.controllers import login_manager
 
 
 from app.organiser import organiser
-
-
-
+from app.middlewares import organiser_authenticated
 
 
 
@@ -32,7 +30,7 @@ def login():
 
     if "id" in session:
     	if session['role'] == 3:
-	        flash("Already Logged In")
+	        flash("Already Logged In As Organiser")
 	        return redirect(url_for('organiser.dashboard'))
 
     if request.method == "POST":            
@@ -46,7 +44,6 @@ def login():
             	login_user(user)
             	session['id'] = form.id.data
             	session['role'] = user.role
-            	flash("Login Succesfull")
             	return redirect(url_for('organiser.dashboard'))
         flash("Wrong ID or Password")
         
@@ -56,5 +53,6 @@ def login():
 
 @organiser.route('/dashboard/')
 @login_required
+@organiser_authenticated
 def dashboard():
     return render_template("organiser/dashboard.html",current_user = current_user)
