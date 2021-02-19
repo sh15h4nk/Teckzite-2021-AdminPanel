@@ -24,13 +24,10 @@ class User(UserMixin,Base):
     password = db.Column(String(192), nullable=False)
     role = db.Column(SmallInteger, nullable=False)
     dept = db.Column(String(5), server_default="", nullable=False)
-    #hidden = db.Column(SmallInteger, server_default=0, nullable=False)
-    
-    
+      
 
     # event_organised_id = db.Column(Integer, ForeignKey('event.id'))
     # event_coordinated_id = db.Column(Integer, ForeignKey("event.id"))
-    
     
     # workshop_coordinated_id = db.Column(Integer, ForeignKey("workshop.id"))
 
@@ -65,7 +62,7 @@ class Workshop(Base):
     name = db.Column(String(128), nullable=False)
     dept = db.Column(String(5), server_default="", nullable=False)
     details = db.Column(String(256))
-    
+    # organiser = db.relationship("User", backref="org_workshop" ,foreign_keys=[User.workshop_organised_id] ,uselist=False)
     # coordinator =  db.relationship("User", backref="cord_workshop", foreign_keys=[User.workshop_coordinated_id], uselist=False)
 
 #     tech_user_id = db.Column(String(256), ForeignKey('techUser.id'))
@@ -101,6 +98,8 @@ class Workshop(Base):
 
 #     event_id = db.Column(Integer, ForeignKey('event.id'))
 
+
+
 db.create_all()
 
 us = User.query.filter_by(id="admin").first()
@@ -112,5 +111,10 @@ if not us:
 
 
 
+us = User.query.filter_by(id="admin").first()
 
+if not us:
+    us = User("admin", "admin", 1)
+    db.session.add(us)
+    db.session.commit()
  
