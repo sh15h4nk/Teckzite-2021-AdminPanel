@@ -11,14 +11,14 @@ from sqlalchemy import Column, String, SmallInteger, DateTime
 from flask_login import UserMixin
 
 
-class Base(UserMixin,db.Model):
+class Base(db.Model):
     __abstract__ = True
     id = db.Column(String(7), nullable=False, primary_key=True)
     date_created = db.Column(DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
 
-class User(Base):
+class User(UserMixin,Base):
     name = db.Column(String(128), nullable=True)
     email = db.Column(String(128), nullable=True, unique=True)
     password = db.Column(String(192), nullable=False)
@@ -28,11 +28,11 @@ class User(Base):
     
     
 
-    event_organised_id = db.Column(Integer, ForeignKey('event.id'))
-    event_coordinated_id = db.Column(Integer, ForeignKey("event.id"))
+    # event_organised_id = db.Column(Integer, ForeignKey('event.id'))
+    # event_coordinated_id = db.Column(Integer, ForeignKey("event.id"))
     
     
-    workshop_coordinated_id = db.Column(Integer, ForeignKey("workshop.id"))
+    # workshop_coordinated_id = db.Column(Integer, ForeignKey("workshop.id"))
 
 
 
@@ -51,8 +51,8 @@ class Event(Base):
     details = db.Column(String(2000))
     teamsize = db.Column(SmallInteger, nullable=False)
     dept = db.Column(String(5), server_default="", nullable=False)
-    organiser = db.relationship("User", backref="org_event", foreign_keys=[User.event_organised_id], uselist=False)         # backreference from User to retiieve user hosted event ORGANISER
-    coordinator =  db.relationship("User", backref="cord_event",foreign_keys=[User.event_coordinated_id], uselist=False)     # backreference from User to retiieve user hosted event COORDINATOR
+    # organiser = db.relationship("User", backref="org_event", foreign_keys=[User.event_organised_id], uselist=False)         # backreference from User to retiieve user hosted event ORGANISER
+    # coordinator =  db.relationship("User", backref="cord_event",foreign_keys=[User.event_coordinated_id], uselist=False)     # backreference from User to retiieve user hosted event COORDINATOR
     # teams = db.relationship("Team", backref="event")
 
     def __init__(self, id, name, teamsize, details) -> None:
@@ -66,7 +66,7 @@ class Workshop(Base):
     dept = db.Column(String(5), server_default="", nullable=False)
     details = db.Column(String(256))
     
-    coordinator =  db.relationship("User", backref="cord_workshop", foreign_keys=[User.workshop_coordinated_id], uselist=False)
+    # coordinator =  db.relationship("User", backref="cord_workshop", foreign_keys=[User.workshop_coordinated_id], uselist=False)
 
 #     tech_user_id = db.Column(String(256), ForeignKey('techUser.id'))
 
