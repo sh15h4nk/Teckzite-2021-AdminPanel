@@ -12,7 +12,5 @@ class RegisterForm(FlaskForm):
                 Required(message='Forgot your college ID')])    
     password = PasswordField('Password', [
                 Required(message='Must provide a password. ;-)')])
-    role = IntegerField('Role', [
-                Required(message='Must provide a role. ;-)')])
     submit = SubmitField("submit")
 

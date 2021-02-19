@@ -10,23 +10,11 @@ Register
 <div class="container">
 	<br>
 
-	<h3>Register a new user</h3>
+	<h3>Register {{ role }}</h3>
 
 	
 	<form method="POST">
-		{{ form.hidden_tag() }}
-		{{ wtf.form_errors(form, hiddens="only") }}
-
-		{{ wtf.form_field(form.id) }}
-		{{ wtf.form_field(form.password) }}
-
-		{% if current_user.role == 1 %}
-			<h3>Role:</h3>
-			<input type="radio" name="role" value=1>Admin<br>
-			<input type="radio" name="role" value=2>Coordinator<br> 
-			<input type="radio" name="role" value=3>Organiser<br>
-		{% endif %}
-		<input type="submit" value="submit">
+		{{ wtf.quick_form(form) }}
 	  </form>
 </div>
 

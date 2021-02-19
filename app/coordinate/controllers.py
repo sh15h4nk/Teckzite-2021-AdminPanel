@@ -10,11 +10,12 @@ mynav.init_app(app)
 
 
 from app.coordinate import coordinate
-
+from app.middlewares import coordinate_authenticated
 
 
 
 @coordinate.route('/')
+
 def home():
     return render_template('coordinate/index.html')
 
@@ -33,7 +34,7 @@ def login():
 
     if "id" in session:
     	if session['role'] == 2:
-	        flash("Already Logged In")
+	        flash("Already Logged In As Coordinater")
 	        return redirect(url_for('coordinate.dashboard'))
 
     if request.method == "POST":            
@@ -47,7 +48,6 @@ def login():
             	login_user(user)
             	session['id'] = form.id.data
             	session['role'] = user.role
-            	flash("Login Sucessfull")
             	return redirect(url_for('coordinate.dashboard'))
         flash("Wrong ID or Password")
         
@@ -56,6 +56,7 @@ def login():
  
 @coordinate.route('/dashboard/')
 @login_required
+@coordinate_authenticated
 def dashboard():
     return render_template("coordinate/dashboard.html",current_user = current_user)
 
