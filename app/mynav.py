@@ -18,27 +18,43 @@ def my_nav():
 	if current_user.role == 1:
 		dashboard = View("Dashboard",'admin.dashboard')
 
-		view_admin = View("Admin", 'admin.retriveAdminRows', role=1)
-		add_admin = View("Add Admin",'admin.register')
+		view_admin = View("Admin", 'admin.getAdminsView')
+		add_admin = View("Add Admin",'admin.addAdmin')
 		admin_menu = Subgroup("Admins",view_admin,add_admin)
 
 
-		view_coord = View("Co-ordinators",'admin.retriveAdminRows', role=2)
-		add_coord = View("Add Co-ordinators",'admin.register')
+		view_coord = View("Co-ordinators",'admin.getCoordinatersView')
+		add_coord = View("Add Co-ordinators",'admin.addCoordinater')
 		coord_menu = Subgroup("Co-ordinators",view_coord,add_coord)
 
 
-		view_orag = View("organisers",'admin.retriveAdminRows', role=3)
-		add_orag = View("Add organisers",'admin.register')	#consider dept while extracting from database
-		orag_menu = Subgroup("Organisers",view_orag,add_orag)
+		view_orag_mech = View("MECH",'admin.getOrganisersView',dept ='MEC')
+		view_orag_cse = View("CSE",'admin.getOrganisersView',dept='CSE')
+		view_orag_ece = View("ECE",'admin.getOrganisersView',dept='ECE')
+		view_orag_civ = View("CIV",'admin.getOrganisersView',dept='CIV')
+		view_orag_mme = View("MME",'admin.getOrganisersView',dept='MME')
+		view_orag_che = View("CHE",'admin.getOrganisersView',dept='CHE')
+
+		view_orag_puc = View("PUC",'admin.getOrganisersView',dept='PUC')
+
+		orag_menu = Subgroup("Organisers",view_orag_mech, view_orag_cse, view_orag_ece, view_orag_civ, view_orag_mme, view_orag_che, view_orag_puc)
 
 
-		view_events = View("Event",'admin.retriveEvents')			
-		add_event = View("Add Event",'admin.addEvent')	#consider dept while extracting from database
-		event_menu = Subgroup("Events",view_events,add_event)
+		# view_events = View("Event",'admin.getEventsView')
+		view_event_mech = View("MECH",'admin.getEventsView',dept ='MEC')
+		view_event_cse = View("CSE",'admin.getEventsView',dept='CSE')
+		view_event_ece = View("ECE",'admin.getEventsView',dept='ECE')
+		view_event_civ = View("CIV",'admin.getEventsView',dept='CIV')
+		view_event_mme = View("MME",'admin.getEventsView',dept='MME')
+		view_event_che = View("CHE",'admin.getEventsView',dept='CHE')
+
+		view_event_puc = View("PUC",'admin.getEventsView',dept='PUC')
+
+		add_event = View("Add Event",'admin.addEventView')	#consider dept while extracting from database
+		event_menu = Subgroup("Events",view_event_mech, view_event_cse, view_event_ece, view_event_civ, view_event_mme, view_event_che, view_event_puc,add_event)
 
 
-		add_workshop = View("Add WorkShop",'admin.retriveWorkshops')
+		add_workshop = View("Add WorkShop",'admin.getWorkshopsView')
 		view_workshops = View("Workshops",'admin.dashboard')
 		workshop_menu = Subgroup("Workshops",view_workshops,add_workshop)
 

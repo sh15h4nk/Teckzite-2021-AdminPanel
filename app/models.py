@@ -23,16 +23,12 @@ class User(UserMixin,Base):
     email = db.Column(String(128), nullable=True, unique=True)
     password = db.Column(String(192), nullable=False)
     role = db.Column(SmallInteger, nullable=False)
-    branch = db.Column(String(5),server_default=' ', nullable=False)
-    rol = db.Column(SmallInteger ,nullable=True)
-    rol1 = db.Column(SmallInteger,nullable=True)
-    
-    
+    dept = db.Column(String(5), server_default="", nullable=False)
+      
 
-    # event_organised_id = db.Column(Integer,ForeignKey('event.id'))
+    # event_organised_id = db.Column(Integer, ForeignKey('event.id'))
     # event_coordinated_id = db.Column(Integer, ForeignKey("event.id"))
     
-    # workshop_organised_id = db.Column(Integer, ForeignKey('workshop.id'))
     # workshop_coordinated_id = db.Column(Integer, ForeignKey("workshop.id"))
 
 
@@ -51,7 +47,7 @@ class Event(Base):
     
     details = db.Column(String(2000))
     teamsize = db.Column(SmallInteger, nullable=False)
-    # department = db.Column(String(256))
+    dept = db.Column(String(5), server_default="", nullable=False)
     # organiser = db.relationship("User", backref="org_event", foreign_keys=[User.event_organised_id], uselist=False)         # backreference from User to retiieve user hosted event ORGANISER
     # coordinator =  db.relationship("User", backref="cord_event",foreign_keys=[User.event_coordinated_id], uselist=False)     # backreference from User to retiieve user hosted event COORDINATOR
     # teams = db.relationship("Team", backref="event")
@@ -64,7 +60,7 @@ class Event(Base):
 
 class Workshop(Base):
     name = db.Column(String(128), nullable=False)
-    department = db.Column(String(256))
+    dept = db.Column(String(5), server_default="", nullable=False)
     details = db.Column(String(256))
     # organiser = db.relationship("User", backref="org_workshop" ,foreign_keys=[User.workshop_organised_id] ,uselist=False)
     # coordinator =  db.relationship("User", backref="cord_workshop", foreign_keys=[User.workshop_coordinated_id], uselist=False)
@@ -105,6 +101,13 @@ class Workshop(Base):
 
 
 db.create_all()
+
+us = User.query.filter_by(id="admin").first()
+
+if not us:
+    us = User("admin", "admin", 1, )
+    db.session.add(us)
+    db.session.commit()
 
 
 
