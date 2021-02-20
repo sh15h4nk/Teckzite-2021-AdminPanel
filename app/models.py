@@ -3,54 +3,41 @@ from typing import Tuple
 from flask_migrate import branches
 
 from sqlalchemy.orm import backref
-from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import Boolean, Integer
 
 from app import db
-from sqlalchemy import Column, String, SmallInteger, DateTime
+from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
 from flask_login import UserMixin
 
 
 class Base(db.Model):
     __abstract__ = True
-    id = db.Column(String(7), nullable=False, primary_key=True)
+    id = db.Column(Integer, nullable=False, primary_key=True)
     date_created = db.Column(DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
 
-class User(UserMixin,Base):
-    name = db.Column(String(128), nullable=True)
-    email = db.Column(String(128), nullable=True, unique=True)
-    password = db.Column(String(192), nullable=False)
-    role = db.Column(SmallInteger, nullable=False)
-    dept = db.Column(String(5), server_default="", nullable=False)
-      
-
-    event_organised_id = db.Column(Integer, ForeignKey('event.id'))
-    event_coordinated_id = db.Column(Integer, ForeignKey("event.id"))
-    
-    workshop_coordinated_id = db.Column(Integer, ForeignKey("workshop.id"))
-
-
-
-    def __init__(self, id, password, role):
-        self.id = id
-        self.role = role
-        self.password = password
-
-    def __repr__(self):
-        return '<User %r>' % (self.name)
-
-
 class Event(Base):
-    name = db.Column(String(128), nullable=False)
-    
-    details = db.Column(String(2000))
-    teamsize = db.Column(SmallInteger, nullable=False)
-    dept = db.Column(String(5), server_default="", nullable=False)
-    organiser = db.relationship("User", backref="org_event", foreign_keys=[User.event_organised_id], uselist=False)         # backreference from User to retiieve user hosted event ORGANISER
-    coordinator =  db.relationship("User", backref="cord_event",foreign_keys=[User.event_coordinated_id], uselist=False)     # backreference from User to retiieve user hosted event COORDINATOR
-    # teams = db.relationship("Team", backref="event")
+    eventId = db.Column(String(6), nullable=False, unique=True)
+    dept = db.Column(String(5), nullable=False)
+    title = db.Column(String(128), nullable=False, unique=True)
+    prize = db.Column(Integer)
+    description = db.Column(String(2000))
+    brief = db.Column(String(100))
+    status = db.Column(String(200))
+    structure = db.Column(String(2000))
+    timeline = db.Column(String(2000))
+    rules = db.Column(String(2000))
+
+    contacts = db.relationship('Contact')
+    faqs = db.relationship('FAQ')
+
+    min_teamsize = db.Column(SmallInteger)
+    max_teamsize = db.Column(SmallInteger)
+
+    # organiser_id = db.Column(String(7),unique=True)
+
+    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
+    organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
 
     def __init__(self, id, name, teamsize, details) -> None:
         self.id = id
@@ -58,13 +45,81 @@ class Event(Base):
         self.teamsize = teamsize
         self.details = details
 
-class Workshop(Base):
-    name = db.Column(String(128), nullable=False)
-    dept = db.Column(String(5), server_default="", nullable=False)
-    details = db.Column(String(256))
-    coordinator =  db.relationship("User", backref="cord_workshop", foreign_keys=[User.workshop_coordinated_id], uselist=False)
 
-#     tech_user_id = db.Column(String(256), ForeignKey('techUser.id'))
+
+
+class User(UserMixin,Base):
+    userId = db.Column(String(7), nullable=False, unique=True)
+    name = db.Column(String(128), nullable=False)
+    email = db.Column(String(128), nullable=False, unique=True)
+    password = db.Column(String(192), nullable=False)
+    role = db.Column(SmallInteger, nullable=False)
+    dept = db.Column(String(3), nullable=False)
+    phone = db.Column(String(10), unique=True)
+    gender = db.Column(String(1), nullable=False)
+    hidden = db.Column(SmallInteger, default=0, nullable=False) # if true, user is inactive
+
+    coordinated_events = db.relationship('Event', foreign_keys=[Event.coordinator_id])
+    organised_event = db.relationship('Event', foreign_keys=[Event.organiser_id])
+    
+    coordinated_workshop = db.relationship('Workshop')
+   
+
+    def __init__(self, name, email, dept, phone, gender, userId, password, role):
+
+        self.name = name
+        self.email = email
+        self.dept = dept
+        self.phone = phone
+        self.gender = gender
+
+        self.userId = userId        
+        self.password = password
+        self.role = role
+
+
+    def __repr__(self):
+        return '<User %r>' % (self.userId)
+
+
+
+
+class Workshop(Base):
+    workshopId = db.Column(String(6), nullable=False, unique=True)
+    name = db.Column(String(128), nullable=False)
+    # dept = db.Column(String(5), server_default="", nullable=False)
+    description = db.Column(String(256))
+    fee = db.Column(Integer)
+    status=db.Column(String(100))
+    about=db.Column(String(500))
+    timeline = db.Column(String(500))
+    resources = db.Column(String(500))
+
+    contact = db.relationship('Contact')
+    faqs = db.relationship('FAQ')
+
+    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
+
+
+    
+    
+
+class Contact(db.Model):
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String(128), nullable=False)
+    email = db.Column(String(128), nullable=False, unique=True)
+    phone = db.Column(String(10), unique=True)
+
+    event_id = db.Column(Integer, ForeignKey('event.id'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+
+class FAQ(db.Model):
+    id = db.Column(Integer, primary_key=True)
+    question = db.Column(String(100))
+    answer = db.Column(String(500))
+
+    event_id = db.Column(Integer, ForeignKey('event.id'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
 
 
 
@@ -101,19 +156,12 @@ class Workshop(Base):
 
 db.create_all()
 
-us = User.query.filter_by(id="admin").first()
+us = User.query.filter_by(userId="admin").first()
 
 if not us:
-    us = User("admin", "admin", 1, )
+    us = User("admin","admin","cse","XXXXXXX","A","admin", "admin", 1)
     db.session.add(us)
     db.session.commit()
 
 
-
-us = User.query.filter_by(id="admin").first()
-
-if not us:
-    us = User("admin", "admin", 1)
-    db.session.add(us)
-    db.session.commit()
  

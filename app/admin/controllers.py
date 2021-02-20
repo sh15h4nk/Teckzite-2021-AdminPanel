@@ -25,7 +25,7 @@ def home():
 @admin.route("/logout/")
 def logout():
     logout_user()
-    session.pop('id', None)
+    session.pop('userId', None)
     session.pop('_flashes', None)
     flash("You have been logged out")
     return redirect(url_for('index'))
@@ -34,7 +34,7 @@ def logout():
 @admin.route('/login/', methods=['GET', 'POST'])
 def login():
 
-    if "id" in session:
+    if "userId" in session:
         if session['role']==1:
             flash("Already Logged In As Admin")
             return redirect(url_for('admin.dashboard'))
@@ -43,7 +43,7 @@ def login():
 
         form = LoginForm(request.form)
 
-        user = User.query.filter_by(id=form.id.data).first()
+        user = User.query.filter_by(userId=form.id.data).first()
 
         if user and user.password == form.password.data:
             if user.role == 1:
@@ -68,13 +68,12 @@ def addAdmin():
     if request.method == "POST":
         form = RegisterForm(request.form)
 
-        user = User.query.filter_by(id = form.id.data).first()
+        user = User.query.filter_by(userId = form.id.data).first()
 
         if not user:
-            user = User(form.id.data, form.password.data, role=1)
+            user = User(form.id.data, form.password.data, role=1)   #yet to update
             db.session.add(user)
             db.session.commit()
-            session['id'] = form.id.data
             flash("You Registered a User Succesfully")
             
         else:
@@ -90,13 +89,12 @@ def addCoordinater():
     if request.method == "POST":
         form = RegisterForm(request.form)
 
-        user = User.query.filter_by(id = form.id.data).first()
+        user = User.query.filter_by(userId = form.id.data).first()
 
         if not user:
             user = User(form.id.data, form.password.data, role=2)
             db.session.add(user)
             db.session.commit()
-            session['id'] = form.id.data
             flash("You Registered a User Succesfully")
             
         else:
@@ -158,7 +156,7 @@ def addEventView():
         teamSize = request.form.get('teamsize')
         data = request.form.get('text')
 
-        addEvent(eventId, eventName, teamSize, data)
+        addEvent(eventId, eventName, teamSize, data)    #yet to update
 
         return redirect(url_for('admin.addEventView'))
 
