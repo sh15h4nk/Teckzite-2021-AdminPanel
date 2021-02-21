@@ -3,6 +3,7 @@ from flask import Response, request, redirect
 from flask.helpers import flash, url_for
 from flask_login import current_user
 
+
 def admin_authenticated(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):

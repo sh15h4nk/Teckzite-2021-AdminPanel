@@ -6,8 +6,10 @@ from flask_ckeditor import CKEditorField
 
 from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField
 from wtforms_alchemy import PhoneNumberField
-from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired
- 
+from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired,ValidationError
+
+from app.models import User 
+
 
 class LoginForm(FlaskForm):
     userId = TextField('Student ID', [
@@ -70,3 +72,23 @@ class AddWorkshopForm(FlaskForm):
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('About', [DataRequired()])
     submit = SubmitField('Submit')
+
+
+class ChangePassword(FlaskForm):
+    password = PasswordField('New Password', [
+        DataRequired(),
+        EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password')
+    
+    submit = SubmitField("Change Password")
+
+class ResetRequest(FlaskForm):
+    email = StringField('Email Address', [DataRequired(),Email()])
+
+    submit = SubmitField("Change Password")
+
+    def validate_email(self,email):
+        user = User.query.filter_by(email = email.data).first()
+        if user is None:
+            raise ValidationError("Email doesn't exists")
