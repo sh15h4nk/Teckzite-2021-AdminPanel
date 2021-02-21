@@ -41,7 +41,7 @@ def login():
 
         form = LoginForm(request.form)
 
-        user = User.query.filter_by(userId=form.userId.data).first()
+        user = User.query.filter_by(userId=form.id.data).first()
 
         if user and user.password == form.password.data:
             if user.role == 2:
