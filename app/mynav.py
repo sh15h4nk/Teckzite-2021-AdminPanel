@@ -23,8 +23,8 @@ def my_nav():
 		admin_menu = Subgroup("Admins",view_admin,add_admin)
 
 
-		view_coord = View("Co-ordinators",'admin.getCoordinatersView')
-		add_coord = View("Add Co-ordinators",'admin.addCoordinater')
+		view_coord = View("Co-ordinators",'admin.getCoordinatorsView')
+		add_coord = View("Add Co-ordinators",'admin.addCoordinator')
 		coord_menu = Subgroup("Co-ordinators",view_coord,add_coord)
 
 
@@ -54,7 +54,7 @@ def my_nav():
 		event_menu = Subgroup("Events",view_event_mech, view_event_cse, view_event_ece, view_event_civ, view_event_mme, view_event_che, view_event_puc,add_event)
 
 
-		add_workshop = View("Add WorkShop",'admin.getWorkshopsView')
+		add_workshop = View("Add WorkShop",'admin.addWorkshopView')
 		view_workshops = View("Workshops",'admin.dashboard')
 		workshop_menu = Subgroup("Workshops",view_workshops,add_workshop)
 
@@ -66,7 +66,7 @@ def my_nav():
 
 		profile = View("Profile",'admin.dashboard')
 		edit = View("Update",'admin.dashboard')
-		profile_menu = Subgroup(current_user.id,profile,edit)
+		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'admin.logout')
 

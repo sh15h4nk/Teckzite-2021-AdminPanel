@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_session import Session
 from flask_migrate import Migrate
+from flask_ckeditor import CKEditor
 
 app = Flask(__name__)
 
@@ -14,6 +15,8 @@ migrate = Migrate(app, db, render_as_batch=True)
 
 app.config['SESSION_SQLALCHEMY'] = db
 Session(app)
+
+ckeditor = CKEditor(app)
 
 from app.admin.controllers import admin as admin_module
 app.register_blueprint(admin_module)

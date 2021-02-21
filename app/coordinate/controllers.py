@@ -41,7 +41,7 @@ def login():
 
         form = LoginForm(request.form)
 
-        user = User.query.filter_by(id=form.id.data).first()
+        user = User.query.filter_by(userId=form.userId.data).first()
 
         if user and user.password == form.password.data:
             if user.role == 2:
@@ -53,7 +53,7 @@ def login():
         
     form = LoginForm()       
     return render_template("login.html",form= form)
- 
+
 @coordinate.route('/dashboard/')
 @login_required
 @coordinate_authenticated
