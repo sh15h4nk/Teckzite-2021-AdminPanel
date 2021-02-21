@@ -56,8 +56,8 @@ class User(UserMixin,Base):
     role = db.Column(SmallInteger, nullable=False)
     dept = db.Column(String(3), nullable=False)
     phone = db.Column(String(10), unique=True)
-    gender = db.Column(String(1), nullable=False)
-    hidden = db.Column(SmallInteger, default=0, nullable=False) # if true, user is inactive
+    gender = db.Column(String(1))
+    hidden = db.Column(SmallInteger, default=0) # if true, user is inactive
 
     coordinated_events = db.relationship('Event', foreign_keys=[Event.coordinator_id])
     organised_event = db.relationship('Event', foreign_keys=[Event.organiser_id])
@@ -65,17 +65,15 @@ class User(UserMixin,Base):
     coordinated_workshop = db.relationship('Workshop')
    
 
-    def __init__(self, name, email, dept, phone, gender, userId, password, role):
+    def __init__(self, userId, name, email, password, role, dept, phone):
 
+        self.userId = userId
         self.name = name
         self.email = email
-        self.dept = dept
-        self.phone = phone
-        self.gender = gender
-
-        self.userId = userId        
+        self.dept = dept              
         self.password = password
         self.role = role
+        self.phone = phone
 
 
     def __repr__(self):
@@ -87,7 +85,7 @@ class User(UserMixin,Base):
 class Workshop(Base):
     workshopId = db.Column(String(6), nullable=False, unique=True)
     name = db.Column(String(128), nullable=False)
-    # dept = db.Column(String(5), server_default="", nullable=False)
+    dept = db.Column(String(5))
     description = db.Column(String(256))
     fee = db.Column(Integer)
     status=db.Column(String(100))
@@ -159,7 +157,7 @@ db.create_all()
 us = User.query.filter_by(userId="admin").first()
 
 if not us:
-    us = User("admin","admin","cse","XXXXXXX","A","admin", "admin", 1)
+    us = User("admin","admin","admin@gmail.com","admin",1,"cse", 'XXXXXXXXXX')
     db.session.add(us)
     db.session.commit()
 

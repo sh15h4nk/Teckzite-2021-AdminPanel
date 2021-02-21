@@ -6,7 +6,7 @@ from app.models import User, Event
 def getAdmins():
     rows = User.query.filter_by(role=1).all()
 
-    rows = [(row.id, row.name, row.email, row.role) for row in rows]
+    rows = [(row.userId, row.name, row.email, row.dept, row.gender, row.phone) for row in rows]
     
     no_rows = len(rows)
     try:
@@ -16,10 +16,10 @@ def getAdmins():
 
     return {"rows": rows, "no_rows": no_rows, "no_cols": no_cols}
 
-def getCoordinaters():
+def getCoordinators():
     rows = User.query.filter_by(role=2).all()
 
-    rows = [(row.id, row.name, row.email, row.role) for row in rows]
+    rows = [(row.userId, row.name, row.email, row.dept,row.gender, row.phone) for row in rows]
     
     no_rows = len(rows)
     try:
@@ -32,7 +32,7 @@ def getCoordinaters():
 def getOrganisers(dept):
     rows = User.query.filter_by(role=3, dept=dept).all()
 
-    rows = [(row.id, row.name, row.email, row.role) for row in rows]
+    rows = [(row.userId, row.name, row.email, row.dept, row.gender, row.phone) for row in rows]
     
     no_rows = len(rows)
     try:
@@ -46,7 +46,7 @@ def getOrganisers(dept):
 
 def getEvents(dept):
     rows = Event.query.filter_by(dept=dept).all()
-    rows = [(row.id, row.name, row.details) for row in rows]
+    rows = [(row.userId, row.name, row.dept, row.details) for row in rows]
 
     no_rows = len(rows)
     try:

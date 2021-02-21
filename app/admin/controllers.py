@@ -3,8 +3,7 @@ from flask import url_for, redirect, request, render_template, Blueprint, sessio
 from flask.ctx import after_this_request
 from flask.globals import current_app
 from app.models import User
-from app.admin.forms import RegisterForm
-from app.forms import LoginForm
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm
 from app import db
 from app import app
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
@@ -16,6 +15,7 @@ from app.controllers import login_manager
 from app.mynav import mynav
 
 from app.middlewares import admin_authenticated
+from app import ckeditor
 
 
 @admin.route('/')
@@ -43,12 +43,12 @@ def login():
 
         form = LoginForm(request.form)
 
-        user = User.query.filter_by(userId=form.id.data).first()
+        user = User.query.filter_by(userId=form.userId.data).first()
 
         if user and user.password == form.password.data:
             if user.role == 1:
                 login_user(user)
-                session['id'] = form.id.data
+                session['id'] = form.userId.data
                 session['role'] = user.role
                 return redirect(url_for("admin.dashboard"))
         
@@ -65,42 +65,78 @@ def login():
 @admin_authenticated
 def addAdmin():
 
-    if request.method == "POST":
-        form = RegisterForm(request.form)
+    form = RegisterForm(request.form)
 
-        user = User.query.filter_by(userId = form.id.data).first()
+    if request.method == "POST":
+
+        if not form.validate_on_submit():
+            return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+
+        user = User.query.filter_by(userId = form.userId.data).first()
 
         if not user:
-            user = User(form.id.data, form.password.data, role=1)   #yet to update
+
+            email_already_exists = User.query.filter_by(email=form.email.data).first()
+
+            if email_already_exists:
+                flash('Email already exists! ')
+                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+            
+            phone_already_exists = User.query.filter_by(phone=form.phone.data).first()
+
+            if phone_already_exists:
+                flash('Phone Number already exists! ')
+                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+
+            user = User(form.userId.data, form.name.data, form.email.data, form.password.data, 1, form.dept.data, form.phone.data)  #updated
             db.session.add(user)
             db.session.commit()
-            flash("You Registered a User Succesfully")
+            flash("You Registered a Admin Succesfully")
+            return redirect(url_for('admin.addAdmin'))
             
         else:
             flash("User already exists")    
-    form = RegisterForm()
+
     return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
    
-@admin.route('/coordinaters/add', methods=['GET', 'POST'])
+@admin.route('/coordinators/add', methods=['GET', 'POST'])
 @login_required
 @admin_authenticated
-def addCoordinater():
+def addCoordinator():
 
+    form = RegisterForm(request.form)
     if request.method == "POST":
-        form = RegisterForm(request.form)
-
-        user = User.query.filter_by(userId = form.id.data).first()
+        
+        if not form.validate_on_submit():
+            return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+            
+        user = User.query.filter_by(userId = form.userId.data).first()
 
         if not user:
-            user = User(form.id.data, form.password.data, role=2)
+
+            email_already_exists = User.query.filter_by(email=form.email.data).first()
+
+            if email_already_exists:
+                flash('Email already exists! ')
+                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+            
+            phone_already_exists = User.query.filter_by(phone=form.phone.data).first()
+
+            if phone_already_exists:
+                flash('Phone Number already exists! ')
+                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+
+            user = User(form.userId.data, form.name.data, form.email.data, form.password.data, 2, form.dept.data)  #updated
             db.session.add(user)
             db.session.commit()
-            flash("You Registered a User Succesfully")
+            flash("You Registered a Coordinator Succesfully")
+            return redirect(url_for('admin.addCoordinator'))
             
         else:
             flash("User already exists")    
-    form = RegisterForm()
+
     return render_template('admin/register.html',role="Coordinator", form = form,current_user = current_user)
+        
 
 
 @admin.route('/dashboard/')
@@ -117,11 +153,11 @@ def getAdminsView():
     data = getAdmins()
     return render_template("users.html",role = "Admin",data = data)
     
-@admin.route('/coordinaters/')
+@admin.route('/coordinators/')
 @login_required
 @admin_authenticated
-def getCoordinatersView():
-    data = getCoordinaters()
+def getCoordinatorsView():
+    data = getCoordinators()
     return render_template("users.html", role= "Coordinator",data = data)
 
 @admin.route('/organisers/<dept>')
@@ -147,8 +183,11 @@ def getEventsView(dept):
 @login_required
 @admin_authenticated
 def addEventView():
+
+    form = CreateEventForm(request.form)
+
     if request.method == 'GET':
-        return render_template("admin/add_event.html")
+        return render_template("add_event.html", form=form)
 
     else:
         eventId = request.form.get('eventid')
@@ -161,9 +200,29 @@ def addEventView():
         return redirect(url_for('admin.addEventView'))
 
 
-@admin.route('/workshop/show')
+@admin.route('/workshops/')
 @login_required
 @admin_authenticated
 def getWorkshopsView():
     data = getWorkshops()
     return data
+
+
+@admin.route('/workshop/add')
+@login_required
+@admin_authenticated
+def addWorkshopView():
+    form = AddWorkshopForm(request.form)
+
+    if request.method == 'GET':
+        return render_template("add_workshop.html", form=form)
+
+    else:
+        eventId = request.form.get('eventid')
+        eventName = request.form.get('eventname')
+        teamSize = request.form.get('teamsize')
+        data = request.form.get('text')
+
+        addEvent(eventId, eventName, teamSize, data)    #yet to update
+
+        return redirect(url_for('admin.addWorkshopView'))
