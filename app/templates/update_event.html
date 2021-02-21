@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block title %}
+Add Workshop
+{% endblock %}
+
+
+{% block content %}
+{{ super() }}
+
+<div class="container"> 
+    <form method="post">
+
+
+        <div id="contacts">
+            <h4> <b> Contact 1 </b> </h4>
+            <div>            
+                <label for="name"> Name </label>
+                <input  class="form-control" type="text" name="contacts[0][name]" required id="name">
+                <label for="name"> Email </label>
+                <input class="form-control" type="email" name="contacts[0][email]" required id="email">
+                <label for="name"> Phone </label>
+                <input class="form-control" type="tel" name="contacts[0][phone]" required id="phone"> 
+            </div> <br>
+        </div>        
+
+        <input type="number" hidden id="no-of-contacts" name="noOfContacts">
+
+        <button class="btn btn-primary" id="add-contact">Add contact</button>
+        <button class="btn btn-danger" id="delete-contact">Delete contact</button> <br><br>
+
+        <button class="btn btn-success" type="submit">Submit</button>
+       
+    </form>
+</div>
+
+{% block javascript %}
+
+<script>
+    
+    let i=1;
+
+    document.getElementById('no-of-contacts').value = 1;
+
+
+    document.getElementById('add-contact').onclick = function() {
+
+        var element = `
+        <div>    
+            <h4> <b> Contact ${i+1} </b> </h4>
+            <label for="name"> Name </label>
+            <input class="form-control"  type="text" name="contacts[${i}][name]" id="name">
+            <label for="name"> Email </label>
+            <input class="form-control"  type="email" name="contacts[${i}][email]" id="email">
+            <label for="name"> Phone </label>
+            <input class="form-control" type="tel" name="contacts[${i}][phone]" id="phone"> 
+        </div> <br>
+        `;
+        
+
+        // let div = document.createElement('div');
+        // div.innerHTML = element;
+
+        let contacts = document.getElementById('contacts');
+        contacts.innerHTML += element;
+
+        i++;
+
+        document.getElementById('no-of-contacts').value = i;
+
+    }
+
+    document.getElementById('delete-contact').onclick = function() {
+
+        if (i==1){
+            alert("Minimum one contact is needed");
+            return
+        }
+
+        let doc = document.getElementById('contacts')
+        doc.removeChild(doc.lastElementChild)
+        doc.removeChild(doc.lastElementChild)
+        
+        i--;
+        document.getElementById('no-of-contacts').value = i;
+
+    }
+
+
+
+</script>
+
+{% endblock %}
+    
+{{ ckeditor.load() }}
+
+{% endblock %}``
