@@ -40,9 +40,11 @@ class Event(Base):
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
     organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
 
-    def __init__(self, eventId, title) -> None:
+    def __init__(self, eventId, title, coordinater_id, organiser_id) -> None:
         self.eventId = eventId
         self.title = title
+        self.coordinator_id = coordinater_id
+        self.organiser_id = organiser_id
 
 
 

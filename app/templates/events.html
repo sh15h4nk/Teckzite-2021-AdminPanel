@@ -15,7 +15,7 @@ Events
 
 <div class="container">
 
-	<table class="table">
+	<table id="table" class="display" style="width:100%">
 		<thead>
 		<tr>
 			<th>ID</th>
@@ -35,4 +35,25 @@ Events
 
 </div>
 
+{% block javascript %}
+	{{ super() }}
+
+<script>
+
+	
+	$(document).ready(function() {
+    	$('#example').DataTable();
+	} );
+
+	alert(2);
+
+</script>
+
+
+
 {% endblock %}
+
+
+{% endblock %}
+
+

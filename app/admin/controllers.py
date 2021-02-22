@@ -202,52 +202,29 @@ def addEventView():
 
     form = CreateEventForm(request.form)
 
-    if request.method == 'GET':
-        return render_template("add_event.html", form=form)
-
-    else:
-        
-        title = form.title.data
+    if form.validate_on_submit():       
+        # return "Validated"
         organiser = form.event_organiser.data
-        # print(organiser)
+        # return organiser['dept']
+        organiser = User(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
+        db.session.add(organiser)
+        db.session.commit()
 
-        user = User.query.filter_by(userId=organiser['userId']).first()
-        
-        if not user:
-
-            email_already_exists = User.query.filter_by(email=organiser['email']).first()
-
-            if email_already_exists:
-                flash('Email already exists! ')
-                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
-            
-            phone_already_exists = User.query.filter_by(phone=organiser['phone']).first()
-
-            if phone_already_exists:
-                flash('Phone Number already exists! ')
-                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
-
-            organiser = User(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
-            db.session.add(organiser)
-            db.session.commit()
-
-            eventId = generate_event_id()
-            coordinator = User.query.filter_by(userId=form.event_coordinator.data).first()
-
-            event = Event(eventId, title)
-            event.organiser_id = organiser.id
-            event.coordinator_id = coordinator.id
-            db.session.add(event)
-            db.session.commit()
-
-            flash("Event has been added successfully")
-            return redirect(url_for('admin.addEventView'))
-        
-        else:
-            flash('Organiser already exists')
         
 
+        eventId = generate_event_id()
+        coordinator = User.query.filter_by(userId=form.coordinator.data).first()
+        event = Event(eventId, form.title.data, coordinator.id, organiser.id)
+        db.session.add(event)
+        db.session.commit()
+        flash("Event added successfully")
         return redirect(url_for('admin.addEventView'))
+
+    return render_template('add_event.html', form=form)
+
+        
+
+        
 
 
 @admin.route('/workshops/')

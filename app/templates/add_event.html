@@ -1,20 +1,57 @@
 {% extends "layout.html" %}
-{% import "bootstrap/wtf.html" as wtf%}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
 Add Event
 {% endblock %}
 
-
 {% block content %}
 {{ super() }}
 
 <div class="container">
-    <form method="post">
+    <form class = 'form' method="post">
+        {{ form.csrf_token }}
+        {{ form.event_organiser.csrf_token }}
         {{ wtf.quick_form(form) }}
+        <!-- <div class="form-group row-md-6">
+            {{ wtf.form_field(form.title, class='form-control', 
+               placeholder='Title') }}
+        </div>
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.coordinator, class='form-control', 
+               placeholder='coordinator') }}
+        </div><br>
+        <div> <h2>Organiser</h2> </div>
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.event_organiser.userId, class='form-control', 
+               placeholder='Student ID') }}
+        </div>
+        
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.event_organiser.email, class='form-control', 
+               placeholder='Email') }}
+        </div>
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.event_organiser.phone, class='form-control', 
+               placeholder='Phone') }}
+        </div>
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.event_organiser.dept, class='form-control', 
+               placeholder='Dept') }}
+        </div>
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.event_organiser.password, class='form-control', 
+               placeholder='Password') }}
+        </div>
+        <div class="form-group row-md-6">
+            {{ wtf.form_field(form.event_organiser.confirm, class='form-control', 
+               placeholder='Confirm') }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button> -->
+
+        
+
     </form>
 </div>
-    
-{{ ckeditor.load() }}
 
 {% endblock %}
