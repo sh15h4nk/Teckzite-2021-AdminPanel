@@ -13,7 +13,7 @@
 
 <div class="container">
 
-	<table class="table">
+	<table id='usertable' class="table">
 		<thead>
 		<tr>
 			<th>ID</th>
@@ -22,20 +22,29 @@
 			<th>Branch</th>
 			<th>Gender</th>
 			<th>Phone</th>
+			<th>Block</th>
 			
 		</tr>
 		</thead>
 		<tbody>
-		{% for row in data['rows'] %}
+		{% for row in data %}
 			<tr>
-				<td>{{ row[0] }}</td>
-				<td>{{ row[1] }}</td>
-				<td>{{ row[2] }}</td>
-				<td>{{ row[3] }}</td>
-				<td>{{ row[4] }}</td>
-				<td>{{ row[5] }}</td>
+				<td>{{ row.id }}</td>
+				<td>{{ row.name }}</td>
+				<td>{{ row.email }}</td>
+				<td>{{ row.dept }}</td>
+				<td>{{ row.gender }}</td>
+				<td>{{ row.phone }}</td>
+				<td data-id = {{row.id}}>
+					{% if row.hidden == 1 %}
+						<input type="radio" id="hide" name="hide{{row.id}}" value="hide" checked>yes
+						<input type="radio" id="unhide" name="hide{{row.id}}" value="unhide">no
+					{% else %}
+						<input type="radio" id="hide" name="hide{{row.id}}" value="hide">yes
+						<input type="radio" id="unhide" name="hide{{row.id}}" value="unhide" checked>no
+					{% endif %}
 
-
+				</td>
 			</tr>
 		{% endfor %}
 		</tbody>
@@ -43,6 +52,44 @@
 
 
 </div>
+
+
+{% block javascript %}
+	{{ super() }}
+
+<script>
+    $(document).ready(function() {
+    $('#usertable').DataTable().destroy();
+    $('#usertable').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'excelHtml5'
+        	]
+    	} );
+	} );
+
+	$('#usertable').editable({
+        container:'body',
+        selector:'td.hide',
+        url:'/hide_user',
+        title:'Name',
+        type:'POST',
+        validate:function(value){
+            if($.trim(value) == '')
+            {
+                return 'This field is required';
+            }
+        }
+    });
+
+
+
+</script>
+
+
+
+{% endblock %}
+
 
 
 {% endblock %}

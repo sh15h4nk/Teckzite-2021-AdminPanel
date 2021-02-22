@@ -205,6 +205,11 @@ def addEventView():
     if form.validate_on_submit():       
         # return "Validated"
         organiser = form.event_organiser.data
+
+        coordinator = User.query.filter_by(dept=organiser['dept'], role=2).first()
+        if coordinator is None:
+            flash("No coordinator for the Dept")
+            return redirect(url_for('admin.addEventView'))
         # return organiser['dept']
         organiser = User(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
         db.session.add(organiser)
@@ -213,8 +218,8 @@ def addEventView():
         
 
         eventId = generate_event_id()
-        coordinator = User.query.filter_by(userId=form.coordinator.data).first()
-        event = Event(eventId, form.title.data, coordinator.id, organiser.id)
+        
+        event = Event(eventId, form.title.data, coordinator.dept , coordinator.id, organiser.id)
         db.session.add(event)
         db.session.commit()
         flash("Event added successfully")
@@ -253,3 +258,21 @@ def addWorkshopView():
         addEvent(eventId, eventName, teamSize, data)    #yet to update
 
         return redirect(url_for('admin.addWorkshopView'))
+
+
+
+
+
+
+
+
+
+@login_required
+@admin_authenticated
+@admin.route('/hide_user', methods=['POST'])
+def hideUser():
+    user_id = request.form['id']
+    field = request.form['field']
+    value = request.form['value']
+    return "got the request", user_id, field, value
+
