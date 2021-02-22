@@ -18,6 +18,8 @@ app.config['SESSION_SQLALCHEMY'] = db
 Session(app)
 
 ckeditor = CKEditor(app)
+mail = Mail(app)
+
 
 mail = Mail(app)
 
@@ -31,7 +33,4 @@ from app.organiser.controllers import organiser as organiser_module
 app.register_blueprint(organiser_module)
 
 Bootstrap(app)
-
-
-
 # db.create_all()

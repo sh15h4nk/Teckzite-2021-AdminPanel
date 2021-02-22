@@ -4,9 +4,10 @@ from flask_migrate import branches, current
 
 from sqlalchemy.orm import backref
 
-from app import db
+from app import db, app
 from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
 from flask_login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 class Base(db.Model):
@@ -62,6 +63,18 @@ class User(UserMixin,Base):
     
     coordinated_workshop = db.relationship('Workshop')
    
+    def generate_token(self, expires_sec=1800):
+        serial = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return serial.dumps({'user_id':self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_token(token):
+        serial = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = serial.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
     def __init__(self, userId, name, email, password, role, dept, phone):
 

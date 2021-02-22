@@ -7,6 +7,7 @@ from app.models import CurrentId
 from app import db
 
 
+
 def admin_authenticated(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
