@@ -46,7 +46,7 @@ def getOrganisers(dept):
 
 def getEvents(dept):
     rows = Event.query.filter_by(dept=dept).all()
-    rows = [(row.userId, row.name, row.dept, row.details) for row in rows]
+    rows = [(row.eventId, row.title) for row in rows]
 
     no_rows = len(rows)
     try:

@@ -28,7 +28,7 @@ class RegisterForm(FlaskForm):
         Required(), Length(min=7, max=7)])  
 
     name = TextField('Student Name', [
-        Required()])
+        Required(), Length(min=7, max=20)])
 
     email = StringField('Email Address', [Email("provide a valid email")])
 
@@ -36,7 +36,7 @@ class RegisterForm(FlaskForm):
         [Required(), NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
     )
     
-    dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
+    dept =  SelectField('Department', choices=BRANCH_CHOICES)
 
     password = PasswordField('New Password', [
         DataRequired(),
@@ -46,10 +46,37 @@ class RegisterForm(FlaskForm):
     
     submit = SubmitField("submit")
 
+
+    def validate_userId(self, userId):
+        user = User.query.filter_by(userId=userId.data).first()
+        if user:
+            raise ValidationError("User already exists")
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError("Email already exists")
+    
+    def validate_phone(self, phone):
+        user = User.query.filter_by(phone=phone.data).first()
+        if user:
+            raise ValidationError("Phone already exists")
+
+     
+
 class CreateEventForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
-    event_coordinator = StringField('Coordinator ID', [DataRequired(), Length(min=7, max=7)])
+    coordinator = StringField('Coordinator ID', [DataRequired(), Length(min=7, max=7)])
     event_organiser = FormField(RegisterForm)
+
+    def validate_coordinator(self, coordinator):
+        user = User.query.filter_by(userId=coordinator.data).first()
+        # print(user)
+        if not user:
+            raise ValidationError("Coordinator doesn't exist")
+        elif user.role != 2:
+            raise ValidationError("User provided is not Coordinator")
+
     
 
 class UpdateEventForm():
