@@ -5,9 +5,9 @@ from flask.globals import current_app
 from app.models import User
 from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm
 from app import db
-from app import app
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
+
 
 from app.admin import admin
 from app.admin.functions import *
@@ -17,6 +17,7 @@ from app.mynav import mynav
 from app.middlewares import admin_authenticated
 from app import ckeditor
 
+from app.middlewares import generate_event_id, generate_workshop_id, generate_techzite_id
 
 @admin.route('/')
 def home():
@@ -190,12 +191,46 @@ def addEventView():
         return render_template("add_event.html", form=form)
 
     else:
-        eventId = request.form.get('eventid')
-        eventName = request.form.get('eventname')
-        teamSize = request.form.get('teamsize')
-        data = request.form.get('text')
+        
+        title = form.title.data
+        organiser = form.event_organiser.data
+        # print(organiser)
 
-        addEvent(eventId, eventName, teamSize, data)    #yet to update
+        user = User.query.filter_by(userId=organiser['userId']).first()
+        
+        if not user:
+
+            email_already_exists = User.query.filter_by(email=organiser['email']).first()
+
+            if email_already_exists:
+                flash('Email already exists! ')
+                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+            
+            phone_already_exists = User.query.filter_by(phone=organiser['phone']).first()
+
+            if phone_already_exists:
+                flash('Phone Number already exists! ')
+                return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
+
+            organiser = User(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
+            db.session.add(organiser)
+            db.session.commit()
+
+            eventId = generate_event_id()
+            coordinator = User.query.filter_by(userId=form.event_coordinator.data).first()
+
+            event = Event(eventId, title)
+            event.organiser_id = organiser.id
+            event.coordinator_id = coordinator.id
+            db.session.add(event)
+            db.session.commit()
+
+            flash("Event has been added successfully")
+            return redirect(url_for('admin.addEventView'))
+        
+        else:
+            flash('Organiser already exists')
+        
 
         return redirect(url_for('admin.addEventView'))
 
