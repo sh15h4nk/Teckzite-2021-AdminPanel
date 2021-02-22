@@ -11,6 +11,7 @@ from app.admin import roles
 
 from app.admin import admin
 from app.admin.functions import *
+from app.functions import sendMail
 from app.controllers import login_manager
 from app.mynav import mynav
 
@@ -92,7 +93,14 @@ def addAdmin():
             user = User(form.userId.data, form.name.data, form.email.data, form.password.data, 1, form.dept.data, form.phone.data)  #updated
             db.session.add(user)
             db.session.commit()
+
+
+            sendMail(user)
+
             flash("You Registered a Admin Succesfully")
+            flash("Email has been sent to reset the password")
+
+
             return redirect(url_for('admin.addAdmin'))
             
         else:
@@ -127,10 +135,17 @@ def addCoordinator():
                 flash('Phone Number already exists! ')
                 return render_template('admin/register.html',role="Admin", form = form,current_user = current_user)
 
-            user = User(form.userId.data, form.name.data, form.email.data, form.password.data, 2, form.dept.data)  #updated
+            user = User(form.userId.data, form.name.data, form.email.data, form.password.data, 2, form.dept.data, form.phone.data)  #updated
             db.session.add(user)
             db.session.commit()
+
+
+            sendMail(user)
+
             flash("You Registered a Coordinator Succesfully")
+            flash("Email has been sent to reset the password")
+
+
             return redirect(url_for('admin.addCoordinator'))
             
         else:
