@@ -1,6 +1,6 @@
 from enum import unique
 from typing import Tuple
-from flask_migrate import branches
+from flask_migrate import branches, current
 
 from sqlalchemy.orm import backref
 
@@ -18,7 +18,7 @@ class Base(db.Model):
 
 class Event(Base):
     eventId = db.Column(String(6), nullable=False, unique=True)
-    dept = db.Column(String(5), nullable=False)
+    dept = db.Column(String(5))
     title = db.Column(String(128), nullable=False, unique=True)
     prize = db.Column(Integer)
     description = db.Column(String(2000))
@@ -39,11 +39,9 @@ class Event(Base):
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
     organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
 
-    def __init__(self, id, name, teamsize, details) -> None:
-        self.id = id
-        self.name = name
-        self.teamsize = teamsize
-        self.details = details
+    def __init__(self, eventId, title) -> None:
+        self.eventId = eventId
+        self.title = title
 
 
 
@@ -119,6 +117,11 @@ class FAQ(db.Model):
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
 
+class CurrentId(db.Model):
+    current_techzite_id = db.Column(Integer, default=10001, primary_key=True)
+    current_event_id = db.Column(Integer, default=10001)
+    current_workshop_id = db.Column(Integer, default=10001)
+
 
 
 
@@ -161,5 +164,10 @@ if not us:
     db.session.add(us)
     db.session.commit()
 
+currentIds = db.session.query(CurrentId).count()
 
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
  

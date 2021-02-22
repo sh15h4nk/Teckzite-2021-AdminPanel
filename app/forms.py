@@ -46,7 +46,25 @@ class RegisterForm(FlaskForm):
 
 class CreateEventForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
+    event_coordinator = StringField('Coordinator ID', [DataRequired(), Length(min=7, max=7)])
     event_organiser = FormField(RegisterForm)
+    
+
+class UpdateEventForm():
+    title = StringField('Title', [DataRequired(), Length(min=5)])
+    prize = IntegerField('Fee', [DataRequired()])
+    description = CKEditorField('Description', [DataRequired(), Length(min=20)])
+    brief = CKEditorField('Status', [DataRequired()])
+    status = CKEditorField('Status', [DataRequired()])
+    structure = CKEditorField('Timeline', [DataRequired()])
+    timeline = CKEditorField('Timeline', [DataRequired()])
+    rules = CKEditorField('Timeline', [DataRequired()])
+    
+    min_teamsize = IntegerField('Minimum team size', 
+        [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+    max_teamsize = IntegerField('Maximum team size', 
+        [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+    
 
 class Contacts(FlaskForm):
     name = StringField('Name', [DataRequired()])
@@ -68,5 +86,6 @@ class AddWorkshopForm(FlaskForm):
     status = CKEditorField('Status', [DataRequired()])
     about = CKEditorField('About', [DataRequired()])
     timeline = CKEditorField('Timeline', [DataRequired()])
-    resources = CKEditorField('About', [DataRequired()])
-    submit = SubmitField('Submit')
+    resources = CKEditorField('Resources', [DataRequired()])
+    
+
