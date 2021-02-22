@@ -66,16 +66,7 @@ class RegisterForm(FlaskForm):
 
 class CreateEventForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
-    coordinator = StringField('Coordinator ID', [DataRequired(), Length(min=7, max=7)])
     event_organiser = FormField(RegisterForm)
-
-    def validate_coordinator(self, coordinator):
-        user = User.query.filter_by(userId=coordinator.data).first()
-        # print(user)
-        if not user:
-            raise ValidationError("Coordinator doesn't exist")
-        elif user.role != 2:
-            raise ValidationError("User provided is not Coordinator")
 
     
 

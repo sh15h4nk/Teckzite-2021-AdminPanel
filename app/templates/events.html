@@ -15,18 +15,24 @@ Events
 
 <div class="container">
 
-	<table id="table" class="display" style="width:100%">
+	<table id="mytable" class="display" style="width:100%">
 		<thead>
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
+			<th>Block</th>
+
 		</tr>
 		</thead>
 		<tbody>
-		{% for row in data['rows'] %}
+		{% for row in data %}
 			<tr>
-				<td>{{ row[0] }}</td>
-				<td>{{ row[1] }}</td>
+				<td>EV{{ row.id }}</td>
+				<td>{{ row.title }}</td>
+				<td>
+					<input type="radio" id="hide" name="hide{{row.id}}" value="hide" checked="">yes
+					<input type="radio" id="unhide" name="hide{{row.id}}" value="unhide">no
+				</td>
 			</tr>
 		{% endfor %}
 		</tbody>
@@ -39,13 +45,15 @@ Events
 	{{ super() }}
 
 <script>
-
-	
-	$(document).ready(function() {
-    	$('#example').DataTable();
-	} );
-
-	alert(2);
+    $(document).ready(function() {
+    $('#mytable').DataTable().destroy();
+    $('#mytable').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'excelHtml5'
+        ]
+    } );
+} );
 
 </script>
 

@@ -1,5 +1,4 @@
 from enum import unique
-from typing import Tuple
 from flask_migrate import branches, current
 
 from sqlalchemy.orm import backref
@@ -28,6 +27,8 @@ class Event(Base):
     structure = db.Column(String(2000))
     timeline = db.Column(String(2000))
     rules = db.Column(String(2000))
+    # hidden = db.Column(SmallInteger, default=0) # if true, user is inactive
+    
 
     contacts = db.relationship('Contact')
     faqs = db.relationship('FAQ')
@@ -40,9 +41,10 @@ class Event(Base):
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
     organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
 
-    def __init__(self, eventId, title, coordinater_id, organiser_id) -> None:
+    def __init__(self, eventId, title,dept, coordinater_id, organiser_id) -> None:
         self.eventId = eventId
         self.title = title
+        self.dept = dept
         self.coordinator_id = coordinater_id
         self.organiser_id = organiser_id
 
