@@ -30,3 +30,5 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USERNAME = creds.email_username
 MAIL_PASSWORD = creds.email_passwd
+
+SEND_FILE_MAX_AGE_DEFAULT = 0

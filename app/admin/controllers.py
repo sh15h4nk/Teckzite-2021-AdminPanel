@@ -2,12 +2,16 @@ from operator import add
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask.ctx import after_this_request
 from flask.globals import current_app
+from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm
 from app import db
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
+from PIL import Image
+import os
 
+import urllib
 
 from app.admin import admin
 from app.admin.functions import *
@@ -240,29 +244,26 @@ def getWorkshopsView():
     return data
 
 
-@admin.route('/workshop/add')
+@admin.route('/workshop/add', methods=['GET', 'POST'])
 @login_required
 @admin_authenticated
 def addWorkshopView():
     form = AddWorkshopForm(request.form)
 
-    if request.method == 'GET':
-        return render_template("add_workshop.html", form=form)
+    if request.method == 'POST':
+        print(form)
+        return 'c'
 
-    else:
-        eventId = request.form.get('eventid')
-        eventName = request.form.get('eventname')
-        teamSize = request.form.get('teamsize')
-        data = request.form.get('text')
+      
+        data = request.form['uri']
 
-        addEvent(eventId, eventName, teamSize, data)    #yet to update
+        response = urllib.request.urlopen(data)
+        with open('app/uploads/fuck.jpg', 'wb') as f:  
+            f.write(response.file.read())
 
-        return redirect(url_for('admin.addWorkshopView'))
+        return "Success"
 
-
-
-
-
+    return render_template('add_workshop.html', form=form)
 
 
 

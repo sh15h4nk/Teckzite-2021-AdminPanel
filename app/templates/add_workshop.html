@@ -5,24 +5,94 @@
 Add Workshop
 {% endblock %}
 
+{% block styles %}
+{{ super() }}
+<style>
+
+label.cabinet{
+	display: block;
+	cursor: pointer;
+}
+
+label.cabinet input.file{
+	position: relative;
+	height: 100%;
+	width: auto;
+	opacity: 0;
+	-moz-opacity: 0;
+  filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+  margin-top:-30px;
+}
+
+#upload-demo{
+	width: 250px;
+	height: 250px;
+  padding-bottom:25px;
+}
+figure figcaption {
+    position: absolute;
+    bottom: 0;
+    color: #fff;
+    width: 100%;
+    padding-left: 9px;
+    padding-bottom: 5px;
+    text-shadow: 0 0 10px #000;
+}
+
+</style>
+{% endblock %}
 
 {% block content %}
 {{ super() }}
 
+
+
+<div class="modal fade" id="cropImagePop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">
+                <?=multiLanguage( "Edit Foto" , "Edit Photo" )?></h4>
+            </div>
+            <div class="modal-body">
+                <div id="upload-demo" class="center-block"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="cropImageBtn" class="btn btn-primary">Crop</button>
+            </div>
+		</div>
+	</div>
+</div>
+
+
+
 <div class="container"> 
-    <form method="post">
-        {{ wtf.quick_form(form) }}
+    <form action="#" method="post" >
+        
+        {{ form.csrf_token }}
+        {{ wtf.form_field(form.title) }}
+        {{ wtf.form_field(form.dept) }}
+        {{ wtf.form_field(form.description) }}
+        {{ wtf.form_field(form.fee) }}
+        {{ wtf.form_field(form.status) }}
+        {{ wtf.form_field(form.about) }}
+        {{ wtf.form_field(form.timeline) }}
+        {{ wtf.form_field(form.resources) }}
+
+
 
 
         <div id="contacts">
             <h4> <b> Contact 1 </b> </h4>
             <div>            
                 <label for="name"> Name </label>
-                <input  class="form-control" type="text" name="contacts[0][name]" required id="name">
+                <input  class="form-control" type="text" name="contacts[0][name]" required >
                 <label for="name"> Email </label>
-                <input class="form-control" type="email" name="contacts[0][email]" required id="email">
+                <input class="form-control" type="email" name="contacts[0][email]" required >
                 <label for="name"> Phone </label>
-                <input class="form-control" type="tel" name="contacts[0][phone]" required id="phone"> 
+                <input class="form-control" type="tel" name="contacts[0][phone]" required > 
             </div> <br>
         </div>        
 
@@ -31,69 +101,48 @@ Add Workshop
         <button class="btn btn-primary" id="add-contact">Add contact</button>
         <button class="btn btn-danger" id="delete-contact">Delete contact</button> <br><br>
 
-        <button class="btn btn-success" type="submit">Submit</button>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <label class="cabinet center-block">
+                        <figure>
+                            <img src="" class="gambar img-responsive img-thumbnail" id="item-img-output" /> Upload Image
+                            
+                        </figure>
+                        <input type="file" id="final-result" class="item-img file center-block" name="image"/>
+                    </label> 
+                </div>
+            </div>
+            <br>
+            
+        </div>
+        <input type="text" name="uri" hidden id="uri">
+
+        <input type="submit" value="Submit"> <br> <br><br> <br>
        
     </form>
 </div>
 
-{% block javascript %}
+    
+{{ ckeditor.load() }}
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.5.1/croppie.js"></script>
+<script src="/static/addContacts.js"></script>
+<script src="/static/imageUpload.js"></script>
 
 <script>
-    
-    let i=1;
 
-    document.getElementById('no-of-contacts').value = 1;
-
-
-    document.getElementById('add-contact').onclick = function() {
-
-        var element = `
-        <div>    
-            <h4> <b> Contact ${i+1} </b> </h4>
-            <label for="name"> Name </label>
-            <input class="form-control"  type="text" name="contacts[${i}][name]" id="name">
-            <label for="name"> Email </label>
-            <input class="form-control"  type="email" name="contacts[${i}][email]" id="email">
-            <label for="name"> Phone </label>
-            <input class="form-control" type="tel" name="contacts[${i}][phone]" id="phone"> 
-        </div> <br>
-        `;
-        
-
-        // let div = document.createElement('div');
-        // div.innerHTML = element;
-
-        let contacts = document.getElementById('contacts');
-        contacts.innerHTML += element;
-
-        i++;
-
-        document.getElementById('no-of-contacts').value = i;
-
+    function submit(){
+        document.forms[0].submit();
     }
-
-    document.getElementById('delete-contact').onclick = function() {
-
-        if (i==1){
-            alert("Minimum one contact is needed");
-            return
-        }
-
-        let doc = document.getElementById('contacts')
-        doc.removeChild(doc.lastElementChild)
-        doc.removeChild(doc.lastElementChild)
-        
-        i--;
-        document.getElementById('no-of-contacts').value = i;
-
-    }
-
-
 
 </script>
 
 {% endblock %}
-    
-{{ ckeditor.load() }}
-
-{% endblock %}``
