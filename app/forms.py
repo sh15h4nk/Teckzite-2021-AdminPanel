@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.sql.sqltypes import String
 from flask_ckeditor import CKEditorField
-
+from flask_wtf.file import FileField, FileRequired
 
 from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField
 from wtforms_alchemy import PhoneNumberField
@@ -68,6 +68,10 @@ class CreateEventForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
     event_organiser = FormField(RegisterForm)
 
+
+class PhotoForm(FlaskForm):
+    photo = FileField(validators=[FileRequired()])  
+
     
 
 class UpdateEventForm():
@@ -99,7 +103,7 @@ class FAQs(FlaskForm):
 
 class AddWorkshopForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
-    name = StringField('Name', [DataRequired()])
+    # name = StringField('Name', [DataRequired()])
     dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
     description = CKEditorField('Description', [DataRequired(), Length(min=20)])
     fee = IntegerField('Fee', [DataRequired()])
@@ -107,7 +111,7 @@ class AddWorkshopForm(FlaskForm):
     about = CKEditorField('About', [DataRequired()])
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('About', [DataRequired()])
-    submit = SubmitField('Submit')
+    # submit = SubmitField('Submit')
 
 
 class ChangePassword(FlaskForm):

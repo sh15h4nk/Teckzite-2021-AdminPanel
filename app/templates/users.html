@@ -4,30 +4,37 @@
 {{ role }}
 {% endblock %}
 
+{% block styles %}
+{{ super() }}
+
+{% endblock %}
+
 
 {% block content %}
 {{ super() }}
 <div>
-	<center><h1>{{ role }}'s</h1></center>
+	<center>
+		<h1>{{ role }}'s</h1>
+	</center>
 </div>
 
 <div class="container">
 
 	<table id='usertable' class="table">
 		<thead>
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>E-mail</th>
-			<th>Branch</th>
-			<th>Gender</th>
-			<th>Phone</th>
-			<th>Block</th>
-			
-		</tr>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>E-mail</th>
+				<th>Branch</th>
+				<th>Gender</th>
+				<th>Phone</th>
+				<th>Block</th>
+
+			</tr>
 		</thead>
 		<tbody>
-		{% for row in data %}
+			{% for row in data %}
 			<tr>
 				<td>{{ row.id }}</td>
 				<td>{{ row.name }}</td>
@@ -35,18 +42,19 @@
 				<td>{{ row.dept }}</td>
 				<td>{{ row.gender }}</td>
 				<td>{{ row.phone }}</td>
-				<td data-id = {{row.id}}>
+				<td id="radioDiv" data-name="radio">
 					{% if row.hidden == 1 %}
-						<input type="radio" id="hide" name="hide{{row.id}}" value="hide" checked>yes
-						<input type="radio" id="unhide" name="hide{{row.id}}" value="unhide">no
+					<input type="radio" onclick=status(this) id="hide" name="{{row.id}}" value="hide" checked>yes
+					<input type="radio" onclick=status(this) id="unhide" name="{{row.id}}" value="unhide">no
 					{% else %}
-						<input type="radio" id="hide" name="hide{{row.id}}" value="hide">yes
-						<input type="radio" id="unhide" name="hide{{row.id}}" value="unhide" checked>no
+					<input type="radio" onclick=status(this) id="hide" name="{{row.id}}" value="hide">yes
+					<input type="radio" onclick=status(this) id="unhide" name="{{row.id}}" value="unhide" checked>no
 					{% endif %}
+
 
 				</td>
 			</tr>
-		{% endfor %}
+			{% endfor %}
 		</tbody>
 	</table>
 
@@ -54,42 +62,33 @@
 </div>
 
 
-{% block javascript %}
-	{{ super() }}
-
-<script>
-    $(document).ready(function() {
-    $('#usertable').DataTable().destroy();
-    $('#usertable').DataTable( {
-        dom: 'Bfrtip',
-        buttons: [
-            'excelHtml5'
-        	]
-    	} );
-	} );
-
-	$('#usertable').editable({
-        container:'body',
-        selector:'td.hide',
-        url:'/hide_user',
-        title:'Name',
-        type:'POST',
-        validate:function(value){
-            if($.trim(value) == '')
-            {
-                return 'This field is required';
-            }
-        }
-    });
-
-
-
-</script>
-
-
 
 {% endblock %}
 
+
+{% block scripts %}
+
+{{ super() }}
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script>
+	$(document).ready(function () {
+		$('#usertable').DataTable().destroy();
+		$('#usertable').DataTable({
+			dom: 'Bfrtip',
+			buttons: [
+				'excelHtml5'
+			]
+		});
+	});
+
+	function status(elem) {	
+		var data = {"id": elem.name, "value": elem.value};
+		$.post('/userUpdate', data, function(data, status){
+			console.log(status);
+		});  		
+	}
+
+</script>
 
 
 {% endblock %}

@@ -1,9 +1,15 @@
+from operator import imatmul
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required, current_user
+from flask_migrate import current
+from sqlalchemy.sql.sqltypes import Date
+from werkzeug.utils import secure_filename
 from app import app, db
 from app.models import User
 from app.forms import ChangePassword, ResetRequest
 from app.functions import sendMail
+import os
+from PIL import Image
 
 login_manager = LoginManager(app)
 
@@ -56,3 +62,49 @@ def resetRequest():
 		return redirect(url_for('index'))
 	return render_template('change_password.html',Title="Reset Password",form = form)
 	
+@login_required
+@app.route('/userUpdate', methods=['POST'])
+def userUpdateView():
+
+	if current_user.role == 1:
+		user = User.query.filter_by(id=request.form['id']).first()
+		if user:
+			if request.form['value'] == 'hide':
+				user.hidden = 1
+				return "Success"
+			elif request.form['value'] == 'unhide':
+				user.hidden = 0
+				return "Success"
+			else:
+				return "Invalid operation"
+		
+		else:
+			return "Failed"
+		
+		
+	elif current_user.role == 2:
+		user = User.query.filter_by(id=request.form['id'], role=3).first()
+		if user:
+			if request.form['value'] == 'hide':
+				user.hidden = 1
+				return "Success"
+			elif request.form['value'] == 'unhide':
+				user.hidden = 0
+				return "Success"
+			else:
+				return "Invalid operation"
+		
+		else:
+			return "Failed"
+
+	else:
+		return "Unauthorised"
+
+
+@login_required
+@app.route('/uploadImage', methods=['POST'])
+def uploadImageView():
+	
+		
+	file = request.files
+	return "Success"
