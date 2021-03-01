@@ -27,7 +27,7 @@ class Event(Base):
     structure = db.Column(String(2000))
     timeline = db.Column(String(2000))
     rules = db.Column(String(2000))
-    # hidden = db.Column(SmallInteger, default=0) # if true, user is inactive
+    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
     
 
     contacts = db.relationship('Contact')

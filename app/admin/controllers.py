@@ -8,7 +8,7 @@ from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm,
 from app import db
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
-from PIL import Image
+# from PIL import Image
 import os
 
 import urllib

@@ -5,11 +5,11 @@ from flask_migrate import current
 from sqlalchemy.sql.sqltypes import Date
 from werkzeug.utils import secure_filename
 from app import app, db
-from app.models import User
+from app.models import User, Event
 from app.forms import ChangePassword, ResetRequest
 from app.functions import sendMail
 import os
-from PIL import Image
+# from PIL import Image
 
 login_manager = LoginManager(app)
 
@@ -63,8 +63,8 @@ def resetRequest():
 	return render_template('change_password.html',Title="Reset Password",form = form)
 	
 @login_required
-@app.route('/userUpdate', methods=['POST'])
-def userUpdateView():
+@app.route('/hideUser', methods=['POST'])
+def hideUserView():
 
 	if current_user.role == 1:
 		user = User.query.filter_by(id=request.form['id']).first()
@@ -108,3 +108,43 @@ def uploadImageView():
 		
 	file = request.files
 	return "Success"
+
+
+
+@login_required
+@app.route('/hideEvent', methods=['POST'])
+def hideEventView():
+
+	if current_user.role == 1:
+		event = Event.query.filter_by(id=request.form['id']).first()
+		if event:
+			if request.form['value'] == 'hide':
+				event.hidden = 1
+				return "Success"
+			elif request.form['value'] == 'unhide':
+				event.hidden = 0
+				return "Success"
+			else:
+				return "Invalid operation"
+		
+		else:
+			return "Failed"
+		
+		
+	elif current_user.role == 2:
+		event = Event.query.filter_by(id=request.form['id'], dept=current_user.dept).first()
+		if event:
+			if request.form['value'] == 'hide':
+				event.hidden = 1
+				return "Success"
+			elif request.form['value'] == 'unhide':
+				event.hidden = 0
+				return "Success"
+			else:
+				return "Invalid operation"
+		
+		else:
+			return "Failed"
+
+	else:
+		return "Unauthorised"
