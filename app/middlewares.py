@@ -3,7 +3,6 @@ from functools import wraps
 from flask import Response, request, redirect
 from flask.helpers import flash, url_for
 from flask_login import current_user
-from app.models import CurrentId
 from app import db
 
 
@@ -46,32 +45,3 @@ def organiser_authenticated(func):
     return decorated_function
 
 
-def generate_techzite_id():
-
-    currentId = CurrentId.query.first()
-    current_techzite_id = currentId.current_techzite_id
-    
-    currentId.current_techzite_id += 1
-    db.session.commit()
-    
-    return current_techzite_id
-
-def generate_event_id():
-
-    currentId = CurrentId.query.first()
-    current_event_id = currentId.current_event_id
-    
-    currentId.current_event_id += 1
-    db.session.commit()
-
-    return current_event_id
-
-def generate_workshop_id():
-
-    currentId = CurrentId.query.first()
-    current_workshop_id = currentId.current_workshop_id
-    
-    currentId.current_workshop_id += 1
-    db.session.commit()
-
-    return current_workshop_id

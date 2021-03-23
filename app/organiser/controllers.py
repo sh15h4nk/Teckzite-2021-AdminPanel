@@ -21,6 +21,7 @@ def home():
 def logout():
     logout_user()
     session.pop('id', None)
+    session.pop('role', None)
     session.pop('_flashes', None)
     flash("You have been logged out")
     return redirect(url_for('index'))
@@ -28,10 +29,9 @@ def logout():
 @organiser.route('/login/', methods=['GET', 'POST'])
 def login():
 
-    if "id" in session:
-    	if session['role'] == 3:
-	        flash("Already Logged In As Organiser")
-	        return redirect(url_for('organiser.dashboard'))
+    if "id" in session and session['role'] == 3:
+        flash("Already Logged In As Organiser")
+        return redirect(url_for('organiser.dashboard'))
 
     if request.method == "POST":            
 
@@ -40,9 +40,9 @@ def login():
         user = User.query.filter_by(userId=form.id.data).first()
 
         if user and user.password == form.password.data:
-            if user.role == 3:
+            if user.role == 3 and user.hidden == 0:
             	login_user(user)
-            	session['id'] = form.id.data
+            	session['id'] = user.id
             	session['role'] = user.role
             	return redirect(url_for('organiser.dashboard'))
         flash("Wrong ID or Password")
