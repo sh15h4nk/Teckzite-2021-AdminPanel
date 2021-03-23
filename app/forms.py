@@ -110,7 +110,7 @@ class AddWorkshopForm(FlaskForm):
     status = CKEditorField('Status', [DataRequired()])
     about = CKEditorField('About', [DataRequired()])
     timeline = CKEditorField('Timeline', [DataRequired()])
-    resources = CKEditorField('About', [DataRequired()])
+    resources = CKEditorField('Resources', [DataRequired()])
     # submit = SubmitField('Submit')
 
 

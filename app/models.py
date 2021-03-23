@@ -41,7 +41,7 @@ class Event(Base):
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
     organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
 
-    def __init__(self, eventId, title,dept, coordinater_id, organiser_id) -> None:
+    def __init__(self, eventId, title, dept, coordinater_id, organiser_id) -> None:
         self.eventId = eventId
         self.title = title
         self.dept = dept
@@ -113,6 +113,18 @@ class Workshop(Base):
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
 
+    def __init__(self, workshop_id, name, dept, description, fee, status, about, timeline, resources, coordinator_id):
+        self.workshop_id = workshop_id
+        self.name = name
+        self.dept = dept
+        self.description = description
+        self.fee = fee
+        self.status = status
+        self.about = about
+        self.timeline = timeline
+        self.resources = resources
+        self.coordinator_id = coordinator_id
+
 
     
     
@@ -126,6 +138,11 @@ class Contact(db.Model):
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
 
+    def __init__(self, name, email, phone):
+        self.name = name
+        self.email = email
+        self.phone = phone
+
 class FAQ(db.Model):
     id = db.Column(Integer, primary_key=True)
     question = db.Column(String(100))
@@ -133,6 +150,11 @@ class FAQ(db.Model):
 
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+
+    def __init__(self, question, answer):
+        self.question = question
+        self.answer = answer
+
 
 class CurrentId(db.Model):
     current_techzite_id = db.Column(Integer, default=10001, primary_key=True)
@@ -179,6 +201,20 @@ us = User.query.filter_by(userId="admin").first()
 if not us:
     us = User("admin","admin","admin@gmail.com","admin",1,"cse", 'XXXXXXXXXX')
     db.session.add(us)
+    db.session.commit()
+
+co = User.query.filter_by(userId="coo").first()
+
+if not co:
+    co = User("coo","coo","coo@gmail.com","coo",2,"cse", 'XXXXXyXXXX')
+    db.session.add(co)
+    db.session.commit()
+
+org = User.query.filter_by(userId="org").first()
+
+if not org:
+    org = User("org","org","org@gmail.com","org",3,"cse", 'XyXXXXXXXX')
+    db.session.add(org)
     db.session.commit()
 
 currentIds = db.session.query(CurrentId).count()

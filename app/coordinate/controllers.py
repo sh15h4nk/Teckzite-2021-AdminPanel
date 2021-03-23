@@ -25,6 +25,7 @@ def home():
 def logout():
     logout_user()
     session.pop('id', None)
+    session.pop('role', None)
     session.pop('_flashes', None)
     flash("You have been logged out")
     return redirect(url_for('index'))
@@ -32,21 +33,20 @@ def logout():
 @coordinate.route('/login/', methods=['GET', 'POST'])
 def login():
 
-    if "id" in session:
-    	if session['role'] == 2:
-	        flash("Already Logged In As Coordinater")
-	        return redirect(url_for('coordinate.dashboard'))
+    if "id" in session and session['role'] == 2:
+        flash("Already Logged In As Coordinator")
+        return redirect(url_for('coordinate.dashboard'))
 
     if request.method == "POST":            
 
         form = LoginForm(request.form)
 
-        user = User.query.filter_by(userId=form.id.data).first()
+        user = User.query.filter_by(userId=form.userId.data).first()
 
         if user and user.password == form.password.data:
-            if user.role == 2:
+            if user.role == 2 and user.hidden == 0:
             	login_user(user)
-            	session['id'] = form.id.data
+            	session['id'] = user.id
             	session['role'] = user.role
             	return redirect(url_for('coordinate.dashboard'))
         flash("Wrong ID or Password")

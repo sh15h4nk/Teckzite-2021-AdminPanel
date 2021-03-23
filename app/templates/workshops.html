@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Events
+Workshops
 {% endblock %}
 
 
@@ -71,13 +71,13 @@ Events
 
 <div>
     <h1>
-        <center>Event's</center>
+        <center>Workshops's</center>
     </h1>
 </div>
 
 <div class="container">
 
-	<table id="mytable" class="table">
+	<table id="workshoptable" class="table">
 		<thead>
 		<tr>
 			<th>ID</th>
@@ -133,8 +133,8 @@ Events
 
 <script>
     $(document).ready(function(){
-    	$('#mytable').DataTable().destroy();
-    	$('#mytable').DataTable({
+    	$('#workshoptable').DataTable().destroy();
+    	$('#workshoptable').DataTable({
         	dom: 'Bfrtip',
        		buttons: [
             	'excelHtml5'

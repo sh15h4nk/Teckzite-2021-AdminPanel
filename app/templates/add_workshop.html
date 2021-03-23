@@ -71,22 +71,20 @@ figure figcaption {
 
 
 <div class="container"> 
-    <form action="#" method="post" >
+    <form action="" id="workshopform" method="post">
         
         {{ form.csrf_token }}
-        {{ wtf.form_field(form.title) }}
-        {{ wtf.form_field(form.dept) }}
-        {{ wtf.form_field(form.description) }}
-        {{ wtf.form_field(form.fee) }}
-        {{ wtf.form_field(form.status) }}
-        {{ wtf.form_field(form.about) }}
-        {{ wtf.form_field(form.timeline) }}
-        {{ wtf.form_field(form.resources) }}
+        <!-- {{ wtf.form_field(form.title) }} -->
+        <!-- {{ wtf.form_field(form.dept) }} -->
+        <!-- {{ wtf.form_field(form.description) }} -->
+        <!-- {{ wtf.form_field(form.fee) }} -->
+        <!-- {{ wtf.form_field(form.status) }} -->
+        <!-- {{ wtf.form_field(form.about) }} -->
+        <!-- {{ wtf.form_field(form.timeline) }} -->
+        <!-- {{ wtf.form_field(form.resources) }} -->
 
 
-
-
-        <div id="contacts">
+        <!-- <div id="contacts">
             <h4> <b> Contact 1 </b> </h4>
             <div>            
                 <label for="name"> Name </label>
@@ -119,9 +117,16 @@ figure figcaption {
             <br>
             
         </div>
-        <input type="text" name="uri" hidden id="uri">
+        <input type="text" name="uri" hidden id="uri"> -->
 
-        <input type="submit" value="Submit"> <br> <br><br> <br>
+        <div class="form-group  required"><label class="control-label" for="description">Description</label>
+        
+            <textarea class="ckeditor form-control" id="description" name="description", value="" required>
+            </textarea>
+        
+        </div>
+
+        <input type="submit" id="formsubmit"> <br> <br><br> <br>
        
     </form>
 </div>
@@ -138,12 +143,17 @@ figure figcaption {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.5.1/croppie.js"></script>
 <script src="/static/addContacts.js"></script>
 <script src="/static/imageUpload.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.2.6/purify.min.js" integrity="sha512-rXAHWSMciPq2KsOxTvUeYNBb45apbcEXUVSIexVPOBnKfD/xo99uUe5M2OOsC49hGdUrkRLYsATkQQHMzUo/ew==" crossorigin="anonymous"></script>
 <script>
-
-    function submit(){
-        document.forms[0].submit();
+    function purify(dirty) {
+        return DOMPurify.sanitize(dirty);
     }
+    $("#workshopform").submit(function (e) {
+        e.preventDefault();
+        console.log("on submit");
+        console.log("dirty", document.getElementById('description').value);
+    });
+
 
 </script>
 
