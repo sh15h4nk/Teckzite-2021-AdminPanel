@@ -99,12 +99,12 @@ class User(UserMixin,Base):
 
 class Workshop(Base):
     workshopId = db.Column(String(6), nullable=False, unique=True)
-    name = db.Column(String(128), nullable=False)
+    title = db.Column(String(128), nullable=False)
     dept = db.Column(String(5))
     description = db.Column(String(256))
-    fee = db.Column(Integer)
-    status=db.Column(String(100))
-    about=db.Column(String(500))
+    fee = db.Column(Integer, default = 0)
+    status = db.Column(String(100))
+    about = db.Column(String(500))
     timeline = db.Column(String(500))
     resources = db.Column(String(500))
 
@@ -113,9 +113,9 @@ class Workshop(Base):
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
 
-    def __init__(self, workshop_id, name, dept, description, fee, status, about, timeline, resources, coordinator_id):
-        self.workshop_id = workshop_id
-        self.name = name
+    def __init__(self, workshop_id, title, dept, description, fee, status, about, timeline, resources, coordinator_id):
+        self.workshopId = workshop_id
+        self.title = title
         self.dept = dept
         self.description = description
         self.fee = fee
@@ -132,8 +132,8 @@ class Workshop(Base):
 class Contact(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(128), nullable=False)
-    email = db.Column(String(128), nullable=False, unique=True)
-    phone = db.Column(String(10), unique=True)
+    email = db.Column(String(128), nullable=False)
+    phone = db.Column(String(10))
 
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))

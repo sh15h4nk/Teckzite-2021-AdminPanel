@@ -12,10 +12,13 @@ mynav = Nav()
 @mynav.navigation("my_nav")
 def my_nav():
 
-	
+	if current_user.is_anonymous:
+		index = View("index", 'index')
+
+		return Navbar('Teckzite\'21',index)
 
 
-	if current_user.role == 1:
+	elif current_user.role == 1:
 		dashboard = View("Dashboard",'admin.dashboard')
 
 		view_admin = View("View", 'admin.getAdminsView')

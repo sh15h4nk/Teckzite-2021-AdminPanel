@@ -1,11 +1,11 @@
 from operator import add
-from flask import url_for, redirect, request, render_template, Blueprint, session, flash
+from flask import url_for, redirect, request, render_template, Blueprint, session, flash, escape, get_flashed_messages
 from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm
-from app import db
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm, Contacts, FAQs
+from app import db, app
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
 # from PIL import Image
@@ -19,7 +19,7 @@ from app.functions import *
 from app.controllers import login_manager
 from app.mynav import mynav
 
-from app.middlewares import admin_authenticated
+from app.middlewares import role_required
 from app import ckeditor
 
 
@@ -63,20 +63,21 @@ def login():
         flash("Wrong ID or Password")
         
     form = LoginForm()       
-    return render_template("login.html",form= form)
+    return render_template("login.html",form= form, role = "Admin")
     
         
 #Data fetching routes
 @admin.route('/dashboard/')
 @login_required
-@admin_authenticated
+@role_required([1])
 def dashboard():
+    get_flashed_messages()
     return render_template("admin/dashboard.html",current_user = current_user)
 
 
 @admin.route('/admins/')
 @login_required
-@admin_authenticated
+@role_required([1])
 def getAdminsView():
     data = getAdminsAll()
     return render_template("users.html",role = "Admin",data = data)
@@ -84,7 +85,7 @@ def getAdminsView():
 
 @admin.route('/coordinators/')
 @login_required
-@admin_authenticated
+@role_required([1])
 def getCoordinatorsView():
     data = getCoordinatorsAll()
     return render_template("users.html", role= "Coordinator",data = data)
@@ -92,7 +93,7 @@ def getCoordinatorsView():
 
 @admin.route('/organisers/')
 @login_required
-@admin_authenticated
+@role_required([1])
 def getOrganisersView():
     data = getOrganisersAll()
     return render_template("users.html", role="Organiser",data = data)
@@ -100,7 +101,7 @@ def getOrganisersView():
 
 @admin.route('/events/')
 @login_required
-@admin_authenticated
+@role_required([1])
 def getEventsView():
     data = getEventsAll()
     return render_template("events.html",data = data)
@@ -108,7 +109,7 @@ def getEventsView():
 
 @admin.route('/workshops/')
 @login_required
-@admin_authenticated
+@role_required([1])
 def getWorkshopsView():
     data = getWorkshopsAll()
     return render_template("workshops.html",data =data)
@@ -119,7 +120,7 @@ def getWorkshopsView():
 #Data Adding routes
 @admin.route('/admins/add', methods=['GET', 'POST'])
 @login_required
-@admin_authenticated
+@role_required([1])
 def addAdmin():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
@@ -135,7 +136,7 @@ def addAdmin():
 
 @admin.route('/coordinators/add', methods=['GET', 'POST'])
 @login_required
-@admin_authenticated
+@role_required([1])
 def addCoordinator():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
@@ -151,7 +152,7 @@ def addCoordinator():
 
 @admin.route('/event/add', methods=['GET', 'POST'])
 @login_required
-@admin_authenticated
+@role_required([1])
 def addEventView():
     form = CreateEventForm(request.form)
     if form.validate_on_submit():
@@ -166,7 +167,7 @@ def addEventView():
 
         flash("Event added successfully")
         flash("Organiser added successfully")
-        flash("Check Email to reset password")
+        # flash("Check Email to reset password")
         return redirect(url_for('admin.addEventView'))
 
     return render_template('add_event.html', form=form)
@@ -174,23 +175,79 @@ def addEventView():
 
 @admin.route('/workshop/add', methods=['GET', 'POST'])
 @login_required
-@admin_authenticated
+@role_required([1])
 def addWorkshopView():
     form = AddWorkshopForm(request.form)
 
-    if request.method == 'POST':
-        # print(form)
-        return "GOtcha"
-        # return request.form['description']
+    if request.method == "POST":
+        if request.form.get("skip"):
+            return redirect(url_for("admin.dashboard"))
 
-      
-        data = request.form['uri']
+        elif request.form.get("add-faq-from-contacts"):
+            workshop_id = request.form['programId']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            form = FAQs()
+            return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs)+1)
+            
+        elif request.form.get("add-contact-from-faq"):
+            workshop_id = request.form['programId']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            form = Contacts()
+            return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
 
-        response = urllib.request.urlopen(data)
-        with open('app/uploads/fuck.jpg', 'wb') as f:  
-            f.write(response.file.read())
 
-        return "Success"
+        elif request.form.get("add-contact-to-program"):
+            form = Contacts()
+            workshop_id = request.form['programId']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if form.validate_on_submit():
+                contact = addContactToWorkshop(request.form['name'], request.form['email'], request.form['phone'], workshop_id)
+                if type(contact) == str:
+                    flash(contact)
+                    return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
+                flash("Contact "+str(len(workshop.contact))+" Added!")
+                form = Contacts()
+                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
+            else:
+                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
+
+
+        elif request.form.get("add-faq-to-program"):
+            form = FAQs()
+            workshop_id = request.form['programId']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if form.validate_on_submit():
+                faq = addFaqToWorkshop(form.question.data, form.answer.data, workshop_id)
+                if type(faq) == str:
+                    flash(faq)
+                    return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
+                flash("FAQ "+ str(len(workshop.faqs)) + "Added!")
+                form = FAQs()
+                return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
+            else:
+                # return form.errors
+                return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
+
+
+        elif form.validate_on_submit():
+            workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
+            contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
+            if type(contact) == str:
+                flash(contact)
+                return render_template('add_workshop.html', form=form)
+
+            flash("Workshop Added Succesfully")
+
+            if request.form.get('submit'):
+                return redirect(url_for('admin.dashboard'))
+
+            elif request.form.get('add-contact'):
+                form = Contacts()
+                return render_template('add_contacts.html', form=form, program_id = workshop.id, count = 2)
+
+            elif request.form.get('add-faq'):
+                form = FAQs()
+                return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
 
     return render_template('add_workshop.html', form=form)
 
@@ -198,7 +255,7 @@ def addWorkshopView():
 
 
 @login_required
-@admin_authenticated
+@role_required([1])
 @admin.route('/hide_user', methods=['POST'])
 def hideUser():
     user_id = request.form['id']
