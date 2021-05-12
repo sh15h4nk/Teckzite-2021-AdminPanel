@@ -34,3 +34,4 @@ app.register_blueprint(organiser_module)
 
 Bootstrap(app)
 # db.create_all()
+#app.run('0.0.0.0', port = 1337)
