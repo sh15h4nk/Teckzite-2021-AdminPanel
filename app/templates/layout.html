@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% if current_user.id != NULL %}
+	{% block navbar %}
+	{{ nav.my_nav.render() }}
+	{% endblock %}
+{% endif %}

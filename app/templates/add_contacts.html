@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Add Contacts
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<center><h1>Add Contact {{ count }}</h1></center>
+
+<div class="container">
+    <form class = 'form' method="post">
+    	{{ form.csrf_token }}
+        {{ wtf.form_field(form.name) }}
+        {{ wtf.form_field(form.email) }}
+        {{ wtf.form_field(form.phone) }}
+        <input type="hidden" name="programId" value="{{program_id}}">
+        <button type="submit" class="btn btn-primary" name="add-contact-to-program" value="add-contact-to-workshop">Add contact</button>
+        <button type="submit" class="btn btn-primary" name="add-faq-from-contacts" value="add-faq-from-contacts">Add FAQs</button>
+        {% if current_user.role == 1 %}
+            <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Skip</a>
+        {% elif current_user.role == 2 %}
+            <a class="btn btn-primary" href="{{url_for('coordinate.dashboard')}}" role="button">Skip</a>
+        {% endif %}
+    </form>
+</div>
+
+{% endblock %}

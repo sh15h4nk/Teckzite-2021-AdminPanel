@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div class="container">
+	<br>
+
+	<h3>Register {{ role }}</h3>
+
+	
+	<form method="POST">
+		{{ wtf.quick_form(form) }}
+	  </form>
+</div>
+
+
+{% endblock %}
