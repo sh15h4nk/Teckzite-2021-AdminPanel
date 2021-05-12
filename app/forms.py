@@ -4,12 +4,10 @@ from sqlalchemy.sql.sqltypes import String
 from flask_ckeditor import CKEditorField
 from flask_wtf.file import FileField, FileRequired
 
-from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField
-from wtforms_alchemy import PhoneNumberField
+from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form
 from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired,ValidationError
 
-from app.models import User 
-
+from app.models import User, Workshop
 
 class LoginForm(FlaskForm):
     userId = TextField('Student ID', [
@@ -19,7 +17,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-# BRANCH_CHOICES = ['CSE', 'ECE', ('MEC', 'MECH'), 'CIV', ('CHE', 'CHEM'), 'MME', 'PUC']
 BRANCH_CHOICES = [('CSE','CSE'), ('ECE','ECE'), ('MEC', 'MECH'), ('CIV','CIV'), ('CHE', 'CHEM'), ('MME','MME'), ('PUC','PUC'),]
 
 
@@ -62,7 +59,6 @@ class RegisterForm(FlaskForm):
         if user:
             raise ValidationError("Phone already exists")
 
-     
 
 class CreateEventForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
@@ -91,28 +87,53 @@ class UpdateEventForm():
     
 
 class Contacts(FlaskForm):
-    name = StringField('Name', [DataRequired()])
+    name = StringField('Name')
     email = StringField('Email Address', [Email("provide a valid email")])
     phone = IntegerField('Phone Number',
-        [Required(), NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
+        [NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
     )
+    def validate_name(self, name):
+        if not name:
+            raise ValidationError("Name is Required")
+
+    def validate_email(self, email):
+        if not email:
+            raise ValidationError("Email is Required")
+
+    def validate_phone(self, phone):
+        if not phone:
+            raise ValidationError("Phone is Required")
 
 class FAQs(FlaskForm):
-    question = TextField('Question', [DataRequired()])
-    answer = TextField('Answer', [DataRequired()])
+    question = StringField('Question')
+    answer = StringField('Answer')
+
+    def validate_question(self, question):
+        if len(question.data) == 0:
+            raise ValidationError("Question is Required")
+    def validate_answer(self, answer):
+        if len(answer.data) == 0:
+            raise ValidationError("Answer is Required")
 
 class AddWorkshopForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
-    # name = StringField('Name', [DataRequired()])
     dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
     description = CKEditorField('Description', [DataRequired(), Length(min=20)])
-    fee = IntegerField('Fee', [DataRequired()])
+    fee = IntegerField('Fee', [DataRequired(message="Enter a valid number"), NumberRange(min=0, max=99999, message="Enter a valid number")])
     status = CKEditorField('Status', [DataRequired()])
     about = CKEditorField('About', [DataRequired()])
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('Resources', [DataRequired()])
-    # submit = SubmitField('Submit')
+    primary_contact = FormField(Contacts)
+    # contacts = FieldList(FormField(Contacts), min_entries=1, max_entries=3 )
 
+    def validate_title(self, title):
+        workshop = Workshop.query.filter_by(title=title.data).first()
+        if workshop:
+            raise ValidationError("workshop title already exists")
+    # def validate_fee(self, fee):
+    #     if :
+    #         pass
 
 class ChangePassword(FlaskForm):
     password = PasswordField('New Password', [

@@ -1,5 +1,5 @@
 from operator import imatmul
-from flask import url_for, redirect, request, render_template, Blueprint, session, flash
+from flask import url_for, redirect, request, render_template, Blueprint, session, flash, Response
 from flask_login import LoginManager, login_required, current_user
 from flask_migrate import current
 from sqlalchemy.sql.sqltypes import Date
@@ -10,6 +10,13 @@ from app.forms import ChangePassword, ResetRequest
 from app.functions import sendMail
 import os
 # from PIL import Image
+
+response = Response()
+@app.after_request
+def add_header(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
+
 
 login_manager = LoginManager(app)
 

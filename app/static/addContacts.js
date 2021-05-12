@@ -18,8 +18,8 @@ document.getElementById('add-contact').onclick = function() {
     `;
     
 
-    // let div = document.createElement('div');
-    // div.innerHTML = element;
+    let div = document.createElement('div');
+    div.innerHTML = element;
 
     let contacts = document.getElementById('contacts');
     contacts.innerHTML += element;

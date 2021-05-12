@@ -52,7 +52,7 @@ def login():
         flash("Wrong ID or Password")
         
     form = LoginForm()       
-    return render_template("login.html",form= form)
+    return render_template("login.html",form = form, role = "Coordinator")
 
 @coordinate.route('/dashboard/')
 @login_required

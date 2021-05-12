@@ -1,7 +1,8 @@
-from app import mail, db
+from app import mail, db, app
 from flask_mail import Message 
 from flask.helpers import flash, url_for
-from app.models import User, Event, Workshop, CurrentId
+from flask import escape
+from app.models import User, Event, Workshop, CurrentId, Contact, FAQ
 
 
 
@@ -63,11 +64,59 @@ def addEvent(title, dept, coordinater_id, organiser_id):
 
     return event
 
-def addWorkshop(name, dept, description, fee, status, about, timeline, resources, coordinator_id):
+def addWorkshop(title, dept, description, fee, status, about, timeline, resources, coordinator_id):
     workshop_id = generate_workshop_id()
 
-    workshop = Workshop(workshop_id, name, dept, description, fee, status, about, timeline, resources, coordinator_id)
+    #sanitizing input
+    description = escape(description)
+    status = escape(status)
+    about = escape(about)
+    timeline = escape(timeline)
+    resources = escape(resources)
+    #adding workshop to db
+    workshop = Workshop(workshop_id, title, dept, description, fee, status, about, timeline, resources, coordinator_id)
     db.session.add(workshop)
     db.session.commit()
     
     return workshop
+
+def addContactToWorkshop(name, email, phone, workshop_id):
+    contact = Contact.query.filter_by(email = email, phone = phone).first()
+    if contact:
+        if not contact.workshop_id:
+            contact.workshop_id = workshop_id
+            db.session.commit()
+            return contact
+
+        return "Contact Already exists"
+
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    if not workshop:
+        return "Invalid Workshop ID"
+    elif not (len(workshop.contact) < 3):
+        return "Contact limit exceeded"
+
+    contact = Contact(name, email, phone)
+    contact.workshop_id = workshop_id
+    db.session.add(contact)
+    db.session.commit()
+
+    return contact
+     
+def addFaqToWorkshop(question, answer, workshop_id):
+    faq = FAQ.query.filter_by(question = question, answer = answer, workshop_id = workshop_id).first()
+    if faq:
+        return "FAQ Already exists"
+
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    if not workshop:
+        return "Invalid Workshop ID"
+    elif not (len(workshop.faqs) < 10):
+        return "FAQs limit exceeded"
+
+    faq = FAQ(question, answer)
+    faq.workshop_id = workshop_id
+    db.session.add(faq)
+    db.session.commit()
+
+    return faq

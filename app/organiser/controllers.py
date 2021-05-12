@@ -33,11 +33,10 @@ def login():
         flash("Already Logged In As Organiser")
         return redirect(url_for('organiser.dashboard'))
 
-    if request.method == "POST":            
-
+    if request.method == "POST":
         form = LoginForm(request.form)
 
-        user = User.query.filter_by(userId=form.id.data).first()
+        user = User.query.filter_by(userId=form.userId.data).first()
 
         if user and user.password == form.password.data:
             if user.role == 3 and user.hidden == 0:
@@ -48,7 +47,7 @@ def login():
         flash("Wrong ID or Password")
         
     form = LoginForm()       
-    return render_template("login.html",form= form)
+    return render_template("login.html",form= form, role = "Organiser")
  
 
 @organiser.route('/dashboard/')
