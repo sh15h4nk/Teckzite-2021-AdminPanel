@@ -1,0 +1,11 @@
+#cache
+*/__pycache__/
+*.py[cod]
+.vscode/*
+
+#env 
+env/
+req.txt
+
+#database
+app.db

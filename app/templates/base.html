@@ -1,0 +1,65 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+Teckzite 2021
+{% endblock%}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+.footer-block{
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: black;
+	color: white;
+	text-align: center;
+}
+
+
+</style>
+{% endblock %}
+
+
+{% block metas %}
+	{{ super() }}
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+	<br><br>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-info" role="alert">{{ message }}</div>
+			{% endfor %}
+		{% endif %}
+		{% endwith %}
+</div>
+{% endblock %}
+
+
+{% block html %}
+{{ super() }}
+
+<br><br><br><br>
+<footer class="footer-block page-footer font-small">
+	<!--Copyright-->
+		<div class="footer-copyright text-center">&#169;2020 admins yet to add
+			
+		</div>
+	<!--Copyright-->
+	
+</footer>
+
+
+{% endblock %}
+
