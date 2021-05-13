@@ -5,7 +5,7 @@ from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
 from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm, Contacts, FAQs, UpdateEventForm
-from app import db, app
+from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
 # from PIL import Image
@@ -53,7 +53,7 @@ def login():
 
         user = User.query.filter_by(userId=form.userId.data).first()
 
-        if user and user.password == form.password.data:
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             if user.role == 1 and user.hidden == 0:
                 login_user(user)
                 session['id'] = user.id
@@ -124,7 +124,8 @@ def getWorkshopsView():
 def addAdmin():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        addUser(form.userId.data, form.name.data, form.email.data, form.password.data, 1, form.dept.data, form.phone.data)
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        addUser(form.userId.data, form.name.data, form.email.data, hashed_password, 1, form.dept.data, form.phone.data)
 
         flash("You Registered a Admin Succesfully")
         flash("Email has been sent to reset the password")
@@ -140,7 +141,8 @@ def addAdmin():
 def addCoordinator():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        addUser(form.userId.data, form.name.data, form.email.data, form.password.data, 2, form.dept.data, form.phone.data)
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        addUser(form.userId.data, form.name.data, form.email.data, hashed_password, 2, form.dept.data, form.phone.data)
 
         flash("You Registered a Coordinator Succesfully")
         flash("Email has been sent to reset the password")
@@ -162,7 +164,8 @@ def addEventView():
             flash("No coordinator for the Dept")
             return redirect(url_for('admin.addEventView'))
         
-        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
+        hashed_password = bcrypt.generate_password_hash(organiser['password'])
+        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], hashed_password, 3, organiser['dept'], organiser['phone'])
         addEvent(form.title.data, coordinator.dept , coordinator.id, organiser.id)
 
         flash("Event added successfully")
