@@ -2,14 +2,22 @@
 {% import "bootstrap/wtf.html" as wtf%}
 
 {% block title %}
-Add Workshop
+Update Event 
 {% endblock %}
 
 
 {% block content %}
 {{ super() }}
 
-<div class="container"> 
+<div class="container">
+    <form class = 'form' method="post">
+        {{ form.csrf_token }}
+        {{ wtf.quick_form(form) }}
+
+    </form>
+</div>
+
+<!-- <div class="container"> 
     <form method="post">
 
 
@@ -33,11 +41,11 @@ Add Workshop
         <button class="btn btn-success" type="submit">Submit</button>
        
     </form>
-</div>
+</div> -->
 
 {% block javascript %}
 
-<script>
+<!-- <script>
     
     let i=1;
 
@@ -89,10 +97,20 @@ Add Workshop
 
 
 
+</script> -->
+
+<script>
+    var urlParams = new URLSearchParams(window.location.search);
+    $('#eventId').attr('type', 'hidden').attr('value', parseInt(urlParams.get('id')));
+    $('#title').attr('value', '{{event.title}}');
+    $('#prize').attr('value', '{{event.prize}}');
+    $('#min_teamsize').attr('value', '{{event.min_teamsize}}');
+    $('#max_teamsize').attr('value', '{{event.max_teamsize}}');
+    
 </script>
 
 {% endblock %}
     
 {{ ckeditor.load() }}
 
-{% endblock %}``
+{% endblock %}

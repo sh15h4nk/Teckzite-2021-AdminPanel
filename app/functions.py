@@ -1,9 +1,15 @@
+import re
 from app import mail, db, app
 from flask_mail import Message 
 from flask.helpers import flash, url_for
 from flask import escape
 from app.models import User, Event, Workshop, CurrentId, Contact, FAQ
+import json
 
+def dict_escape(d:dict):
+    for k,v in d.items():
+        d[k] = escape(v)
+    return d
 
 
 def sendMail(user):
@@ -63,6 +69,26 @@ def addEvent(title, dept, coordinater_id, organiser_id):
     db.session.commit()
 
     return event
+
+
+def updateEvent(data):
+  
+    # data = dict_escape(data)
+    del data['csrf_token']
+    del data['submit']
+    event = Event.query.filter_by(id = data['eventId']).update(data)
+    db.session.commit()
+    return event
+
+def updateWorkshop(data):
+  
+    del data['csrf_token']
+    del data['submit']
+    workshop = Workshop.query.filter_by(id = data['workshopId']).update(data)
+    db.session.commit()
+    return workshop
+
+
 
 def addWorkshop(title, dept, description, fee, status, about, timeline, resources, coordinator_id):
     workshop_id = generate_workshop_id()

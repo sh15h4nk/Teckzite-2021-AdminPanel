@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block title %}
+Add Workshop
+{% endblock %}
+
+
+{% block content %}
+{{ super() }}
+
+<div class="container">
+    <form class = 'form' method="post">
+        {{ form.csrf_token }}
+        {{ wtf.form_field(form.contacts[0]) }}     
+        {{ wtf.form_field(form.contacts[1]) }}     
+        {{ wtf.form_field(form.contacts[2]) }}     
+        {{ wtf.form_field(form.submit) }}
+
+    </form>
+</div>
+
+{{ ckeditor.load() }}
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+
+    <script> 
+        $('document');
+    </script>
+{% endblock %}

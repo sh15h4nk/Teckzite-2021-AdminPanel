@@ -1,13 +1,15 @@
 from flask_wtf import FlaskForm
 from sqlalchemy.sql.elements import TextClause
-from sqlalchemy.sql.sqltypes import String
+from sqlalchemy.sql.sqltypes import Integer, String
 from flask_ckeditor import CKEditorField
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileAllowed, FileField, FileRequired
 
 from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form
+from wtforms.fields.simple import HiddenField
 from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired,ValidationError
+from wtforms.widgets.core import HiddenInput
 
-from app.models import User, Workshop
+from app.models import Event, User, Workshop
 
 class LoginForm(FlaskForm):
     userId = TextField('Student ID', [
@@ -63,14 +65,16 @@ class RegisterForm(FlaskForm):
 class CreateEventForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
     event_organiser = FormField(RegisterForm)
+    # profile = FileField('Profile', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
 
 
 class PhotoForm(FlaskForm):
     photo = FileField(validators=[FileRequired()])  
 
-    
 
-class UpdateEventForm():
+class UpdateEventForm(FlaskForm):
+
+    eventId = IntegerField('',[DataRequired()])
     title = StringField('Title', [DataRequired(), Length(min=5)])
     prize = IntegerField('Fee', [DataRequired()])
     description = CKEditorField('Description', [DataRequired(), Length(min=20)])
@@ -79,11 +83,27 @@ class UpdateEventForm():
     structure = CKEditorField('Timeline', [DataRequired()])
     timeline = CKEditorField('Timeline', [DataRequired()])
     rules = CKEditorField('Timeline', [DataRequired()])
-    
+
     min_teamsize = IntegerField('Minimum team size', 
         [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
     max_teamsize = IntegerField('Maximum team size', 
         [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+
+    submit = SubmitField('Submit')
+
+class UpdateWorkshopForm(FlaskForm):
+    workshopId = IntegerField('',[DataRequired()])
+    title = StringField('Title', [DataRequired(), Length(min=5)])
+    description = CKEditorField('Description', [DataRequired(), Length(min=20)])
+    fee = IntegerField('Fee', [DataRequired(message="Enter a valid number"), NumberRange(min=0, max=99999, message="Enter a valid number")])
+    status = CKEditorField('Status', [DataRequired()])
+    about = CKEditorField('About', [DataRequired()])
+    timeline = CKEditorField('Timeline', [DataRequired()])
+    resources = CKEditorField('Resources', [DataRequired()])
+
+    submit = SubmitField('Submit')
+    
+    
     
 
 class Contacts(FlaskForm):
@@ -92,6 +112,7 @@ class Contacts(FlaskForm):
     phone = IntegerField('Phone Number',
         [NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
     )
+
     def validate_name(self, name):
         if not name:
             raise ValidationError("Name is Required")
@@ -125,7 +146,8 @@ class AddWorkshopForm(FlaskForm):
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('Resources', [DataRequired()])
     primary_contact = FormField(Contacts)
-    # contacts = FieldList(FormField(Contacts), min_entries=1, max_entries=3 )
+    #contacts = FieldList(FormField(Contacts), min_entries=3, max_entries=3 )
+    submit = SubmitField('Submit')
 
     def validate_title(self, title):
         workshop = Workshop.query.filter_by(title=title.data).first()
