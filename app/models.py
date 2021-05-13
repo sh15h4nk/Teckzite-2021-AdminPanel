@@ -3,7 +3,7 @@ from flask_migrate import branches, current
 
 from sqlalchemy.orm import backref
 
-from app import db, app
+from app import db, app, bcrypt
 from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -14,6 +14,29 @@ class Base(db.Model):
     id = db.Column(Integer, nullable=False, primary_key=True)
     date_created = db.Column(DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+
+class Sponsor(db.Model):
+    id = db.Column(Integer, primary_key=True)
+    title = db.Column(String(128), nullable=False)
+    image_url = db.Column(String(128), nullable=False)
+
+    event_id = db.Column(Integer, ForeignKey('event.id'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+
+    def __init__(self, title, image_url):
+        self.title = title
+        self.image_url = image_url
+
+
+class Image(db.Model):
+    id = db.Column(Integer, primary_key=True)
+    image_url = db.Column(String(128), nullable=False)
+
+    event_id = db.Column(Integer, ForeignKey('event.id'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+
+    def __init__(self, image_url):
+        self.image_url = image_url
 
 
 class Event(Base):
@@ -31,7 +54,10 @@ class Event(Base):
     
 
     contacts = db.relationship('Contact')
+    images = db.relationship('Image')
     faqs = db.relationship('FAQ')
+    sponsors = db.relationship('Sponsor')
+
 
     min_teamsize = db.Column(SmallInteger)
     max_teamsize = db.Column(SmallInteger)
@@ -109,8 +135,10 @@ class Workshop(Base):
     resources = db.Column(String(500))
     # hidden = db.Column(SmallInteger, default=0) # if true, workshop is inactive
 
-    contact = db.relationship('Contact')
+    contacts = db.relationship('Contact')
+    images = db.relationship('Image')
     faqs = db.relationship('FAQ')
+    sponsors = db.relationship('Sponsor')
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
 
@@ -200,21 +228,21 @@ db.create_all()
 us = User.query.filter_by(userId="admin").first()
 
 if not us:
-    us = User("admin","admin","admin@gmail.com","admin",1,"cse", 'XXXXXXXXXX')
+    us = User("admin","admin","admin@gmail.com",bcrypt.generate_password_hash("admin"),1,"cse", 'XXXXXXXXXX')
     db.session.add(us)
     db.session.commit()
 
 co = User.query.filter_by(userId="coo").first()
 
 if not co:
-    co = User("coo","coo","coo@gmail.com","coo",2,"cse", 'XXXXXyXXXX')
+    co = User("coo","coo","coo@gmail.com",bcrypt.generate_password_hash("coo"),2,"cse", 'XXXXXyXXXX')
     db.session.add(co)
     db.session.commit()
 
 org = User.query.filter_by(userId="org").first()
 
 if not org:
-    org = User("org","org","org@gmail.com","org",3,"cse", 'XyXXXXXXXX')
+    org = User("org","org","org@gmail.com",bcrypt.generate_password_hash("org"),3,"cse", 'XyXXXXXXXX')
     db.session.add(org)
     db.session.commit()
 

@@ -2,31 +2,35 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
-Add Contacts
+Upload Image
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-{% if not hide_form %}
-    <center><h1>Add Contact {{ count }}</h1></center>
-{% endif %}
+
+<center><h1>Upload Image</h1></center>
 
 <div class="container">
-    <form class = 'form' method="post">
-        {% if not hide_form %}
-        	{{ form.csrf_token }}
-            {{ wtf.form_field(form.name) }}
-            {{ wtf.form_field(form.email) }}
-            {{ wtf.form_field(form.phone) }}
-            <button type="submit" class="btn btn-primary" name="add-contact-to-program" value=" add-contact-to-workshop">Submit</button>
+    <div>
+        {% if img_url %}
+            <img src="{{ img_url }}" alt="">
         {% endif %}
+    </div>
+    <form class = 'form' method="post">
+        {{ form.csrf_token }}
+        {{ wtf.form_field(form.photo) }}
+
+        <button type="submit" class="btn btn-primary" name="upload-image-to-program" value="upload-image-to-program">Submit</button>
         <input type="hidden" name="programId" value="{{program_id}}">
+        <button type="submit" class="btn btn-primary" name="add-contact-from" value="add-contact-from">Add Contact's</button>
         <button type="submit" class="btn btn-primary" name="add-faq-from" value="add-faq-from">Add FAQs</button>
         {% if current_user.role == 1 %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
         {% elif current_user.role == 2 %}
             <a class="btn btn-primary" href="{{url_for('coordinate.dashboard')}}" role="button">Done</a>
         {% endif %}
+
+        
     </form>
 </div>
 

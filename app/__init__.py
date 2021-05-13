@@ -34,5 +34,6 @@ from app.organiser.controllers import organiser as organiser_module
 app.register_blueprint(organiser_module)
 
 Bootstrap(app)
-# db.create_all()
-#app.run('0.0.0.0', port = 1337)
+
+if __name__ == '__main__':
+	app.run('0.0.0.0', port = 1337)

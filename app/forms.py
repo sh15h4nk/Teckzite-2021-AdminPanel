@@ -69,7 +69,7 @@ class CreateEventForm(FlaskForm):
 
 
 class PhotoForm(FlaskForm):
-    photo = FileField(validators=[FileRequired()])  
+    photo = FileField("Upload Image",validators=[FileRequired("Please Select an Image")])
 
 
 class UpdateEventForm(FlaskForm):
@@ -146,6 +146,7 @@ class AddWorkshopForm(FlaskForm):
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('Resources', [DataRequired()])
     primary_contact = FormField(Contacts)
+    image = FormField(PhotoForm)
     #contacts = FieldList(FormField(Contacts), min_entries=3, max_entries=3 )
     submit = SubmitField('Submit')
 

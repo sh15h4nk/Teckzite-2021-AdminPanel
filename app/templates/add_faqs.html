@@ -7,22 +7,25 @@ Add FAQ's
 
 {% block content %}
 {{ super() }}
-
-<center><h1>Add FAQ {{count}}</h1></center>
+{% if not hide_form %}
+    <center><h1>Add FAQ {{count}}</h1></center>
+{% endif %}
 
 <div class="container">
     <form class = 'form' method="post">
-    	{{ form.csrf_token }}
-        {{ wtf.form_field(form.question) }}
-        {{ wtf.form_field(form.answer) }}
+        {% if not hide_form %}
+    	   {{ form.csrf_token }}
+            {{ wtf.form_field(form.question) }}
+            {{ wtf.form_field(form.answer) }}
+            <button type="submit" class="btn btn-primary" name="add-faq-to-program" value="add-contact-to-workshop">Submit</button>
+        {% endif %}
         <input type="hidden" name="programId" value="{{program_id}}">
-        <button type="submit" class="btn btn-primary" name="add-faq-to-program" value="add-contact-to-workshop">Add FAQ</button>
-        <button type="submit" class="btn btn-primary" name="add-contact-from-faq" value="add-contact-to-workshop">Add contact</button>
+        <button type="submit" class="btn btn-primary" name="add-contact-from" value="add-contact-from">Add contact</button>
 
         {% if current_user.role == 1 %}
-            <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Skip</a>
+            <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
         {% elif current_user.role == 2 %}
-            <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Skip</a>
+            <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
         {% endif %}
 
     </form>
