@@ -4,7 +4,7 @@ from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm, Contacts, FAQs
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm, Contacts, FAQs, UpdateEventForm
 from app import db, app
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
@@ -171,6 +171,9 @@ def addEventView():
         return redirect(url_for('admin.addEventView'))
 
     return render_template('add_event.html', form=form)
+
+
+
 
 
 @admin.route('/workshop/add', methods=['GET', 'POST'])

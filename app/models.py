@@ -107,6 +107,7 @@ class Workshop(Base):
     about = db.Column(String(500))
     timeline = db.Column(String(500))
     resources = db.Column(String(500))
+    # hidden = db.Column(SmallInteger, default=0) # if true, workshop is inactive
 
     contact = db.relationship('Contact')
     faqs = db.relationship('FAQ')
