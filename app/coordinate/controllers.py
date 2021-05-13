@@ -1,4 +1,4 @@
-from app import app, db
+from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.forms import LoginForm
@@ -43,7 +43,7 @@ def login():
 
         user = User.query.filter_by(userId=form.userId.data).first()
 
-        if user and user.password == form.password.data:
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             if user.role == 2 and user.hidden == 0:
             	login_user(user)
             	session['id'] = user.id
