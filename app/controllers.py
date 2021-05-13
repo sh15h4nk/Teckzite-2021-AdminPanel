@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_required, current_user
 from flask_migrate import current
 from sqlalchemy.sql.sqltypes import Date
 from werkzeug.utils import secure_filename
-from app import app, db
+from app import app, db, bcrypt
 from app.models import User, Event, Workshop
 from app.forms import ChangePassword, CreateEventForm, ResetRequest, UpdateEventForm, UpdateWorkshopForm
 from app.functions import sendMail, updateEvent, updateWorkshop
@@ -51,7 +51,8 @@ def resetPassword(token):
 		return redirect(url_for('resetRequest'))
 	form = ChangePassword()
 	if form.validate_on_submit():
-		user.password = form.password.data
+		hashed_password = bcrypt.generate_password_hash(form.password.data)
+		user.password = hashed_password
 		db.session.commit()
 
 		flash("Password Updated Successfully")

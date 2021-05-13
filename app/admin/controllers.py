@@ -189,17 +189,17 @@ def addWorkshopView():
         if request.form.get("skip"):
             return redirect(url_for("admin.dashboard"))
 
-        elif request.form.get("add-faq-from-contacts"):
+        elif request.form.get("add-faq-from"):
             workshop_id = request.form['programId']
             workshop = Workshop.query.filter_by(id = workshop_id).first()
             form = FAQs()
             return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs)+1)
             
-        elif request.form.get("add-contact-from-faq"):
+        elif request.form.get("add-contact-from"):
             workshop_id = request.form['programId']
             workshop = Workshop.query.filter_by(id = workshop_id).first()
             form = Contacts()
-            return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
+            return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
 
 
         elif request.form.get("add-contact-to-program"):
@@ -209,13 +209,16 @@ def addWorkshopView():
             if form.validate_on_submit():
                 contact = addContactToWorkshop(request.form['name'], request.form['email'], request.form['phone'], workshop_id)
                 if type(contact) == str:
+                    if contact == "Overflow":
+                        flash("Contacts Limit Exceeded!")
+                        return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1, hide_form = 1)
                     flash(contact)
-                    return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
-                flash("Contact "+str(len(workshop.contact))+" Added!")
+                    return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
+                flash("Contact "+str(len(workshop.contacts))+" Added!")
                 form = Contacts()
-                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
+                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
             else:
-                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contact)+1)
+                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
 
 
         elif request.form.get("add-faq-to-program"):
@@ -225,6 +228,9 @@ def addWorkshopView():
             if form.validate_on_submit():
                 faq = addFaqToWorkshop(form.question.data, form.answer.data, workshop_id)
                 if type(faq) == str:
+                    if faq == "Overflow":
+                        flash("Faqs Limit Exceeded!")
+                        return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs)+1, hide_form = 1)
                     flash(faq)
                     return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
                 flash("FAQ "+ str(len(workshop.faqs)) + "Added!")
@@ -233,6 +239,15 @@ def addWorkshopView():
             else:
                 # return form.errors
                 return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
+
+
+        elif request.form.get("upload-image-to-program"):
+            form = PhotoForm()
+            workshop_id = request.form['programId']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if form.validate_on_submit():
+                return request.form
+            return form.errors
 
 
         elif form.validate_on_submit():
@@ -254,6 +269,10 @@ def addWorkshopView():
             elif request.form.get('add-faq'):
                 form = FAQs()
                 return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
+            
+            elif request.form.get('upload-image'):
+                form = PhotoForm()
+                return render_template('upload_image.html', form = form, program_id = workshop.id)
 
     return render_template('add_workshop.html', form=form)
 

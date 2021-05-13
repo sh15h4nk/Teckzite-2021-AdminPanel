@@ -82,11 +82,16 @@ figure figcaption {
         {{ wtf.form_field(form.about) }}
         {{ wtf.form_field(form.timeline) }}
         {{ wtf.form_field(form.resources) }}
+
         {{ form.primary_contact.csrf_token }}
         {{ wtf.form_field(form.primary_contact) }}
 
+        {{ form.csrf_token }}
+        {{ wtf.form_field(form.image) }}
+
         <button type="submit" class="btn btn-primary" name="add-contact" value="Add Contact">Add contacts</button>
         <button type="submit" class="btn btn-primary" name="add-faq" value="Add FAQs">Add FAQs</button>
+        <button type="submit" class="btn btn-primary" name="upload-sponsor-image" value="Upload Sponsor Image">Upload Sponsor Image</button>
         <button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>
 
 
@@ -146,7 +151,7 @@ figure figcaption {
 {{super()}}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.5.1/croppie.js"></script>
-<!-- <script src="/static/addContacts.js"></script>
+<!-- <script src="/static/addContacts.js"></script> -->
 <script src="/static/imageUpload.js"></script>
- -->
+
 {% endblock %}

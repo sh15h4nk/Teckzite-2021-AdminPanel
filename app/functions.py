@@ -94,11 +94,11 @@ def addWorkshop(title, dept, description, fee, status, about, timeline, resource
     workshop_id = generate_workshop_id()
 
     #sanitizing input
-    description = escape(description)
-    status = escape(status)
-    about = escape(about)
-    timeline = escape(timeline)
-    resources = escape(resources)
+    description = str(escape(description))
+    status = str(escape(status))
+    about = str(escape(about))
+    timeline = str(escape(timeline))
+    resources = str(escape(resources))
     #adding workshop to db
     workshop = Workshop(workshop_id, title, dept, description, fee, status, about, timeline, resources, coordinator_id)
     db.session.add(workshop)
@@ -107,6 +107,13 @@ def addWorkshop(title, dept, description, fee, status, about, timeline, resource
     return workshop
 
 def addContactToWorkshop(name, email, phone, workshop_id):
+
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    if not workshop:
+        return "Invalid Workshop ID"
+    elif not (len(workshop.contacts) < 3):
+        return "Overflow"
+
     contact = Contact.query.filter_by(email = email, phone = phone).first()
     if contact:
         if not contact.workshop_id:
@@ -114,13 +121,6 @@ def addContactToWorkshop(name, email, phone, workshop_id):
             db.session.commit()
             return contact
 
-        return "Contact Already exists"
-
-    workshop = Workshop.query.filter_by(id = workshop_id).first()
-    if not workshop:
-        return "Invalid Workshop ID"
-    elif not (len(workshop.contact) < 3):
-        return "Contact limit exceeded"
 
     contact = Contact(name, email, phone)
     contact.workshop_id = workshop_id
@@ -130,16 +130,19 @@ def addContactToWorkshop(name, email, phone, workshop_id):
     return contact
      
 def addFaqToWorkshop(question, answer, workshop_id):
-    faq = FAQ.query.filter_by(question = question, answer = answer, workshop_id = workshop_id).first()
-    if faq:
-        return "FAQ Already exists"
 
     workshop = Workshop.query.filter_by(id = workshop_id).first()
     if not workshop:
         return "Invalid Workshop ID"
     elif not (len(workshop.faqs) < 10):
-        return "FAQs limit exceeded"
+        return "Overflow"
 
+
+    faq = FAQ.query.filter_by(question = question, answer = answer, workshop_id = workshop_id).first()
+    if faq:
+        return "FAQ Already exists"
+
+    
     faq = FAQ(question, answer)
     faq.workshop_id = workshop_id
     db.session.add(faq)
