@@ -5,6 +5,11 @@ from flask.helpers import flash, url_for
 from flask import escape
 from app.models import User, Event, Workshop, CurrentId, Contact, FAQ
 import json
+from config import *
+
+from PIL import Image
+from io import BytesIO
+import base64, cv2
 
 def dict_escape(d:dict):
     for k,v in d.items():
@@ -149,3 +154,29 @@ def addFaqToWorkshop(question, answer, workshop_id):
     db.session.commit()
 
     return faq
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def crop_and_save_image(imageString, crop, image_type, id):
+
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.mkdir(UPLOAD_FOLDER)
+    if not os.path.exists(f"{UPLOAD_FOLDER}/{image_type}/"):
+        os.mkdir(f"{UPLOAD_FOLDER}/{image_type}/")
+    
+    image = Image.open(BytesIO(base64.b64decode(imageString.encode())))
+    url = f"{UPLOAD_FOLDER}/{image_type}/{id}.{image.format.lower()}"
+    image.save(url)
+
+    image = cv2.imread(url)
+
+    if crop['x'] < 0:
+        crop['x'] = 0
+    if crop['y'] < 0:
+        crop['y'] = 0
+    
+    crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
+    cv2.imwrite(url, crop_image)
