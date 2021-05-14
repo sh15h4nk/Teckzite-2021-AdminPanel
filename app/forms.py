@@ -9,7 +9,7 @@ from wtforms.fields.simple import HiddenField
 from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired,ValidationError
 from wtforms.widgets.core import HiddenInput
 
-from app.models import Event, User, Workshop
+from app.models import Event, Image, User, Workshop
 
 class LoginForm(FlaskForm):
     userId = TextField('Student ID', [
@@ -67,9 +67,6 @@ class CreateEventForm(FlaskForm):
     event_organiser = FormField(RegisterForm)
     # profile = FileField('Profile', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
 
-
-class PhotoForm(FlaskForm):
-    photo = FileField("Upload Image",validators=[FileRequired("Please Select an Image")])
 
 
 class UpdateEventForm(FlaskForm):
@@ -136,6 +133,34 @@ class FAQs(FlaskForm):
         if len(answer.data) == 0:
             raise ValidationError("Answer is Required")
 
+class PhotoForm(FlaskForm):
+    image = StringField('')
+    cropX = StringField('')
+    cropY = StringField('')
+    cropWidth = StringField('')
+    cropHeight = StringField('')
+
+    def validate_image(self, image):
+        if not image:
+            raise ValidationError("Field is Required")
+    def validate_cropX(self, cropX):
+        if not cropX:
+            raise ValidationError("Field is Required")
+    def validate_cropY(self, cropY):
+        if not cropY:
+            raise ValidationError("Field is Required")
+    def validate_cropWidth(self, cropWidth):
+        if not cropWidth:
+            raise ValidationError("Field is Required")
+    def validate_cropHeight(self, cropHeight):
+        if not cropHeight:
+            raise ValidationError("Field is Required")
+    
+
+  
+
+    
+
 class AddWorkshopForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
     dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
@@ -146,7 +171,7 @@ class AddWorkshopForm(FlaskForm):
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('Resources', [DataRequired()])
     primary_contact = FormField(Contacts)
-    image = FormField(PhotoForm)
+    photo = FormField(PhotoForm)
     #contacts = FieldList(FormField(Contacts), min_entries=3, max_entries=3 )
     submit = SubmitField('Submit')
 

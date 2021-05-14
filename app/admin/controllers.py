@@ -4,11 +4,11 @@ from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, PhotoForm, Contacts, FAQs, UpdateEventForm
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, Contacts, FAQs, UpdateEventForm
 from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
-# from PIL import Image
+import cv2
 import os
 
 import urllib
@@ -186,6 +186,9 @@ def addWorkshopView():
     form = AddWorkshopForm(request.form)
 
     if request.method == "POST":
+
+        print(form.errors)
+
         if request.form.get("skip"):
             return redirect(url_for("admin.dashboard"))
 
@@ -241,17 +244,29 @@ def addWorkshopView():
                 return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
 
 
-        elif request.form.get("upload-image-to-program"):
-            form = PhotoForm()
-            workshop_id = request.form['programId']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
-            if form.validate_on_submit():
-                return request.form
-            return form.errors
+        # elif request.form.get("upload-image-to-program"):
+        #     # form = PhotoForm()
+        #     workshop_id = request.form['programId']
+        #     workshop = Workshop.query.filter_by(id = workshop_id).first()
+        #     if form.validate_on_submit():
+        #         return request.form
+        #     return form.errors
 
 
         elif form.validate_on_submit():
+            
+            
+ 
             workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
+
+            crop = {}
+            crop['x'] = int(float(str(form.photo.cropX.data)))
+            crop['y'] = int(float(str(form.photo.cropY.data)))
+            crop['width'] = int(float(str(form.photo.cropWidth.data)))
+            crop['height'] = int(float(str(form.photo.cropHeight.data)))
+            
+            crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop.id)
+
             contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
             if type(contact) == str:
                 flash(contact)
@@ -270,9 +285,9 @@ def addWorkshopView():
                 form = FAQs()
                 return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
             
-            elif request.form.get('upload-image'):
-                form = PhotoForm()
-                return render_template('upload_image.html', form = form, program_id = workshop.id)
+            # elif request.form.get('upload-image'):
+            #     form = PhotoForm()
+            #     return render_template('upload_image.html', form = form, program_id = workshop.id)
 
     return render_template('add_workshop.html', form=form)
 

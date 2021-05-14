@@ -1,111 +1,42 @@
-function dataURItoBlob(dataURI) {
-    // convert base64 to raw binary data held in a string
-    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-    var byteString = atob(dataURI.split(',')[1]);
-
-    // separate out the mime component
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-    // write the bytes of the string to an ArrayBuffer
-    var ab = new ArrayBuffer(byteString.length);
-    var ia = new Uint8Array(ab);
-    for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-
-    //Old Code
-    //write the ArrayBuffer to a blob, and you're done
-    //var bb = new BlobBuilder();
-    //bb.append(ab);
-    //return bb.getBlob(mimeString);
-
-    //New Code
-    return new Blob([ab], {type: mimeString});
+var cropper = new Cropper(image_preview, {
+    aspectRatio: 16 / 9,
+});
 
 
-}
+// $('#photo-cropX').attr('type', 'hidden');
+// $('#photo-cropY').attr('type', 'hidden');
+// $('#photo-cropWidth').attr('type', 'hidden');
+// $('#photo-cropHeight').attr('type', 'hidden');
+// $('#photo-image').attr('type', 'hidden');
 
 
+$('#input-image').on('change', function (evt) {
+    const [file] = this.files
+    if (file) {
+        cropper.destroy();
 
-let count = 0;
-
-$(".gambar").attr("src", "");
-var $uploadCrop,
-tempFilename,
-rawImg,
-imageId;
-function readFile(input) {
-    if (input.files && input.files[0]) {
         var reader = new FileReader();
-        reader.onload = function (e) {
+        reader.readAsDataURL(file);
 
-            if (count > 0)
-                location.reload();
+        reader.onload = function(e){
+            imageFile = e.target.result;
+            image_preview.src = imageFile;
+            var ind = imageFile.indexOf('base64,') + 7;
+            b_imageFile = imageFile.substr(ind)
 
-            $('.upload-demo').addClass('ready');
-            $('#cropImagePop').modal('show');
-            rawImg = e.target.result;
-        }
-        reader.readAsDataURL(input.files[0]);
-        
+            cropper = new Cropper(image_preview, {
+                aspectRatio: 16 / 9,
+                crop(event) {
+
+                    $('#photo-cropX').attr('value', event.detail.x);
+                    $('#photo-cropY').attr('value', event.detail.y);
+                    $('#photo-cropWidth').attr('value', event.detail.width);
+                    $('#photo-cropHeight').attr('value', event.detail.height);
+                    $('#photo-image').attr('value', b_imageFile);
+                                    
+                },
+            });
+        } 
     }
-    else {
-        swal("Sorry - you're browser doesn't support the FileReader API");
-    }
-}
-
-$uploadCrop = $('#upload-demo').croppie({
-    viewport: {
-        width: 211,
-        height: 210.5,
-    },
     
-    enforceBoundary: false,
-    enableExif: true
-
-
-});
-
-
-
-$(document).ready(function(){
-    
-    $(document).on('shown.bs.modal','.modal', function () {
-        
-        $uploadCrop.croppie('bind', {
-            url: rawImg
-        }).then(function(){
-            console.log('jQuery bind complete');
-        });
-    });
-});
-
-
-$('#cropImageBtn').on('click', function (ev) {
-
-    count++;
-
-    $uploadCrop.croppie('result', {
-        type: 'base64',
-        format: 'jpeg',
-        size: {width: 211, height: 210.5}
-    }).then(function (resp) {
-        $('#item-img-output').attr('src', resp);
-        
-        $('#uri').val(resp);
-        
-
-        $('#cropImagePop').modal('hide');
-    });
-
-
-});
-
-
-$('.item-img').on('change', function () { 
-
-    imageId = $(this).data('id'); 
-    tempFilename = $(this).val();
-    $('#cancelCropBtn').data('id', imageId);
-    readFile(this); 
 });
