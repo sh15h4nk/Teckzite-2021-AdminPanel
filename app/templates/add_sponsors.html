@@ -2,13 +2,13 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
-Add Contacts
+Add Sponsors
 {% endblock %}
 
 {% block content %}
 {{ super() }}
 {% if not hide_form %}
-    <center><h1>Add Contact {{ count }}</h1></center>
+    <center><h1>Add Sponsors {{ count }}</h1></center>
 {% endif %}
 
 <div class="container">
@@ -16,13 +16,12 @@ Add Contacts
         {% if not hide_form %}
         	{{ form.csrf_token }}
             {{ wtf.form_field(form.name) }}
-            {{ wtf.form_field(form.email) }}
-            {{ wtf.form_field(form.phone) }}
-            <button type="submit" class="btn btn-primary" name="add-contact-to-program" value=" add-contact-to-workshop">Submit</button>
+            {{ wtf.form_field(form.url) }}
+            <button type="submit" class="btn btn-primary" name="add-sponsor-to-program" value=" add-sponsor-to-workshop">Submit</button>
         {% endif %}
         <input type="hidden" name="programId" value="{{program_id}}">
-        <button type="submit" class="btn btn-primary" name="add-faq-from" value="add-faq-from">Add FAQs</button>
-        <button type="submit" class="btn btn-primary" name="add-sponsor-from" value="add-sponsor-from">Add Sponsor's</button>
+        <button type="submit" class="btn btn-primary" name="add-contact-from" value="{{program_id}}">Add Contacts</button>
+        <button type="submit" class="btn btn-primary" name="add-faq-from" value="{{program_id}}">Add FAQs</button>
         {% if current_user.role == 1 %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
         {% elif current_user.role == 2 %}

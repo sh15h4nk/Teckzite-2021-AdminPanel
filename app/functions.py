@@ -2,15 +2,19 @@ import re
 from app import mail, db, app
 from flask_mail import Message 
 from flask.helpers import flash, url_for
-from flask import escape
-from app.models import User, Event, Workshop, CurrentId, Contact, FAQ
+from flask import escape, Markup
+from app.models import User, Event, Workshop, CurrentId, Contact, FAQ, Sponsor
 import json
 
 def dict_escape(d:dict):
     for k,v in d.items():
-        d[k] = escape(v)
+        d[k] = str(escape(v))
     return d
 
+def dict_markup(d:dict):
+    for k,v in d.items():
+        d[k] = Markup(v)
+    return d
 
 def sendMail(user):
 	token = user.generate_token()
@@ -149,3 +153,29 @@ def addFaqToWorkshop(question, answer, workshop_id):
     db.session.commit()
 
     return faq
+
+def addSponsorToWorkshop(title, url, workshop_id):
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    if not workshop:
+        return "Invalid Workshop ID"
+    elif not (len(workshop.sponsors) < 3):
+        return "Overflow"
+
+    sponsor = Sponsor.query.filter_by(title = title, url = url, workshop_id = workshop_id).first()
+    if sponsor:
+        return "Sponsor Already exists"
+
+    sponsor = Sponsor(title, url)
+    sponsor.workshop_id = workshop_id
+    db.session.add(sponsor)
+    db.session.commit()
+    return sponsor
+
+def updateWorkshop(key, value, workshop_id):
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    if not workshop:
+        return "Invalid Workshop ID"
+    # props = vars(workshop)
+    print(hasattr(workshop, "name"))
+    # for i in props:
+    #     print(i)
