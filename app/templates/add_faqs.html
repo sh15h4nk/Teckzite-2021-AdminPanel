@@ -21,6 +21,7 @@ Add FAQ's
         {% endif %}
         <input type="hidden" name="programId" value="{{program_id}}">
         <button type="submit" class="btn btn-primary" name="add-contact-from" value="add-contact-from">Add contact</button>
+        <button type="submit" class="btn btn-primary" name="add-sponsor-from" value="add-sponsor-from">Add Sponsor's</button>
 
         {% if current_user.role == 1 %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
