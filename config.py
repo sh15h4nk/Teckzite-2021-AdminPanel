@@ -33,5 +33,5 @@ MAIL_PASSWORD = creds.email_passwd
 
 SEND_FILE_MAX_AGE_DEFAULT = 0
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'image_uploads/')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'image_uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}

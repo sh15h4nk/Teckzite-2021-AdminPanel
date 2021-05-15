@@ -47,10 +47,6 @@ class PhotoForm(FlaskForm):
             raise ValidationError("Field is Required")
     
 
-  
-
-
-
 class RegisterForm(FlaskForm):
     userId = TextField('Student ID', [
         Required(), Length(min=7, max=7)])  
@@ -125,7 +121,7 @@ class UpdateWorkshopForm(FlaskForm):
     about = CKEditorField('About')
     timeline = CKEditorField('Timeline')
     resources = CKEditorField('Resources')
-    # photo = PhotoForm()
+    photo = FormField(PhotoForm)
    
 class Contacts(FlaskForm):
     name = StringField('Name')
@@ -157,9 +153,9 @@ class FAQs(FlaskForm):
         if len(answer.data) == 0:
             raise ValidationError("Answer is Required")
 class Sponsors(FlaskForm):
-    title = StringField('Name', [Length(min=5)])
+    name = StringField('Name', [Length(min=5)])
     url = TextField('Url', [URL(message="Must be a valid URL")])
-
+    photo = FormField(PhotoForm)
 
 
     

@@ -36,15 +36,7 @@ img {
 <div class="container">
     <form class = 'form' method="post">
         
-        {{ form.photo.csrf_token }}
-        {{ wtf.form_field(form.photo) }}
-
-        <input type="file" id="input-image">
-        <div class="item">
-            <img id="image_preview" src="/static/back.jpg" alt="Add your image"> 
-        </div>
-        
-        {{ wtf.form_field(form.submit) }}
+        {{ form.csrf_token }}
         {% if current_user.role == 1 %}
         	{{ wtf.form_field(form.title, value = workshop.title) }}
         {% else %}
@@ -66,6 +58,14 @@ img {
 
         <input type="hidden" id="hidden-resources" name="hidden-resources" value="{{ markup.resources }}">
         {{ wtf.form_field(form.resources) }}
+
+        {{ form.photo.csrf_token }}
+        {{ wtf.form_field(form.photo) }}
+
+        <input type="file" id="input-image">
+        <div class="item">
+            <img id="image_preview" src="{{image_url}}" alt="Add your image"> 
+        </div>
 
 
         <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.id}}">Submit</button>

@@ -5,6 +5,31 @@
 Add Sponsors
 {% endblock %}
 
+{% block styles %}
+{{ super() }}
+<style>
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.item {
+    display: block;
+    width: 600px;
+    min-height: 300px;
+    max-height: auto;
+    float: left;
+    margin: 3px;
+    padding: 3px;
+    background-color: skyblue;
+}
+
+</style>
+<link rel="stylesheet" href="/static/cropperjs-master/dist/cropper.css"/>
+
+{% endblock %}
+
 {% block content %}
 {{ super() }}
 {% if not hide_form %}
@@ -17,6 +42,16 @@ Add Sponsors
         	{{ form.csrf_token }}
             {{ wtf.form_field(form.name) }}
             {{ wtf.form_field(form.url) }}
+
+            {{ form.photo.csrf_token }}
+            {{ wtf.form_field(form.photo) }}
+       
+
+            <input type="file" id="input-image">
+            <div class="item">
+                <img id="image_preview" src="/static/back.jpg" alt="Add your image"> 
+            </div>
+            
             <button type="submit" class="btn btn-primary" name="add-sponsor-to-program" value=" add-sponsor-to-workshop">Submit</button>
         {% endif %}
         <input type="hidden" name="programId" value="{{program_id}}">
@@ -29,5 +64,15 @@ Add Sponsors
         {% endif %}
     </form>
 </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+
+
+<script src="/static/cropperjs-master/dist/cropper.js"></script>
+<script src="/static/imageUpload.js"></script>
 
 {% endblock %}

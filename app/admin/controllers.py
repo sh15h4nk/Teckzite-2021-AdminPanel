@@ -1,10 +1,11 @@
 from operator import add
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash, escape, get_flashed_messages, Markup, jsonify
+import flask
 from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, PhotoForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
 from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
@@ -198,12 +199,18 @@ def addWorkshopView():
                 
                 #adding image
                 crop = {}
-                crop['x'] = int(float(str(form.photo.cropX.data)))
-                crop['y'] = int(float(str(form.photo.cropY.data)))
-                crop['width'] = int(float(str(form.photo.cropWidth.data)))
-                crop['height'] = int(float(str(form.photo.cropHeight.data)))
+                try:
+                    crop['x'] = int(float(str(form.photo.cropX.data)))
+                    crop['y'] = int(float(str(form.photo.cropY.data)))
+                    crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                    crop['height'] = int(float(str(form.photo.cropHeight.data)))
+                except:
+                    flash("No image uploaded")
+                    return redirect(url_for('admin.addWorkshopView'))
                 
-                crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop.id)
+                status = crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop.id)
+                if not status:
+                    flash("Something went wrong")
                 
                 contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
                 if type(contact) == str:
@@ -280,7 +287,28 @@ def addWorkshopView():
             form = Sponsors()
             if form.validate_on_submit():
                 # return request.form
-                sponsor = addSponsorToWorkshop(form.name.data, form.url.data, workshop_id)
+
+                #adding image
+                image_url = ""
+                crop = {}
+                try:
+                    crop['x'] = int(float(str(form.photo.cropX.data)))
+                    crop['y'] = int(float(str(form.photo.cropY.data)))
+                    crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                    crop['height'] = int(float(str(form.photo.cropHeight.data)))
+                except:
+                    flash("No image uploaded")
+                    return render_template('add_sponsors.html', form = form, program_id = workshop_id, count = len(workshop.sponsors))
+
+                
+                url = crop_and_save_image(form.photo.image.data, crop, 'sponsor', workshop.id)
+                if not url:
+                    flash("Something went wrong")
+                else:
+                    image_url = url
+                    
+                
+                sponsor = addSponsorToWorkshop(form.name.data, form.url.data, workshop_id, image_url)
                 if type(sponsor) == str:
                     if sponsor == "Overflow":
                         flash("Sponsors Limit Exceeded!")
@@ -303,6 +331,12 @@ def updateWorkshopView():
             workshop = Workshop.query.filter_by(id = workshop_id).first()
             if not workshop:
                 return "Invalid Workshop"
+
+            if len(workshop.images):
+                image_url = workshop.images[0].image_url
+            else:
+                image_url = "/static/back.jpg"
+
             markup = dict_markup({
                 "status": workshop.status,
                 "description": workshop.description,
@@ -310,7 +344,7 @@ def updateWorkshopView():
                 "timeline": workshop.timeline,
                 "resources": workshop.resources,
                 })
-            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup )
+            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup, image_url=image_url)
         
         elif request.form.get('update-contacts-from'):
             workshop_id = request.form['update-contacts-from']
@@ -320,13 +354,13 @@ def updateWorkshopView():
             form = Contacts()
             return render_template('update_contacts.html',form = form, contacts = workshop.contacts, workshop_id = workshop.id)
 
-        # elif request.form.get("upload-image-to-program"):
-        #     # form = PhotoForm()
-        #     workshop_id = request.form['programId']
-        #     workshop = Workshop.query.filter_by(id = workshop_id).first()
-        #     if form.validate_on_submit():
-        #         return request.form
-        #     return form.errors
+        elif request.form.get("upload-image-to-program"):
+            form = PhotoForm()
+            workshop_id = request.form['programId']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if form.validate_on_submit():
+                return request.form
+            return form.errors
         elif request.form.get('update-faqs-from'):
             workshop_id = request.form['update-faqs-from']
             workshop = Workshop.query.filter_by(id = workshop_id).first()
@@ -343,26 +377,7 @@ def updateWorkshopView():
             form = Sponsors()
             return render_template('update_sponsors.html',form = form, sponsors = workshop.sponsors, workshop_id = workshop.id)
 
-        elif form.validate_on_submit():
-            
-            
- 
-            workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
-
-            crop = {}
-            crop['x'] = int(float(str(form.photo.cropX.data)))
-            crop['y'] = int(float(str(form.photo.cropY.data)))
-            crop['width'] = int(float(str(form.photo.cropWidth.data)))
-            crop['height'] = int(float(str(form.photo.cropHeight.data)))
-            
-            crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop.id)
-
-            contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
-            if type(contact) == str:
-                flash(contact)
-                return render_template('add_workshop.html', form=form)
-
-
+  
         elif request.form.get("update-contact"):
             form = Contacts()
             if form.validate_on_submit():
@@ -370,7 +385,7 @@ def updateWorkshopView():
                 contact_id = dict(request.form).get('update-contact')
                 status = updateWorkshop(form.data, contact_id, 'contact')
                 if status == "error":
-                    return "Something went wrong"
+                    flash("Something went wrong")
                 else:
                     return(redirect(url_for('admin.updateWorkshopView')))
 
@@ -381,13 +396,6 @@ def updateWorkshopView():
                     return "Invalid"
                 return render_template('update_contacts.html',form = form, contacts = workshop.contacts, workshop_id = workshop.id)
 
-        elif request.form.get('add-faq'):
-            form = FAQs()
-            return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
-        
-            # elif request.form.get('upload-image'):
-            #     form = PhotoForm()
-            #     return render_template('upload_image.html', form = form, program_id = workshop.id)
         elif request.form.get("update-faq"):
             form = FAQs()
             if form.validate_on_submit():
@@ -411,9 +419,24 @@ def updateWorkshopView():
             if form.validate_on_submit():
 
                 sponsor_id = dict(request.form).get('update-sponsor')
-                status = updateWorkshop(form.data, sponsor_id, 'sponsor')
-                if status == "error":
-                    return "Something went wrong"
+
+                #update image
+                crop = {}
+
+                try:
+                    crop['x'] = int(float(str(form.photo.cropX.data)))
+                    crop['y'] = int(float(str(form.photo.cropY.data)))
+                    crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                    crop['height'] = int(float(str(form.photo.cropHeight.data)))
+                except:
+                    return(redirect(url_for('admin.updateWorkshopView')))
+                
+                image_url = crop_and_save_image(form.photo.image.data, crop, 'sponsor', sponsor_id)
+                form.data['image_url'] = image_url
+                sponsor_status = updateWorkshop(form.data, sponsor_id, 'sponsor')
+
+                if not sponsor_status:
+                    flash("Something went wrong")            
                 else:
                     return(redirect(url_for('admin.updateWorkshopView')))
                 
@@ -427,12 +450,27 @@ def updateWorkshopView():
 
 
         elif form.validate_on_submit():#update-workshop
+
+
             workshop_id = dict(request.form).get('update-workshop')
-            status = updateWorkshop(form.data, workshop_id, 'markup')
-            if status == "error":
-                return "Something went wrong"
+            markup_status = updateWorkshop(form.data, workshop_id, 'markup')
+
+            #update image
+            crop = {}
+
+            try:
+                crop['x'] = int(float(str(form.photo.cropX.data)))
+                crop['y'] = int(float(str(form.photo.cropY.data)))
+                crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                crop['height'] = int(float(str(form.photo.cropHeight.data)))
+            except:
+                return(redirect(url_for('admin.updateWorkshopView')))
+            image_status = crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop_id)
+
+            if not markup_status or not image_status:
+                flash("Something went wrong")            
             else:
-                return(redirect('admin.updateWorkshopView'))
+                return(redirect(url_for('admin.updateWorkshopView')))
         else:
             return form.errors
     return redirect(url_for('admin.getWorkshopsView'))

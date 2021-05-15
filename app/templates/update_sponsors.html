@@ -5,6 +5,31 @@
 Update Sponsor's
 {% endblock %}
 
+{% block styles %}
+{{ super() }}
+<style>
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.item {
+    display: block;
+    width: 600px;
+    min-height: 300px;
+    max-height: auto;
+    float: left;
+    margin: 3px;
+    padding: 3px;
+    background-color: skyblue;
+}
+
+</style>
+<link rel="stylesheet" href="/static/cropperjs-master/dist/cropper.css"/>
+
+{% endblock %}
+
 {% block content %}
 {{ super() }}
 <center><h1>Update Sponsor's</h1></center>
@@ -27,8 +52,18 @@ Update Sponsor's
     {% for sponsor in sponsors %}
         <form class = 'form' method="post">
         	{{ form.csrf_token }}
-            {{ wtf.form_field(form.title, value= sponsor.title ) }}
+            {{ wtf.form_field(form.name, value= sponsor.name ) }}
             {{ wtf.form_field(form.url, value=sponsor.url ) }}
+
+            {{ form.photo.csrf_token }}
+            {{ wtf.form_field(form.photo) }}
+       
+
+            <input type="file" id="input-image">
+            <div class="item">
+                <img id="image_preview" src="{{sponsor.image_url}}" alt="Add your image"> 
+            </div>
+
             <input type="hidden" name="workshop_id" value="{{workshop_id}}">
             <button type="submit" class="btn btn-primary" name="update-sponsor" value="{{sponsor.id}}">Update</button>
         </form>
@@ -39,5 +74,15 @@ Update Sponsor's
         <button type="submit" class="btn btn-primary" name="add-sponsor-from" value="add-sponsor-from">Add Sponsor's</button>
     </form>
 </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+
+
+<script src="/static/cropperjs-master/dist/cropper.js"></script>
+<script src="/static/imageUpload.js"></script>
 
 {% endblock %}
