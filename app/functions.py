@@ -11,7 +11,7 @@ from app.models import Image
 
 from PIL import Image as PIL_Image
 from io import BytesIO
-import base64, cv2
+import base64, cv2, uuid
 
 def dict_escape(d:dict):
     for k,v in d.items():
@@ -167,47 +167,55 @@ def allowed_file(filename):
 
 def crop_and_save_image(imageString, crop, image_type, id):
 
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
-    if not os.path.exists(f"{UPLOAD_FOLDER}/{image_type}/"):
-        os.mkdir(f"{UPLOAD_FOLDER}/{image_type}/")
-    
-    image = PIL_Image.open(BytesIO(base64.b64decode(imageString.encode())))
-    url = f"{UPLOAD_FOLDER}/{image_type}/{id}.{image.format.lower()}"
-    image.save(url)
+    try:
 
-    # saving to database
-    image = Image(url)
-    if image_type == 'workshop':
-        image.workshop_id = id
-    elif image_type == 'event':
-        image.event_id = id
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.mkdir(UPLOAD_FOLDER)
+        if not os.path.exists(f"{UPLOAD_FOLDER}/{image_type}/"):
+            os.mkdir(f"{UPLOAD_FOLDER}/{image_type}/")
+        
+        image = PIL_Image.open(BytesIO(base64.b64decode(imageString.encode())))
+        url = f"{UPLOAD_FOLDER}/{image_type}/{uuid.uuid4()}.{image.format.lower()}"
+        image.save(url)
 
-    db.session.add(image)
-    db.session.commit()
+        # saving to database
+        image = Image(url)
+        if image_type == 'workshop':
+            image.workshop_id = id
+        elif image_type == 'event':
+            image.event_id = id
+        elif image_type == 'sponsor':
+            return url
 
-    image = cv2.imread(url)
+        db.session.add(image)
+        db.session.commit()
 
-    if crop['x'] < 0:
-        crop['x'] = 0
-    if crop['y'] < 0:
-        crop['y'] = 0
-    
-    crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
-    cv2.imwrite(url, crop_image)
-def addSponsorToWorkshop(title, url, workshop_id):
+        image = cv2.imread(url)
+
+        if crop['x'] < 0:
+            crop['x'] = 0
+        if crop['y'] < 0:
+            crop['y'] = 0
+        
+        crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
+        cv2.imwrite(url, crop_image)
+        return 1
+    except:
+        return 0
+def addSponsorToWorkshop(name, url, workshop_id, image_url):
     workshop = Workshop.query.filter_by(id = workshop_id).first()
     if not workshop:
         return "Invalid Workshop ID"
     elif not (len(workshop.sponsors) < 3):
         return "Overflow"
 
-    sponsor = Sponsor.query.filter_by(title = title, url = url, workshop_id = workshop_id).first()
+    sponsor = Sponsor.query.filter_by(name = name, url = url, workshop_id = workshop_id).first()
     if sponsor:
         return "Sponsor Already exists"
 
-    sponsor = Sponsor(title, url)
+    sponsor = Sponsor(name, url)
     sponsor.workshop_id = workshop_id
+    sponsor.image_url = image_url
     db.session.add(sponsor)
     db.session.commit()
     return sponsor
@@ -215,9 +223,10 @@ def addSponsorToWorkshop(title, url, workshop_id):
 def updateWorkshop(data, field_id, field):
 
     if not Workshop.query.filter_by(id = field_id):
-        return "error"
+        return 0
 
     if field == "markup":
+        del data['photo']
         del data['csrf_token']
         status =  Workshop.query.filter_by(id = field_id).update(data)
         return status
@@ -229,6 +238,7 @@ def updateWorkshop(data, field_id, field):
     
     elif field == "sponsor":
         del data['csrf_token']
+        del data['photo']
         status =  Sponsor.query.filter_by(id = field_id).update(data)
         return status
 

@@ -1,13 +1,14 @@
 var cropper = new Cropper(image_preview, {
     aspectRatio: 16 / 9,
+    cropBoxResizable: false
 });
 
 
-// $('#photo-cropX').attr('type', 'hidden');
-// $('#photo-cropY').attr('type', 'hidden');
-// $('#photo-cropWidth').attr('type', 'hidden');
-// $('#photo-cropHeight').attr('type', 'hidden');
-// $('#photo-image').attr('type', 'hidden');
+$('#photo-cropX').attr('type', 'hidden');
+$('#photo-cropY').attr('type', 'hidden');
+$('#photo-cropWidth').attr('type', 'hidden');
+$('#photo-cropHeight').attr('type', 'hidden');
+$('#photo-image').attr('type', 'hidden');
 
 
 $('#input-image').on('change', function (evt) {
@@ -26,6 +27,7 @@ $('#input-image').on('change', function (evt) {
 
             cropper = new Cropper(image_preview, {
                 aspectRatio: 16 / 9,
+                cropBoxResizable: false,
                 crop(event) {
 
                     $('#photo-cropX').attr('value', event.detail.x);
