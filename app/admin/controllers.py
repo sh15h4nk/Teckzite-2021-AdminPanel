@@ -4,7 +4,7 @@ from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
 from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
@@ -193,6 +193,7 @@ def addWorkshopView():
         elif request.form.get('add-workshop') or request.form.get('add-contact') or request.form.get('add-faq') or request.form.get('add-sponsor'):
             form = AddWorkshopForm()
             if form.validate_on_submit():
+                print(form.data)
                 workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
                 contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
                 if type(contact) == str:
