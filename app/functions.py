@@ -172,9 +172,19 @@ def crop_and_save_image(imageString, crop, image_type, id):
     if not os.path.exists(f"{UPLOAD_FOLDER}/{image_type}/"):
         os.mkdir(f"{UPLOAD_FOLDER}/{image_type}/")
     
-    image = Image.open(BytesIO(base64.b64decode(imageString.encode())))
+    image = PIL_Image.open(BytesIO(base64.b64decode(imageString.encode())))
     url = f"{UPLOAD_FOLDER}/{image_type}/{id}.{image.format.lower()}"
     image.save(url)
+
+    # saving to database
+    image = Image(url)
+    if image_type == 'workshop':
+        image.workshop_id = id
+    elif image_type == 'event':
+        image.event_id = id
+
+    db.session.add(image)
+    db.session.commit()
 
     image = cv2.imread(url)
 

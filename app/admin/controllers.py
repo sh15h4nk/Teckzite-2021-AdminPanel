@@ -193,8 +193,18 @@ def addWorkshopView():
         elif request.form.get('add-workshop') or request.form.get('add-contact') or request.form.get('add-faq') or request.form.get('add-sponsor'):
             form = AddWorkshopForm()
             if form.validate_on_submit():
-                print(form.data)
+                
                 workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
+                
+                #adding image
+                crop = {}
+                crop['x'] = int(float(str(form.photo.cropX.data)))
+                crop['y'] = int(float(str(form.photo.cropY.data)))
+                crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                crop['height'] = int(float(str(form.photo.cropHeight.data)))
+                
+                crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop.id)
+                
                 contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
                 if type(contact) == str:
                     flash(contact)
