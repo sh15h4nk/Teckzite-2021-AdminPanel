@@ -110,7 +110,10 @@ Workshops
                             <label for="{{row.id}}" class="label-default"></label>
                     </div>
                     <td>
-                        <button id="{{row.id}}" name="update"> Update </button>
+                        <form method="POST" action="{{url_for('admin.updateWorkshopView')}}">
+                            <input type="hidden" name="workshop_id" value="{{row.id}}">
+                            <button id="{{row.id}}" name="update-button" value="upload-button"> Update </button>                            
+                        </form>
                     </td>
 					{% endif %}
 				</td>

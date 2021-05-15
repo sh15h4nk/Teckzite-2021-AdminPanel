@@ -1,10 +1,10 @@
 from operator import add
-from flask import url_for, redirect, request, render_template, Blueprint, session, flash, escape, get_flashed_messages
+from flask import url_for, redirect, request, render_template, Blueprint, session, flash, escape, get_flashed_messages, Markup, jsonify
 from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, Contacts, FAQs, UpdateEventForm
+from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm
 from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
@@ -184,31 +184,62 @@ def addEventView():
 @role_required([1])
 def addWorkshopView():
     form = AddWorkshopForm(request.form)
-
     if request.method == "POST":
 
         print(form.errors)
 
         if request.form.get("skip"):
             return redirect(url_for("admin.dashboard"))
+        elif request.form.get('add-workshop') or request.form.get('add-contact') or request.form.get('add-faq') or request.form.get('add-sponsor'):
+            form = AddWorkshopForm()
+            if form.validate_on_submit():
+                workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
+                contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
+                if type(contact) == str:
+                    flash(contact)
+                    return render_template('add_workshop.html', form=form)
 
-        elif request.form.get("add-faq-from"):
-            workshop_id = request.form['programId']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
+                flash("Workshop Added Succesfully")
+
+                if request.form.get('submit'):
+                    return redirect(url_for('admin.dashboard'))
+
+                elif request.form.get('add-contact'):
+                    form = Contacts()
+                    return render_template('add_contacts.html', form=form, program_id = workshop.id, count = 2)
+
+                elif request.form.get('add-faq'):
+                    form = FAQs()
+                    return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
+                
+                elif request.form.get('add-sponsor'):
+                    # return "On Sponsors"
+                    form = Sponsors()
+                    return render_template('add_sponsors.html', form = form, program_id = workshop.id, count = 1)
+            return render_template('add_workshop.html', form=form)
+
+
+        workshop_id = request.form['programId']
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
+        if not workshop:
+            flash("Invalid Request")
+            return redirect(url_for('admin.dashboard'))
+
+        if request.form.get("add-faq-from"):
             form = FAQs()
             return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs)+1)
             
         elif request.form.get("add-contact-from"):
-            workshop_id = request.form['programId']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
             form = Contacts()
             return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
+
+        elif request.form.get('add-sponsor-from'):
+            form = Sponsors()
+            return render_template('add_sponsors.html', form = form, program_id = workshop_id, count = len(workshop.sponsors)+1)
 
 
         elif request.form.get("add-contact-to-program"):
             form = Contacts()
-            workshop_id = request.form['programId']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
             if form.validate_on_submit():
                 contact = addContactToWorkshop(request.form['name'], request.form['email'], request.form['phone'], workshop_id)
                 if type(contact) == str:
@@ -218,16 +249,10 @@ def addWorkshopView():
                     flash(contact)
                     return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
                 flash("Contact "+str(len(workshop.contacts))+" Added!")
-                form = Contacts()
-                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
-            else:
-                return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
-
+            return render_template('add_contacts.html', form = form, program_id = workshop_id, count = len(workshop.contacts)+1)
 
         elif request.form.get("add-faq-to-program"):
             form = FAQs()
-            workshop_id = request.form['programId']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
             if form.validate_on_submit():
                 faq = addFaqToWorkshop(form.question.data, form.answer.data, workshop_id)
                 if type(faq) == str:
@@ -237,12 +262,52 @@ def addWorkshopView():
                     flash(faq)
                     return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
                 flash("FAQ "+ str(len(workshop.faqs)) + "Added!")
-                form = FAQs()
-                return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
-            else:
-                # return form.errors
-                return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
+            return render_template('add_faqs.html', form = form, program_id = workshop_id, count = len(workshop.faqs) +1)
 
+        elif request.form.get("add-sponsor-to-program"):
+            app.logger.warning(str("kkjsdkfjlskdjflksdjflksdjflksdjflksdjflksdjflks")+ str(workshop_id))
+            form = Sponsors()
+            if form.validate_on_submit():
+                # return request.form
+                sponsor = addSponsorToWorkshop(form.name.data, form.url.data, workshop_id)
+                if type(sponsor) == str:
+                    if sponsor == "Overflow":
+                        flash("Sponsors Limit Exceeded!")
+                        return render_template('add_sponsors.html', form = form, program_id = workshop_id, count = len(workshop.sponsors)+1, hide_form = 1)
+                    flash(sponsor)
+                    return render_template('add_sponsors.html', form = form, program_id = workshop_id, count = len(workshop.sponsors) +1)
+                flash("Sponsor "+ str(len(workshop.sponsors)) + "Added!")
+            return render_template('add_sponsors.html', form = form, program_id = workshop_id, count = len(workshop.sponsors) +1)
+
+    return render_template('add_workshop.html', form=form)
+
+@admin.route('/workshop/update', methods=['GET', 'POST'])
+@login_required
+@role_required([1])
+def updateWorkshopView():
+    form = UpdateWorkshopForm(request.form)
+    if request.method == 'POST':
+        if request.form.get('update-button'):
+            workshop_id = request.form['workshop_id']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if not workshop:
+                return "Invalid Workshop"
+            markup = dict_markup({
+                "status": workshop.status,
+                "description": workshop.description,
+                "about": workshop.about,
+                "timeline": workshop.timeline,
+                "resources": workshop.resources,
+                })
+            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup )
+        
+        elif request.form.get('update-contacts-from'):
+            workshop_id = request.form['update-contacts-from']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if not workshop:
+                return "Invalid"
+            form = Contacts()
+            return render_template('update_contacts.html',form = form, contacts = workshop.contacts, workshop_id = workshop.id)
 
         # elif request.form.get("upload-image-to-program"):
         #     # form = PhotoForm()
@@ -251,7 +316,21 @@ def addWorkshopView():
         #     if form.validate_on_submit():
         #         return request.form
         #     return form.errors
+        elif request.form.get('update-faqs-from'):
+            workshop_id = request.form['update-faqs-from']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if not workshop:
+                return "Invalid"
+            form = FAQs()
+            return render_template('update_faqs.html',form = form, faqs = workshop.faqs, workshop_id = workshop.id)
 
+        elif request.form.get('update-sponsors-from'):
+            workshop_id = request.form['update-sponsors-from']
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            if not workshop:
+                return "Invalid"
+            form = Sponsors()
+            return render_template('update_sponsors.html',form = form, sponsors = workshop.sponsors, workshop_id = workshop.id)
 
         elif form.validate_on_submit():
             
@@ -272,27 +351,80 @@ def addWorkshopView():
                 flash(contact)
                 return render_template('add_workshop.html', form=form)
 
-            flash("Workshop Added Succesfully")
 
-            if request.form.get('submit'):
-                return redirect(url_for('admin.dashboard'))
+        elif request.form.get("update-contact"):
+            form = Contacts()
+            if form.validate_on_submit():
+                # updated
+                contact_id = dict(request.form).get('update-contact')
+                status = updateWorkshop(form.data, contact_id, 'contact')
+                if status == "error":
+                    return "Something went wrong"
+                else:
+                    return(redirect(url_for('admin.updateWorkshopView')))
 
-            elif request.form.get('add-contact'):
-                form = Contacts()
-                return render_template('add_contacts.html', form=form, program_id = workshop.id, count = 2)
+            else:
+                workshop_id = request.form['workshop_id']
+                workshop = Workshop.query.filter_by(id = workshop_id).first()
+                if not workshop:
+                    return "Invalid"
+                return render_template('update_contacts.html',form = form, contacts = workshop.contacts, workshop_id = workshop.id)
 
-            elif request.form.get('add-faq'):
-                form = FAQs()
-                return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
-            
+        elif request.form.get('add-faq'):
+            form = FAQs()
+            return render_template('add_faqs.html', form=form, program_id = workshop.id, count = 1)
+        
             # elif request.form.get('upload-image'):
             #     form = PhotoForm()
             #     return render_template('upload_image.html', form = form, program_id = workshop.id)
+        elif request.form.get("update-faq"):
+            form = FAQs()
+            if form.validate_on_submit():
 
-    return render_template('add_workshop.html', form=form)
+                faq_id = dict(request.form).get('update-faq')
+                status = updateWorkshop(form.data, faq_id, 'faq')
+                if status == "error":
+                    return "Something went wrong"
+                else:
+                    return(redirect(url_for('admin.updateWorkshopView')))
+
+            else:
+                workshop_id = request.form['workshop_id']
+                workshop = Workshop.query.filter_by(id = workshop_id).first()
+                if not workshop:
+                    return "Invalid"
+                return render_template('update_faqs.html',form = form, faqs = workshop.faqs, workshop_id = workshop.id)
+
+        elif request.form.get('update-sponsor'):
+            form = Sponsors()
+            if form.validate_on_submit():
+
+                sponsor_id = dict(request.form).get('update-sponsor')
+                status = updateWorkshop(form.data, sponsor_id, 'sponsor')
+                if status == "error":
+                    return "Something went wrong"
+                else:
+                    return(redirect(url_for('admin.updateWorkshopView')))
+                
+
+            else:
+                workshop_id = request.form['workshop_id']
+                workshop = Workshop.query.filter_by(id = workshop_id).first()
+                if not workshop:
+                    return "Invalid"
+                return render_template('update_sponsors.html',form = form, sponsors = workshop.sponsors, workshop_id = workshop.id)
 
 
-
+        elif form.validate_on_submit():#update-workshop
+            workshop_id = dict(request.form).get('update-workshop')
+            status = updateWorkshop(form.data, workshop_id, 'markup')
+            if status == "error":
+                return "Something went wrong"
+            else:
+                return(redirect('admin.updateWorkshopView'))
+        else:
+            return form.errors
+    return redirect(url_for('admin.getWorkshopsView'))
 
 @login_required
 @role_required([1])
