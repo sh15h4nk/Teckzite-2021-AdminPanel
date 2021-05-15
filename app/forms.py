@@ -125,6 +125,7 @@ class UpdateWorkshopForm(FlaskForm):
     about = CKEditorField('About')
     timeline = CKEditorField('Timeline')
     resources = CKEditorField('Resources')
+    # photo = PhotoForm()
    
 class Contacts(FlaskForm):
     name = StringField('Name')

@@ -7,8 +7,9 @@ from flask import escape, Markup
 from app.models import User, Event, Workshop, CurrentId, Contact, FAQ, Sponsor
 import json
 from config import *
+from app.models import Image
 
-from PIL import Image
+from PIL import Image as PIL_Image
 from io import BytesIO
 import base64, cv2
 
@@ -117,11 +118,10 @@ def addWorkshop(title, dept, description, fee, status, about, timeline, resource
     return workshop
 
 def addContactToWorkshop(name, email, phone, workshop_id):
-
-    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    workshop = Workshop.query.filter_by(id = workshop_id).first()    
     if not workshop:
         return "Invalid Workshop ID"
-    elif not (len(workshop.contacts) < 3):
+    elif workshop.contacts and not (len(workshop.contacts) < 3):
         return "Overflow"
 
     contact = Contact.query.filter_by(email = email, phone = phone).first()
