@@ -5,6 +5,30 @@
 Update Workshop 
 {% endblock %}
 
+{% block styles %}
+{{ super() }}
+<style>
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.item {
+    display: block;
+    width: 600px;
+    min-height: 300px;
+    max-height: auto;
+    float: left;
+    margin: 3px;
+    padding: 3px;
+    background-color: skyblue;
+}
+
+</style>
+<link rel="stylesheet" href="/static/cropperjs-master/dist/cropper.css"/>
+
+{% endblock %}
 
 {% block content %}
 {{ super() }}
@@ -12,12 +36,31 @@ Update Workshop
 <div class="container">
     <form class = 'form' method="post">
         {{ form.csrf_token }}
-        {{ wtf.quick_form(form) }}     
+        {{ wtf.form_field(form.title) }}
+        {{ wtf.form_field(form.fee) }}
+        {{ wtf.form_field(form.description) }}
+        {{ wtf.form_field(form.status) }}
+        {{ wtf.form_field(form.about) }}
+        {{ wtf.form_field(form.timeline) }}
+        {{ wtf.form_field(form.resources) }}
+        
+        {{ form.photo.csrf_token }}
+        {{ wtf.form_field(form.photo) }}
+
+        <input type="file" id="input-image">
+        <div class="item">
+            <img id="image_preview" src="/static/back.jpg" alt="Add your image"> 
+        </div>
+        
+        {{ wtf.form_field(form.submit) }}
 
     </form>
 </div>
 
 {% block javascript %}
+
+<script src="/static/cropperjs-master/dist/cropper.js"></script>
+<script src="/static/imageUpload.js"></script>
 
 <script>
     var urlParams = new URLSearchParams(window.location.search);
@@ -26,6 +69,8 @@ Update Workshop
     $('#fee').attr('value', '{{workshop.fee}}');
    
 </script>
+
+
 
 {% endblock %}
     

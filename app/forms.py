@@ -19,7 +19,36 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
+
 BRANCH_CHOICES = [('CSE','CSE'), ('ECE','ECE'), ('MEC', 'MECH'), ('CIV','CIV'), ('CHE', 'CHEM'), ('MME','MME'), ('PUC','PUC'),]
+
+
+class PhotoForm(FlaskForm):
+    image = StringField('')
+    cropX = StringField('')
+    cropY = StringField('')
+    cropWidth = StringField('')
+    cropHeight = StringField('')
+
+    def validate_image(self, image):
+        if not image:
+            raise ValidationError("Field is Required")
+    def validate_cropX(self, cropX):
+        if not cropX:
+            raise ValidationError("Field is Required")
+    def validate_cropY(self, cropY):
+        if not cropY:
+            raise ValidationError("Field is Required")
+    def validate_cropWidth(self, cropWidth):
+        if not cropWidth:
+            raise ValidationError("Field is Required")
+    def validate_cropHeight(self, cropHeight):
+        if not cropHeight:
+            raise ValidationError("Field is Required")
+    
+
+  
+
 
 
 class RegisterForm(FlaskForm):
@@ -97,6 +126,7 @@ class UpdateWorkshopForm(FlaskForm):
     about = CKEditorField('About', [DataRequired()])
     timeline = CKEditorField('Timeline', [DataRequired()])
     resources = CKEditorField('Resources', [DataRequired()])
+    photo = FormField(PhotoForm)
 
     submit = SubmitField('Submit')
     
@@ -133,31 +163,6 @@ class FAQs(FlaskForm):
         if len(answer.data) == 0:
             raise ValidationError("Answer is Required")
 
-class PhotoForm(FlaskForm):
-    image = StringField('')
-    cropX = StringField('')
-    cropY = StringField('')
-    cropWidth = StringField('')
-    cropHeight = StringField('')
-
-    def validate_image(self, image):
-        if not image:
-            raise ValidationError("Field is Required")
-    def validate_cropX(self, cropX):
-        if not cropX:
-            raise ValidationError("Field is Required")
-    def validate_cropY(self, cropY):
-        if not cropY:
-            raise ValidationError("Field is Required")
-    def validate_cropWidth(self, cropWidth):
-        if not cropWidth:
-            raise ValidationError("Field is Required")
-    def validate_cropHeight(self, cropHeight):
-        if not cropHeight:
-            raise ValidationError("Field is Required")
-    
-
-  
 
     
 
