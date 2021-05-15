@@ -1,9 +1,10 @@
+from app.forms import Contacts
 import re
 from app import mail, db, app
 from flask_mail import Message 
 from flask.helpers import flash, url_for
-from flask import escape
-from app.models import User, Event, Workshop, CurrentId, Contact, FAQ
+from flask import escape, Markup
+from app.models import User, Event, Workshop, CurrentId, Contact, FAQ, Sponsor
 import json
 from config import *
 
@@ -13,9 +14,13 @@ import base64, cv2
 
 def dict_escape(d:dict):
     for k,v in d.items():
-        d[k] = escape(v)
+        d[k] = str(escape(v))
     return d
 
+def dict_markup(d:dict):
+    for k,v in d.items():
+        d[k] = Markup(v)
+    return d
 
 def sendMail(user):
 	token = user.generate_token()
@@ -180,3 +185,44 @@ def crop_and_save_image(imageString, crop, image_type, id):
     
     crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
     cv2.imwrite(url, crop_image)
+def addSponsorToWorkshop(title, url, workshop_id):
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    if not workshop:
+        return "Invalid Workshop ID"
+    elif not (len(workshop.sponsors) < 3):
+        return "Overflow"
+
+    sponsor = Sponsor.query.filter_by(title = title, url = url, workshop_id = workshop_id).first()
+    if sponsor:
+        return "Sponsor Already exists"
+
+    sponsor = Sponsor(title, url)
+    sponsor.workshop_id = workshop_id
+    db.session.add(sponsor)
+    db.session.commit()
+    return sponsor
+
+def updateWorkshop(data, field_id, field):
+
+    if not Workshop.query.filter_by(id = field_id):
+        return "error"
+
+    if field == "markup":
+        del data['csrf_token']
+        status =  Workshop.query.filter_by(id = field_id).update(data)
+        return status
+    
+    elif field == "contact":
+        del data['csrf_token']
+        status =  Contact.query.filter_by(id = field_id).update(data)
+        return status
+    
+    elif field == "sponsor":
+        del data['csrf_token']
+        status =  Sponsor.query.filter_by(id = field_id).update(data)
+        return status
+
+    elif field == "faq":
+        del data['csrf_token']
+        status =  FAQ.query.filter_by(id = field_id).update(data)
+        return status

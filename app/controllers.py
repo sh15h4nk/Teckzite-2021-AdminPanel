@@ -222,6 +222,7 @@ def updateWorkshopView():
 	form = UpdateWorkshopForm(request.form)
 
 	if form.validate_on_submit():
+		print("trigger")
 		status = updateWorkshop(form.data)		
 		if status:
 			return redirect(url_for('admin.getWorkshopsView'))

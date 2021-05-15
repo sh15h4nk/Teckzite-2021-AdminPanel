@@ -18,19 +18,22 @@ class Base(db.Model):
 class Sponsor(db.Model):
     id = db.Column(Integer, primary_key=True)
     title = db.Column(String(128), nullable=False)
-    image_url = db.Column(String(128), nullable=False)
+    url = db.Column(String(128))
+    image_url = db.Column(String(128))
+    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
 
-    def __init__(self, title, image_url):
+    def __init__(self, title, url):
         self.title = title
-        self.image_url = image_url
+        self.url = url
 
 
 class Image(db.Model):
     id = db.Column(Integer, primary_key=True)
     image_url = db.Column(String(128), nullable=False)
+    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
@@ -154,7 +157,6 @@ class Workshop(Base):
         self.resources = resources
         self.coordinator_id = coordinator_id
 
-
     
     
 
@@ -163,6 +165,8 @@ class Contact(db.Model):
     name = db.Column(String(128), nullable=False)
     email = db.Column(String(128), nullable=False)
     phone = db.Column(String(10))
+    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
+
 
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
@@ -176,6 +180,7 @@ class FAQ(db.Model):
     id = db.Column(Integer, primary_key=True)
     question = db.Column(String(100))
     answer = db.Column(String(500))
+    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
     event_id = db.Column(Integer, ForeignKey('event.id'))
     workshop_id = db.Column(Integer, ForeignKey('workshop.id'))

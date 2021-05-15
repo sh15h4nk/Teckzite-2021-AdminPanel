@@ -32,17 +32,9 @@ img {
 
 {% block content %}
 {{ super() }}
-
+<center><h1>Update Workshop</h1></center>
 <div class="container">
     <form class = 'form' method="post">
-        {{ form.csrf_token }}
-        {{ wtf.form_field(form.title) }}
-        {{ wtf.form_field(form.fee) }}
-        {{ wtf.form_field(form.description) }}
-        {{ wtf.form_field(form.status) }}
-        {{ wtf.form_field(form.about) }}
-        {{ wtf.form_field(form.timeline) }}
-        {{ wtf.form_field(form.resources) }}
         
         {{ form.photo.csrf_token }}
         {{ wtf.form_field(form.photo) }}
@@ -53,6 +45,33 @@ img {
         </div>
         
         {{ wtf.form_field(form.submit) }}
+        {% if current_user.role == 1 %}
+        	{{ wtf.form_field(form.title, value = workshop.title) }}
+        {% else %}
+        	{{ wtf.form_field(form.title, value = workshop.title, readonly=true) }}
+        {% endif %}
+        {{ wtf.form_field(form.fee, value = workshop.fee) }}
+
+        <input type="hidden" id="hidden-status" name="hidden-status" value="{{ markup.status }}">
+        {{ wtf.form_field(form.status) }}
+
+        <input type="hidden" id="hidden-description" name="hidden-description" value="{{ markup.description }}">
+        {{ wtf.form_field(form.description) }}
+
+        <input type="hidden" id="hidden-about" name="hidden-about" value="{{ markup.about }}">
+        {{ wtf.form_field(form.about) }}
+
+        <input type="hidden" id="hidden-timeline" name="hidden-timeline" value="{{ markup.timeline }}">
+        {{ wtf.form_field(form.timeline) }}
+
+        <input type="hidden" id="hidden-resources" name="hidden-resources" value="{{ markup.resources }}">
+        {{ wtf.form_field(form.resources) }}
+
+
+        <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.id}}">Submit</button>
+        <button type="submit" class="btn btn-primary" name="update-contacts-from" value="{{workshop.id}}">Update contacts</button>
+        <button type="submit" class="btn btn-primary" name="update-faqs-from" value="{{workshop.id}}">Update FAQs</button>
+        <button type="submit" class="btn btn-primary" name="update-sponsors-from" value="{{workshop.id}}">Update Sponsor</button>
 
     </form>
 </div>
@@ -62,11 +81,15 @@ img {
 <script src="/static/cropperjs-master/dist/cropper.js"></script>
 <script src="/static/imageUpload.js"></script>
 
+<script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
 <script>
-    var urlParams = new URLSearchParams(window.location.search);
-    $('#workshopId').attr('type', 'hidden').attr('value', parseInt(urlParams.get('id')));
-    $('#title').attr('value', '{{workshop.title}}');
-    $('#fee').attr('value', '{{workshop.fee}}');
+	$(document).ready(function () {
+		CKEDITOR.instances.status.setData( document.getElementById("hidden-status").value );
+		CKEDITOR.instances.description.setData( document.getElementById("hidden-description").value );
+		CKEDITOR.instances.about.setData( document.getElementById("hidden-about").value );
+		CKEDITOR.instances.timeline.setData( document.getElementById("hidden-timeline").value );
+		CKEDITOR.instances.resources.setData( document.getElementById("hidden-resources").value );
+	});
    
 </script>
 
