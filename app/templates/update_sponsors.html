@@ -27,7 +27,7 @@ Update Sponsor's
     {% for sponsor in sponsors %}
         <form class = 'form' method="post">
         	{{ form.csrf_token }}
-            {{ wtf.form_field(form.name, value= sponsor.title ) }}
+            {{ wtf.form_field(form.title, value= sponsor.title ) }}
             {{ wtf.form_field(form.url, value=sponsor.url ) }}
             <input type="hidden" name="workshop_id" value="{{workshop_id}}">
             <button type="submit" class="btn btn-primary" name="update-sponsor" value="{{sponsor.id}}">Update</button>

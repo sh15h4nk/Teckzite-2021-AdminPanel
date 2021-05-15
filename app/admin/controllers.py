@@ -8,6 +8,7 @@ from app.forms import AddWorkshopForm, LoginForm, CreateEventForm, RegisterForm,
 from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
+from app.functions import *
 # from PIL import Image
 import os
 
@@ -282,7 +283,7 @@ def addWorkshopView():
 @login_required
 @role_required([1])
 def updateWorkshopView():
-    form = UpdateWorkshopForm()
+    form = UpdateWorkshopForm(request.form)
     if request.method == 'POST':
         if request.form.get('update-button'):
             workshop_id = request.form['workshop_id']
@@ -327,7 +328,14 @@ def updateWorkshopView():
         elif request.form.get("update-contact"):
             form = Contacts()
             if form.validate_on_submit():
-                return request.form
+                # updated
+                contact_id = dict(request.form).get('update-contact')
+                status = updateWorkshop(form.data, contact_id, 'contact')
+                if status == "error":
+                    return "Something went wrong"
+                else:
+                    return(redirect(url_for('admin.updateWorkshopView')))
+
             else:
                 workshop_id = request.form['workshop_id']
                 workshop = Workshop.query.filter_by(id = workshop_id).first()
@@ -338,7 +346,14 @@ def updateWorkshopView():
         elif request.form.get("update-faq"):
             form = FAQs()
             if form.validate_on_submit():
-                return request.form
+
+                faq_id = dict(request.form).get('update-faq')
+                status = updateWorkshop(form.data, faq_id, 'faq')
+                if status == "error":
+                    return "Something went wrong"
+                else:
+                    return(redirect(url_for('admin.updateWorkshopView')))
+
             else:
                 workshop_id = request.form['workshop_id']
                 workshop = Workshop.query.filter_by(id = workshop_id).first()
@@ -349,7 +364,15 @@ def updateWorkshopView():
         elif request.form.get('update-sponsor'):
             form = Sponsors()
             if form.validate_on_submit():
-                return request.form
+
+                sponsor_id = dict(request.form).get('update-sponsor')
+                status = updateWorkshop(form.data, sponsor_id, 'sponsor')
+                if status == "error":
+                    return "Something went wrong"
+                else:
+                    return(redirect(url_for('admin.updateWorkshopView')))
+                
+
             else:
                 workshop_id = request.form['workshop_id']
                 workshop = Workshop.query.filter_by(id = workshop_id).first()
@@ -359,7 +382,12 @@ def updateWorkshopView():
 
 
         elif form.validate_on_submit():#update-workshop
-            return jsonify(request.form.to_dict())
+            workshop_id = dict(request.form).get('update-workshop')
+            status = updateWorkshop(form.data, workshop_id, 'markup')
+            if status == "error":
+                return "Something went wrong"
+            else:
+                return(redirect('admin.updateWorkshopView'))
         else:
             return form.errors
     return redirect(url_for('admin.getWorkshopsView'))

@@ -92,6 +92,7 @@ class UpdateEventForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class UpdateWorkshopForm(FlaskForm):
+
     title = StringField('Title', [Length(min=5)])
     fee = IntegerField('Fee', [NumberRange(min=0, max=99999, message="Enter a valid number")])
     description = CKEditorField('Description', [Length(min=20)])
@@ -133,7 +134,7 @@ class FAQs(FlaskForm):
         if len(answer.data) == 0:
             raise ValidationError("Answer is Required")
 class Sponsors(FlaskForm):
-    name = StringField('Name', [Length(min=5)])
+    title = StringField('Name', [Length(min=5)])
     url = TextField('Url', [URL(message="Must be a valid URL")])
 
 

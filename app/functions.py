@@ -1,3 +1,4 @@
+from app.forms import Contacts
 import re
 from app import mail, db, app
 from flask_mail import Message 
@@ -171,11 +172,33 @@ def addSponsorToWorkshop(title, url, workshop_id):
     db.session.commit()
     return sponsor
 
-def updateWorkshop(key, value, workshop_id):
-    workshop = Workshop.query.filter_by(id = workshop_id).first()
-    if not workshop:
-        return "Invalid Workshop ID"
-    # props = vars(workshop)
-    print(hasattr(workshop, "name"))
-    # for i in props:
-    #     print(i)
+def updateWorkshop(data, field_id, field):
+
+    if not Workshop.query.filter_by(id = field_id):
+        return "error"
+
+    if field == "markup":
+        del data['csrf_token']
+        status =  Workshop.query.filter_by(id = field_id).update(data)
+        return status
+    
+    elif field == "contact":
+        del data['csrf_token']
+        status =  Contact.query.filter_by(id = field_id).update(data)
+        return status
+    
+    elif field == "sponsor":
+        del data['csrf_token']
+        status =  Sponsor.query.filter_by(id = field_id).update(data)
+        return status
+
+    elif field == "faq":
+        del data['csrf_token']
+        status =  FAQ.query.filter_by(id = field_id).update(data)
+        return status
+
+
+
+    
+
+
