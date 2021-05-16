@@ -2,9 +2,13 @@
 */__pycache__/
 *.py[cod]
 .vscode/*
+app.db-journal
 
 #env 
 env/
 
 #database
 app.db
+
+#folders
+image_uploads/
