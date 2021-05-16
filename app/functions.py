@@ -1,5 +1,8 @@
 from operator import contains
 from os import stat, stat_result
+
+from botocore.retries import bucket
+import flask_sqlalchemy
 from app.forms import Contacts
 import re
 from app import mail, db, app
@@ -13,7 +16,9 @@ from app.models import Image
 
 from PIL import Image as PIL_Image
 from io import BytesIO
-import base64, cv2, uuid
+import base64, cv2, uuid, numpy as np
+from app import s3
+import asyncio, time
 
 def dict_escape(d:dict):
     for k,v in d.items():
@@ -62,6 +67,45 @@ def generate_workshop_id():
     return current_workshop_id
 
 
+
+def upload_file_to_s3(file, filename, file_ext, acl="public-read"):
+
+    bucket = s3.Bucket(S3_BUCKET)
+    obj = bucket.Object(f"{filename}.{file_ext}")
+    obj.upload_fileobj(
+        file,
+        ExtraArgs={
+            "ACL": acl,
+            "ContentType": f"image/{file_ext}"
+        }
+    )
+    return "{}{}.{}".format(S3_LOCATION, filename, file_ext)
+
+def crop_image(imageString, crop):
+    
+    # saving temp image
+    image = PIL_Image.open(BytesIO(base64.b64decode(imageString.encode())))
+    filename = uuid.uuid4()
+    file_ext = image.format.lower()
+
+    temp_path = f"{UPLOAD_FOLDER}/{filename}.{file_ext}"
+    image.save(temp_path)
+
+    # cropping image
+    image = cv2.imread(temp_path)
+    if crop['x'] < 0:
+        crop['x'] = 0
+    if crop['y'] < 0:
+        crop['y'] = 0
+    
+    crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
+    cv2.imwrite(temp_path, crop_image)
+    
+
+    with open(temp_path, "rb") as file:
+        url = upload_file_to_s3(file, filename, file_ext)
+        os.remove(temp_path)
+        return url
 
 
 #Creating
@@ -167,43 +211,43 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def crop_and_save_image(imageString, crop, image_type, id):
+# def crop_and_save_image(imageString, crop, image_type, id):
 
-    try:
+#     try:
 
-        if not os.path.exists(UPLOAD_FOLDER):
-            os.mkdir(UPLOAD_FOLDER)
-        if not os.path.exists(f"{UPLOAD_FOLDER}/{image_type}/"):
-            os.mkdir(f"{UPLOAD_FOLDER}/{image_type}/")
+#         if not os.path.exists(UPLOAD_FOLDER):
+#             os.mkdir(UPLOAD_FOLDER)
+#         if not os.path.exists(f"{UPLOAD_FOLDER}/{image_type}/"):
+#             os.mkdir(f"{UPLOAD_FOLDER}/{image_type}/")
         
-        image = PIL_Image.open(BytesIO(base64.b64decode(imageString.encode())))
-        url = f"{UPLOAD_FOLDER}/{image_type}/{uuid.uuid4()}.{image.format.lower()}"
-        image.save(url)
+#         image = PIL_Image.open(BytesIO(base64.b64decode(imageString.encode())))
+#         url = f"{UPLOAD_FOLDER}/{image_type}/{uuid.uuid4()}.{image.format.lower()}"
+#         image.save(url)
 
-        # saving to database
-        image = Image(url)
-        if image_type == 'workshop':
-            image.workshop_id = id
-        elif image_type == 'event':
-            image.event_id = id
-        elif image_type == 'sponsor':
-            return url
+#         # saving to database
+#         image = Image(url)
+#         if image_type == 'workshop':
+#             image.workshop_id = id
+#         elif image_type == 'event':
+#             image.event_id = id
+#         elif image_type == 'sponsor':
+#             return url
 
-        db.session.add(image)
-        db.session.commit()
+#         db.session.add(image)
+#         db.session.commit()
 
-        image = cv2.imread(url)
+#         image = cv2.imread(url)
 
-        if crop['x'] < 0:
-            crop['x'] = 0
-        if crop['y'] < 0:
-            crop['y'] = 0
+#         if crop['x'] < 0:
+#             crop['x'] = 0
+#         if crop['y'] < 0:
+#             crop['y'] = 0
         
-        crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
-        cv2.imwrite(url, crop_image)
-        return 1
-    except:
-        return 0
+#         crop_image = image[ crop['y']:crop['y']+crop['height'], crop['x']:crop['x']+crop['width']]
+#         cv2.imwrite(url, crop_image)
+#         return 1
+#     except:
+#         return 0
 def addSponsorToWorkshop(name, url, workshop_id, image_url):
     workshop = Workshop.query.filter_by(id = workshop_id).first()
     if not workshop:
@@ -222,7 +266,7 @@ def addSponsorToWorkshop(name, url, workshop_id, image_url):
     db.session.commit()
     return sponsor
 
-def updateWorkshop(data, field_id, workshop_id, field):
+def updateWorkshop(data, field_id, workshop_id, field, image_url=""):
 
     if not Workshop.query.filter_by(id = field_id):
         return 0
@@ -240,13 +284,20 @@ def updateWorkshop(data, field_id, workshop_id, field):
             "resources": workshop.resources,
         })
 
+    
         data = dict_escape(data)
         try:
+            
+            if image_url:
+                data['image_url'] = image_url     
+            
             status =  Workshop.query.filter_by(id = field_id).update(data)
+            db.session.commit()
+
         except:
-            return (markup,"Error while updating!")
-      
-        workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop, markup,"Error while updating!")
+    
+        workshop = Workshop.query.filter_by(id = field_id).first()
         markup = dict_markup({
             "status": workshop.status,
             "description": workshop.description,
@@ -255,7 +306,7 @@ def updateWorkshop(data, field_id, workshop_id, field):
             "resources": workshop.resources,
         })
 
-        return (markup, "Workshop details updated successfully")
+        return (workshop, markup, "Workshop details updated successfully")
 
     
     elif field == "contact":
@@ -281,6 +332,8 @@ def updateWorkshop(data, field_id, workshop_id, field):
         workshop = Workshop.query.filter_by(id = workshop_id).first()
         if not sponsor:    
             try:
+                if image_url:
+                    data['image_url'] = image_url 
                 sponsor = Sponsor.query.filter_by(id = field_id).update(data)
             except:
                 return (workshop.contacts, "Error while updating!")
