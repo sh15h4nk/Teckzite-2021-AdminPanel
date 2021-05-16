@@ -7,7 +7,7 @@ from flask_migrate import current
 from sqlalchemy.sql.sqltypes import Date
 from werkzeug.utils import secure_filename
 from app import app, db, bcrypt
-from app.models import User, Event, Workshop
+from app.models import User, Event, Workshop, Contact, FAQ, Sponsor
 from app.forms import ChangePassword, CreateEventForm, ResetRequest, UpdateEventForm, UpdateWorkshopForm
 from app.functions import sendMail, updateEvent, updateWorkshop
 import os
@@ -74,43 +74,38 @@ def resetRequest():
 @app.route('/hideUser', methods=['POST'])
 @login_required
 def hideUserView():
-
 	if current_user.role == 1:
 		user = User.query.filter_by(id=request.form['id']).first()
 		if user:
 			if request.form['value'] == 'hide':
 				user.hidden = 1
+				db.session.commit()
 				return "Success"
 			elif request.form['value'] == 'unhide':
 				user.hidden = 0
+				db.session.commit()
 				return "Success"
 			else:
 				return "Invalid operation"
-		
 		else:
 			return "Failed"
-		
-		
 	elif current_user.role == 2:
 		user = User.query.filter_by(id=request.form['id'], role=3).first()
 		if user:
 			if request.form['value'] == 'hide':
 				user.hidden = 1
+				db.session.commit()
 				return "Success"
 			elif request.form['value'] == 'unhide':
 				user.hidden = 0
+				db.session.commit()
 				return "Success"
 			else:
 				return "Invalid operation"
-		
 		else:
 			return "Failed"
-
 	else:
 		return "Unauthorised"
-
-
-
 
 @app.route('/uploadImage', methods=['POST'])
 @login_required
@@ -231,3 +226,66 @@ def updateWorkshopView():
 	workshop = Workshop.query.filter_by(id = int(workshopId)).first()
 	return render_template('update_workshop.html', form=form, workshop=workshop)
 
+
+@app.route('/hideContact', methods=['POST'])
+@login_required
+def hideContactView():
+	if not request.form['id'] or not request.form['value'] or not request.form['workshop_id']:
+		return Response(status=400)
+	contact = Contact.query.filter_by(id=request.form['id']).first()
+	if contact:
+		if request.form['value'] == 'hide':
+			if Contact.query.filter_by(hidden = 0, workshop_id = request.form['workshop_id']).count() >= 2:
+				contact.hidden = 1
+				db.session.commit()
+				return Response(status=200)
+			else:
+				return Response(status=400)
+		elif request.form['value'] == 'unhide':
+			contact.hidden = 0
+			db.session.commit()
+			return Response(status=200)
+		else:
+			return Response(status=400)
+	else:
+		return Response(status=400)
+
+@app.route('/hideFaq', methods=['POST'])
+@login_required
+def hideFaqView():
+	if not request.form['id'] or not request.form['value'] or not request.form['workshop_id']:
+		return Response(status=400)
+	faq = FAQ.query.filter_by(id=request.form['id']).first()
+	if faq:
+		if request.form['value'] == 'hide':
+			faq.hidden = 1
+			db.session.commit()
+			return Response(status=200)
+		elif request.form['value'] == 'unhide':
+			faq.hidden = 0
+			db.session.commit()
+			return Response(status=200)
+		else:
+			return Response(status=400)
+	else:
+		return Response(status=400)			
+
+@app.route('/hideSponsor', methods=['POST'])
+@login_required
+def hideSponsorView():
+	if not request.form['id'] or not request.form['value'] or not request.form['workshop_id']:
+		return Response(status=400)
+	sponsor = Sponsor.query.filter_by(id=request.form['id']).first()
+	if sponsor:
+		if request.form['value'] == 'hide':
+			sponsor.hidden = 1
+			db.session.commit()
+			return Response(status=200)
+		elif request.form['value'] == 'unhide':
+			sponsor.hidden = 0
+			db.session.commit()
+			return Response(status=200)
+		else:
+			return Response(status=400)
+	else:
+		return Response(status=400)

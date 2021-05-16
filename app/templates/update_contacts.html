@@ -5,6 +5,65 @@
 Update Contacts
 {% endblock %}
 
+
+{% block styles %}
+{{ super() }}
+
+
+
+<style type="text/css">
+        
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+
+
+</style>
+
+{% endblock %}
+
+
 {% block content %}
 {{ super() }}
 <center><h1>Update Contacts</h1></center>
@@ -23,6 +82,7 @@ Update Contacts
             <button type="submit" class="btn btn-primary" name="update-faqs-from" value="{{workshop_id}}">Update FAQs</button>
             <button type="submit" class="btn btn-primary" name="update-sponsors-from" value="{{workshop_id}}">Update Sponsor</button>
         </form>
+        <br><br>
     </div>
     {% for contact in contacts %}
         <form class = 'form' method="post">
@@ -30,6 +90,18 @@ Update Contacts
             {{ wtf.form_field(form.name, value= contact.name ) }}
             {{ wtf.form_field(form.email, value=contact.email ) }}
             {{ wtf.form_field(form.phone, value=contact.phone ) }}
+            {% if contact.hidden == 1 %}
+                <div class="material-switch pull-right">
+                        <input id="{{contact.id}}" name="hide" value="{{workshop_id}}" type="checkbox" checked />
+                        <label for="{{contact.id}}" class="label-default"><br>Hide</label>
+                </div>
+
+                {% else %}
+                <div class="material-switch pull-right">
+                        <input id="{{contact.id}}" name="hide" value="{{workshop_id}}" type="checkbox" />
+                        <label for="{{contact.id}}" class="label-default"><br>Hide</label>
+                </div>
+            {% endif %}
             <input type="hidden" name="workshop_id" value="{{workshop_id}}">
             <button type="submit" class="btn btn-primary" name="update-contact" value="{{contact.id}}">Update</button>
         </form>
@@ -41,5 +113,22 @@ Update Contacts
     </form>
 
 </div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('input[type="checkbox"][name="hide"]').change(function () {
+            if(this.checked) {
+                var data = {'id':this.id, 'workshop_id':this.value, 'value':'hide'}
+            }
+            else{
+                var data = {'id':this.id, 'workshop_id':this.value, 'value':'unhide'}
+            }
+            $.post('/hideContact', data, (data,status) => {console.log(status)});
+        });
+    });
+</script>
 
 {% endblock %}
