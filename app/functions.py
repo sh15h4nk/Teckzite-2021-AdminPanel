@@ -316,6 +316,8 @@ def updateWorkshop(data, field_id, workshop_id, field, image_url=""):
         if not contact:    
             try:
                 contact = Contact.query.filter_by(id = field_id).update(data)
+                db.session.commit()
+
             except:
                 return (workshop.contacts, "Error while updating!")
 
@@ -335,6 +337,8 @@ def updateWorkshop(data, field_id, workshop_id, field, image_url=""):
                 if image_url:
                     data['image_url'] = image_url 
                 sponsor = Sponsor.query.filter_by(id = field_id).update(data)
+                db.session.commit()
+
             except:
                 return (workshop.contacts, "Error while updating!")
 
@@ -350,6 +354,8 @@ def updateWorkshop(data, field_id, workshop_id, field, image_url=""):
         if not faq:    
             try:
                 faq = FAQ.query.filter_by(id = field_id).update(data)
+                db.session.commit()
+
             except:
                 return (workshop.contacts, "Error while updating!")
 
