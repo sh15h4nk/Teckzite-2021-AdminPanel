@@ -354,13 +354,13 @@ def updateWorkshopView():
             form = Contacts()
             return render_template('update_contacts.html',form = form, contacts = workshop.contacts, workshop_id = workshop.id)
 
-        elif request.form.get("upload-image-to-program"):
-            form = PhotoForm()
-            workshop_id = request.form['programId']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
-            if form.validate_on_submit():
-                return request.form
-            return form.errors
+        # elif request.form.get("upload-image-to-program"):
+        #     form = PhotoForm()
+        #     workshop_id = request.form['programId']
+        #     workshop = Workshop.query.filter_by(id = workshop_id).first()
+        #     if form.validate_on_submit():
+        #         return request.form
+        #     return form.errors
         elif request.form.get('update-faqs-from'):
             workshop_id = request.form['update-faqs-from']
             workshop = Workshop.query.filter_by(id = workshop_id).first()
@@ -383,11 +383,14 @@ def updateWorkshopView():
             if form.validate_on_submit():
                 # updated
                 contact_id = dict(request.form).get('update-contact')
-                status = updateWorkshop(form.data, contact_id, 'contact')
-                if status == "error":
-                    flash("Something went wrong")
-                else:
-                    return(redirect(url_for('admin.updateWorkshopView')))
+                workshop_id =  dict(request.form).get('workshop_id')
+                contacts = updateWorkshop(form.data, contact_id, workshop_id,'contact')
+                if len(contacts) == 2:
+                    flash(contacts[1])
+                    return render_template('update_contacts.html',form = form, contacts =contacts[0], workshop_id = workshop_id)
+
+                flash("Contact updated")
+                return render_template('update_contacts.html',form = form, contacts =contacts, workshop_id = workshop_id)
 
             else:
                 workshop_id = request.form['workshop_id']
@@ -401,11 +404,14 @@ def updateWorkshopView():
             if form.validate_on_submit():
 
                 faq_id = dict(request.form).get('update-faq')
-                status = updateWorkshop(form.data, faq_id, 'faq')
-                if status == "error":
-                    return "Something went wrong"
-                else:
-                    return(redirect(url_for('admin.updateWorkshopView')))
+                workshop_id =  dict(request.form).get('workshop_id')
+                faqs = updateWorkshop(form.data, faq_id, workshop_id,'faq')
+                if len(faqs) == 2:
+                    flash(faqs[1])
+                    return render_template('update_faqs.html',form = form, faqs =faqs[0], workshop_id = workshop_id)
+
+                flash("Faq updated")
+                return render_template('update_faqs.html',form = form, faqs =faqs, workshop_id = workshop_id)
 
             else:
                 workshop_id = request.form['workshop_id']
@@ -419,7 +425,7 @@ def updateWorkshopView():
             if form.validate_on_submit():
 
                 sponsor_id = dict(request.form).get('update-sponsor')
-
+                workshop_id = dict(request.form).get('workshop_id')
                 #update image
                 crop = {}
 
@@ -429,17 +435,18 @@ def updateWorkshopView():
                     crop['width'] = int(float(str(form.photo.cropWidth.data)))
                     crop['height'] = int(float(str(form.photo.cropHeight.data)))
                 except:
-                    return(redirect(url_for('admin.updateWorkshopView')))
+                    flash("Please add an image")
                 
                 image_url = crop_and_save_image(form.photo.image.data, crop, 'sponsor', sponsor_id)
                 form.data['image_url'] = image_url
-                sponsor_status = updateWorkshop(form.data, sponsor_id, 'sponsor')
-
-                if not sponsor_status:
-                    flash("Something went wrong")            
-                else:
-                    return(redirect(url_for('admin.updateWorkshopView')))
+                sponsors = updateWorkshop(form.data, sponsor_id, workshop_id,  'sponsor')
                 
+                if len(sponsors) == 2:
+                    flash(sponsors[1])
+                    return render_template('update_sponsors.html',form = form, sponsors =sponsors[0], workshop_id = workshop_id)
+
+                flash("Sponsor updated")
+                return render_template('update_sponsors.html',form = form, sponsors =sponsors, workshop_id = workshop_id)
 
             else:
                 workshop_id = request.form['workshop_id']
