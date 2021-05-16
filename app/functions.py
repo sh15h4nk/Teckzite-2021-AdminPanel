@@ -1,5 +1,5 @@
 from operator import contains
-from os import stat
+from os import stat, stat_result
 from app.forms import Contacts
 import re
 from app import mail, db, app
@@ -230,45 +230,77 @@ def updateWorkshop(data, field_id, workshop_id, field):
     if field == "markup":
         del data['photo']
         del data['csrf_token']
-        status =  Workshop.query.filter_by(id = field_id).update(data)
-        return status
+
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
+        markup = dict_markup({
+            "status": workshop.status,
+            "description": workshop.description,
+            "about": workshop.about,
+            "timeline": workshop.timeline,
+            "resources": workshop.resources,
+        })
+
+        data = dict_escape(data)
+        try:
+            status =  Workshop.query.filter_by(id = field_id).update(data)
+        except:
+            return (markup,"Error while updating!")
+      
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
+        markup = dict_markup({
+            "status": workshop.status,
+            "description": workshop.description,
+            "about": workshop.about,
+            "timeline": workshop.timeline,
+            "resources": workshop.resources,
+        })
+
+        return (markup, "Workshop details updated successfully")
+
     
     elif field == "contact":
         del data['csrf_token']
         contact = Contact.query.filter_by(email = data['email'], phone = data['phone']).first()
-    
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
         if not contact:    
-            contact = Contact.query.filter_by(id = field_id).update(data)
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
-            return (workshop.contacts)
-        else:
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
-            return (workshop.contacts, "Contact already exists")
-            
-        
+            try:
+                contact = Contact.query.filter_by(id = field_id).update(data)
+            except:
+                return (workshop.contacts, "Error while updating!")
 
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.contacts, "Contact updated successfully")
+        else:            
+            return (workshop.contacts, "Contact already exists")
+                  
     
     elif field == "sponsor":
         del data['csrf_token']
         del data['photo']
         sponsor = Sponsor.query.filter_by(name = data['name'], url = data['url']).first()
-
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
         if not sponsor:    
-            sponsor = Sponsor.query.filter_by(id = field_id).update(data)
+            try:
+                sponsor = Sponsor.query.filter_by(id = field_id).update(data)
+            except:
+                return (workshop.contacts, "Error while updating!")
+
             workshop = Workshop.query.filter_by(id = workshop_id).first()
-            return (workshop.sponsors)
+            return (workshop.sponsors, "Sponsor updated successfully")
         else:
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
             return (workshop.sponsors, "Sponsor already exists")
 
     elif field == "faq":
         del data['csrf_token']
         faq = FAQ.query.filter_by(question = data['question'], answer = data['answer']).first()
-    
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
         if not faq:    
-            faq = FAQ.query.filter_by(id = field_id).update(data)
+            try:
+                faq = FAQ.query.filter_by(id = field_id).update(data)
+            except:
+                return (workshop.contacts, "Error while updating!")
+
             workshop = Workshop.query.filter_by(id = workshop_id).first()
-            return (workshop.faqs)
+            return (workshop.faqs, "Faq updated successfully")
         else:
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
             return (workshop.faqs, "Faq already exists")
