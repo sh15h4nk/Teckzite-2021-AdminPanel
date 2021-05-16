@@ -1,3 +1,5 @@
+from operator import contains
+from os import stat
 from app.forms import Contacts
 import re
 from app import mail, db, app
@@ -220,7 +222,7 @@ def addSponsorToWorkshop(name, url, workshop_id, image_url):
     db.session.commit()
     return sponsor
 
-def updateWorkshop(data, field_id, field):
+def updateWorkshop(data, field_id, workshop_id, field):
 
     if not Workshop.query.filter_by(id = field_id):
         return 0
@@ -233,16 +235,40 @@ def updateWorkshop(data, field_id, field):
     
     elif field == "contact":
         del data['csrf_token']
-        status =  Contact.query.filter_by(id = field_id).update(data)
-        return status
+        contact = Contact.query.filter_by(email = data['email'], phone = data['phone']).first()
+    
+        if not contact:    
+            contact = Contact.query.filter_by(id = field_id).update(data)
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.contacts)
+        else:
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.contacts, "Contact already exists")
+            
+        
+
     
     elif field == "sponsor":
         del data['csrf_token']
         del data['photo']
-        status =  Sponsor.query.filter_by(id = field_id).update(data)
-        return status
+        sponsor = Sponsor.query.filter_by(name = data['name'], url = data['url']).first()
+
+        if not sponsor:    
+            sponsor = Sponsor.query.filter_by(id = field_id).update(data)
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.sponsors)
+        else:
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.sponsors, "Sponsor already exists")
 
     elif field == "faq":
         del data['csrf_token']
-        status =  FAQ.query.filter_by(id = field_id).update(data)
-        return status
+        faq = FAQ.query.filter_by(question = data['question'], answer = data['answer']).first()
+    
+        if not faq:    
+            faq = FAQ.query.filter_by(id = field_id).update(data)
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.faqs)
+        else:
+            workshop = Workshop.query.filter_by(id = workshop_id).first()
+            return (workshop.faqs, "Faq already exists")
