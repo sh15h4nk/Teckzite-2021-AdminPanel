@@ -11,7 +11,7 @@ from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
 import cv2
-import os
+import os, asyncio
 
 import urllib
 
@@ -210,8 +210,8 @@ def addWorkshopView():
                 workshop = addWorkshop(form.title.data, form.dept.data, form.description.data, form.fee.data, form.status.data, form.about.data, form.timeline.data, form.resources.data, current_user.id)
 
                 
-                status = crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop.id)
-                if not status:
+                image_url = crop_image(form.photo.image.data, crop)
+                if not image_url:
                     flash("Something went wrong")
                 
                 contact = addContactToWorkshop(request.form['primary_contact-name'], request.form['primary_contact-email'], request.form['primary_contact-phone'], workshop.id)
@@ -303,7 +303,7 @@ def addWorkshopView():
                     return render_template('add_sponsors.html', form = form, program_id = workshop_id, count = len(workshop.sponsors))
 
                 
-                url = crop_and_save_image(form.photo.image.data, crop, 'sponsor', workshop.id)
+                url = crop_image(form.photo.image.data, crop)
                 if not url:
                     flash("Something went wrong")
                 else:
@@ -334,10 +334,8 @@ def updateWorkshopView():
             if not workshop:
                 return "Invalid Workshop"
 
-            if len(workshop.images):
-                image_url = workshop.images[0].image_url
-            else:
-                image_url = "/static/back.jpg"
+            if not workshop.image_url:
+                workshop.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
 
             markup = dict_markup({
                 "status": workshop.status,
@@ -346,7 +344,7 @@ def updateWorkshopView():
                 "timeline": workshop.timeline,
                 "resources": workshop.resources,
                 })
-            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup, image_url=image_url)
+            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup)
         
         elif request.form.get('update-contacts-from'):
             workshop_id = request.form['update-contacts-from']
@@ -356,13 +354,6 @@ def updateWorkshopView():
             form = Contacts()
             return render_template('update_contacts.html',form = form, contacts = workshop.contacts, workshop_id = workshop.id)
 
-        # elif request.form.get("upload-image-to-program"):
-        #     form = PhotoForm()
-        #     workshop_id = request.form['programId']
-        #     workshop = Workshop.query.filter_by(id = workshop_id).first()
-        #     if form.validate_on_submit():
-        #         return request.form
-        #     return form.errors
         elif request.form.get('update-faqs-from'):
             workshop_id = request.form['update-faqs-from']
             workshop = Workshop.query.filter_by(id = workshop_id).first()
@@ -377,7 +368,7 @@ def updateWorkshopView():
             if not workshop:
                 return "Invalid"
             form = Sponsors()
-            return render_template('update_sponsors.html',form = form, sponsors = workshop.sponsors, workshop_id = workshop.id)
+            return render_template('update_sponsors.html',form = form, sponsors = workshop.sponsors, workshop_id = workshop.id, count = 1)
 
   
         elif request.form.get("update-contact"):
@@ -424,22 +415,21 @@ def updateWorkshopView():
                 workshop_id = dict(request.form).get('workshop_id')
                 #update image
                 crop = {}
+                image_url = ""
+                base64image = form.photo.image.data
 
-                try:
+                if base64image:
                     crop['x'] = int(float(str(form.photo.cropX.data)))
                     crop['y'] = int(float(str(form.photo.cropY.data)))
                     crop['width'] = int(float(str(form.photo.cropWidth.data)))
                     crop['height'] = int(float(str(form.photo.cropHeight.data)))
-                except:
-                    flash("Please add an image")
                 
-                image_url = crop_and_save_image(form.photo.image.data, crop, 'sponsor', sponsor_id)
-                form.data['image_url'] = image_url
+                    image_url = crop_image(form.photo.image.data, crop)
 
-                sponsors = updateWorkshop(form.data, sponsor_id, workshop_id,  'sponsor')                
+                sponsors = updateWorkshop(form.data, sponsor_id, workshop_id,  'sponsor', image_url)                
 
                 flash(sponsors[1])
-                return render_template('update_sponsors.html',form = form, sponsors =sponsors[0], workshop_id = workshop_id)
+                return render_template('update_sponsors.html',form = form, sponsors =sponsors[0], workshop_id = workshop_id, image_url=image_url)
 
             else:
                 workshop_id = request.form['workshop_id']
@@ -454,22 +444,24 @@ def updateWorkshopView():
 
             workshop_id = dict(request.form).get('update-workshop')
 
-            #update image
+            #update image            
             crop = {}
+            base64image = form.photo.image.data
 
-            try:
+            image_url = ""
+            if base64image:    
                 crop['x'] = int(float(str(form.photo.cropX.data)))
                 crop['y'] = int(float(str(form.photo.cropY.data)))
                 crop['width'] = int(float(str(form.photo.cropWidth.data)))
                 crop['height'] = int(float(str(form.photo.cropHeight.data)))
-            except:
-                flash("Please add an image")
-            image_status = crop_and_save_image(form.photo.image.data, crop, 'workshop', workshop_id)
+                
+                image_url = crop_image(form.photo.image.data, crop)     
 
-            markup = updateWorkshop(form.data, workshop_id, 'markup')
-        
-            flash(markup[1])
-            return render_template('update_sponsors.html',form = form, markup =markup[0], workshop_id = workshop_id)
+            markup = updateWorkshop(form.data, workshop_id, workshop_id, 'markup', image_url)
+
+            flash(markup[2])
+            return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1])
+            
 
             
         else:

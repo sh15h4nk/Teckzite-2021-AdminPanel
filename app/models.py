@@ -35,9 +35,6 @@ class Image(db.Model):
     image_url = db.Column(String(128), nullable=False)
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
-
     def __init__(self, image_url):
         self.image_url = image_url
 
@@ -52,12 +49,12 @@ class Event(Base):
     status = db.Column(String(200))
     structure = db.Column(String(2000))
     timeline = db.Column(String(2000))
+    image_url = db.Column(String(128))
     rules = db.Column(String(2000))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
     
 
     contacts = db.relationship('Contact')
-    images = db.relationship('Image')
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
@@ -136,10 +133,11 @@ class Workshop(Base):
     about = db.Column(String(500))
     timeline = db.Column(String(500))
     resources = db.Column(String(500))
+    image_url = db.Column(String(128))
+    
     # hidden = db.Column(SmallInteger, default=0) # if true, workshop is inactive
 
     contacts = db.relationship('Contact')
-    images = db.relationship('Image')
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
