@@ -48,26 +48,37 @@ img {
             <button type="submit" class="btn btn-primary" name="update-contacts-from" value="{{workshop_id}}">Update Contacts</button>
             <button type="submit" class="btn btn-primary" name="update-faqs-from" value="{{workshop_id}}">Update Faqs</button>
         </form>
-    </div>
+    </div  class="container">
     {% for sponsor in sponsors %}
+    <div class="container">
         <form class = 'form' method="post">
+
         	{{ form.csrf_token }}
             {{ wtf.form_field(form.name, value= sponsor.name ) }}
             {{ wtf.form_field(form.url, value=sponsor.url ) }}
 
-            {{ form.photo.csrf_token }}
-            {{ wtf.form_field(form.photo) }}
-       
 
-            <input type="file" id="input-image">
+            <input class="input-image" type="file">
             <div class="item">
-                <img id="image_preview" src="{{sponsor.image_url}}" alt="Add your image"> 
+                <img class="image_preview" src="{{sponsor.image_url}}" alt="Add your image"> 
             </div>
+
+            {{ form.photo.csrf_token }}
+            {{ wtf.form_field(form.photo.image, class="hide image")}}
+            {{ wtf.form_field(form.photo.cropX, class="hide cropX")}}
+            {{ wtf.form_field(form.photo.cropY, class="hide cropY")}}
+            {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
+            {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
 
             <input type="hidden" name="workshop_id" value="{{workshop_id}}">
             <button type="submit" class="btn btn-primary" name="update-sponsor" value="{{sponsor.id}}">Update</button>
+
+           
+
         </form>
-        <br><br>
+        
+    </div>
+    <br><br><br>
     {% endfor %}
     <form method="POST" action="{{url_for('admin.addWorkshopView')}}">
         <input type="hidden" name="programId" value="{{workshop_id}}">
