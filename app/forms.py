@@ -62,11 +62,6 @@ class RegisterForm(FlaskForm):
     
     dept =  SelectField('Department', choices=BRANCH_CHOICES)
 
-    password = PasswordField('New Password', [
-        DataRequired(),
-        EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
     
     submit = SubmitField("submit")
 
@@ -95,23 +90,22 @@ class CreateEventForm(FlaskForm):
 
 
 class UpdateEventForm(FlaskForm):
-
-    eventId = IntegerField('',[DataRequired()])
-    title = StringField('Title', [DataRequired(), Length(min=5)])
-    prize = IntegerField('Fee', [DataRequired()])
-    description = CKEditorField('Description', [DataRequired(), Length(min=20)])
-    brief = CKEditorField('Status', [DataRequired()])
-    status = CKEditorField('Status', [DataRequired()])
-    structure = CKEditorField('Timeline', [DataRequired()])
-    timeline = CKEditorField('Timeline', [DataRequired()])
-    rules = CKEditorField('Timeline', [DataRequired()])
+    title = StringField('Title', [Length(min=5)])
+    prize = IntegerField('Fee')
+    description = CKEditorField('Description', [Length(min=20)])
+    brief = CKEditorField('Brief')
+    status = CKEditorField('Status')
+    structure = CKEditorField('structure')
+    timeline = CKEditorField('Timeline')
+    rules = CKEditorField('Rules')
+    photo = FormField(PhotoForm)
 
     min_teamsize = IntegerField('Minimum team size', 
         [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
     max_teamsize = IntegerField('Maximum team size', 
         [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
 
-    submit = SubmitField('Submit')
+    # submit = SubmitField('Submit')
 
 class UpdateWorkshopForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
@@ -156,24 +150,13 @@ class Sponsors(FlaskForm):
     name = StringField('Name', [Length(min=5)])
     url = TextField('Url', [URL(message="Must be a valid URL")])
     photo = FormField(PhotoForm)
+   
 
-
-    
-
-class AddWorkshopForm(FlaskForm):
+class CreateWorkshopForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
+    fee = IntegerField('Fee', [NumberRange(min=0, max=99999, message="Enter a valid number")])
     dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
-    description = CKEditorField('Description', [DataRequired(), Length(min=20)])
-    fee = IntegerField('Fee', [DataRequired(message="Enter a valid number"), NumberRange(min=0, max=99999, message="Enter a valid number")])
-    status = CKEditorField('Status', [DataRequired()])
-    about = CKEditorField('About', [DataRequired()])
-    timeline = CKEditorField('Timeline', [DataRequired()])
-    resources = CKEditorField('Resources', [DataRequired()])
-    primary_contact = FormField(Contacts)
-    photo = FormField(PhotoForm)
-    # image = FormField(PhotoForm)
-    #contacts = FieldList(FormField(Contacts), min_entries=3, max_entries=3 )
-    submit = SubmitField('Submit')
+    workshop_organiser = FormField(RegisterForm)
 
     def validate_title(self, title):
         workshop = Workshop.query.filter_by(title=title.data).first()

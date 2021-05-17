@@ -177,7 +177,7 @@ def hideWorkshopView():
 		
 		
 	elif current_user.role == 2:
-		workshop = Event.query.filter_by(id=request.form['id'], dept=current_user.dept).first()
+		workshop = Workshop.query.filter_by(id=request.form['id'], dept=current_user.dept).first()
 		if workshop:
 			if request.form['value'] == 'hide':
 				workshop.hidden = 1

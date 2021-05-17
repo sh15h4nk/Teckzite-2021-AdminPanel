@@ -44,21 +44,21 @@ img {
             <a class="btn btn-primary" href="{{url_for('coordinate.dashboard')}}" role="button">Done</a>
         {% endif %}
         <br><br>
-        <form method="post">
-            <button type="submit" class="btn btn-primary" name="update-contacts-from" value="{{workshop_id}}">Update Contacts</button>
-            <button type="submit" class="btn btn-primary" name="update-faqs-from" value="{{workshop_id}}">Update Faqs</button>
+        <form method="POST" action="{{url_for('admin.updateDataView')}}">
+            <input type="hidden" name="programId" value="{{program_id}}">
+            <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{program_id}}">Update Contacts</button>
+            <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{program_id}}">Update Faqs</button>
         </form>
     </div  class="container">
     {% for sponsor in sponsors %}
-    <div class="container">
+        <div class="container">
         <form class = 'form' method="post">
 
         	{{ form.csrf_token }}
             {{ wtf.form_field(form.name, value= sponsor.name ) }}
             {{ wtf.form_field(form.url, value=sponsor.url ) }}
 
-
-            <input class="input-image" type="file">
+            <input type="file" class="input-image">
             <div class="item">
                 <img class="image_preview" src="{{sponsor.image_url}}" alt="Add your image"> 
             </div>
@@ -70,19 +70,19 @@ img {
             {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
             {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
 
-            <input type="hidden" name="workshop_id" value="{{workshop_id}}">
+            <input type="hidden" name="programId" value="{{program_id}}">
             <button type="submit" class="btn btn-primary" name="update-sponsor" value="{{sponsor.id}}">Update</button>
 
            
 
         </form>
-        
-    </div>
-    <br><br><br>
+       
+        </div>
+        <br><br> <br><br>
     {% endfor %}
-    <form method="POST" action="{{url_for('admin.addWorkshopView')}}">
-        <input type="hidden" name="programId" value="{{workshop_id}}">
-        <button type="submit" class="btn btn-primary" name="add-sponsor-from" value="add-sponsor-from">Add Sponsor's</button>
+    <form method="POST" action="{{url_for('admin.addDataView')}}">
+        <input type="hidden" name="programId" value="{{program_id}}">
+        <button type="submit" class="btn btn-primary" name="add-sponsor-form" value="add-sponsor-form">Add Sponsor's</button>
     </form>
 </div>
 
