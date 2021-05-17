@@ -7,42 +7,42 @@ from app import db
 
 
 
-def admin_authenticated(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        role = current_user.role
-        if role == 1:
-            return func(*args, **kwargs)
+# def admin_authenticated(func):
+#     @wraps(func)
+#     def decorated_function(*args, **kwargs):
+#         role = current_user.role
+#         if role == 1:
+#             return func(*args, **kwargs)
         
-        flash("Unauthorised access")
-        return redirect(url_for('index'))
+#         flash("Unauthorised access")
+#         return redirect(url_for('index'))
     
-    return decorated_function
+#     return decorated_function
 
 
-def coordinate_authenticated(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        role = current_user.role
-        if role == 2:
-            return func(*args, **kwargs)
+# def coordinate_authenticated(func):
+#     @wraps(func)
+#     def decorated_function(*args, **kwargs):
+#         role = current_user.role
+#         if role == 2:
+#             return func(*args, **kwargs)
         
-        flash("Unauthorised access")
-        return redirect(url_for('index'))
+#         flash("Unauthorised access")
+#         return redirect(url_for('index'))
     
-    return decorated_function
+#     return decorated_function
 
-def organiser_authenticated(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        role = current_user.role
-        if role == 3:
-            return func(*args, **kwargs)
+# def organiser_authenticated(func):
+#     @wraps(func)
+#     def decorated_function(*args, **kwargs):
+#         role = current_user.role
+#         if role == 3:
+#             return func(*args, **kwargs)
         
-        flash("Unauthorised access")
-        return redirect(url_for('index'))
+#         flash("Unauthorised access")
+#         return redirect(url_for('index'))
     
-    return decorated_function
+#     return decorated_function
 
 
 #common middleware to use for all the requied roles
@@ -53,6 +53,6 @@ def role_required(roles):
             if current_user.role in roles:
                 return func(*args, **kwargs)
             flash("Unauthorized")
-            return redirect(url_for("index"))
+            return Response(status=403)
         return decorated_function
     return inner_function

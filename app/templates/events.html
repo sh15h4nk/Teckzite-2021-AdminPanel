@@ -101,22 +101,19 @@ Events
                             <input id="{{row.eventId}}" name="hide" type="checkbox" checked />
                             <label for="{{row.eventId}}" class="label-default"></label>
                     </div>
-
-
-
 					{% else %}
 					<div class="material-switch pull-right">
                             <input id="{{row.eventId}}" name="hide" type="checkbox" />
                             <label for="{{row.eventId}}" class="label-default"></label>
                     </div>
-                    <td>
-                        <form method="POST" action="{{url_for('admin.updateEventView')}}">
-                            <input type="hidden" name="event_id" value="{{row.eventId}}">
-                            <button id="{{row.eventId}}" name="update-button" value="upload-button"> Update </button>                            
-                        </form>
-                    </td>
-					{% endif %}
-				</td>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{{url_for('admin.updateEventView')}}">
+                        <input type="hidden" name="event_id" value="{{row.eventId}}">
+                        <button id="{{row.eventId}}" name="update-button" value="upload-button"> Update </button>
+                    </form>
+                </td>
 			</tr>
 		{% endfor %}
 		</tbody>
@@ -149,10 +146,10 @@ Events
 
     	$('input[type="checkbox"][name="hide"]').change(function () {
 	     	if(this.checked) {
-	     		var data = {'id':this.eventId, 'value':'hide'}
+	     		var data = {'id':this.id, 'value':'hide'}
 	     	}
 	     	else{
-	     		var data = {'id':this.eventId, 'value':'unhide'}
+	     		var data = {'id':this.id, 'value':'unhide'}
 	     	}
 	     	$.post('/hideEvent', data, (data,status) => {console.log(status)});
  		});

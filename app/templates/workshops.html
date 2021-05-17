@@ -64,8 +64,6 @@ Workshops
 {% endblock %}
 
 
-
-
 {% block content %}
 {{ super() }}
 
@@ -79,46 +77,43 @@ Workshops
 
 	<table id="workshoptable" class="table">
 		<thead>
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-            <th>Branch</th>            
-			<th>Block</th>
-            <th>Update</th>
+    		<tr>
+    			<th>ID</th>
+    			<th>Name</th>
+                <th>Branch</th>            
+    			<th>Block</th>
+                <th>Update</th>
 
-		</tr>
+    		</tr>
 		</thead>
 		<tbody>
-		{% for row in data %}
-			<tr>
-				<td>{{ row.workshopId }}</td>
-				<td>{{ row.title }}</td>
-                <td>{{ row.dept }}</td>
-                
-				<td>
-					{% if row.hidden == 1 %}
-					<div class="material-switch pull-right">
-                            <input id="{{row.workshopId}}" name="hide" type="checkbox" checked />
-                            <label for="{{row.workshopId}}" class="label-default"></label>
-                    </div>
-
-
-
-					{% else %}
-					<div class="material-switch pull-right">
-                            <input id="{{row.workshopId}}" name="hide" type="checkbox" />
-                            <label for="{{row.workshopId}}" class="label-default"></label>
-                    </div>
+    		{% for row in data %}
+    			<tr>
+    				<td>{{ row.workshopId }}</td>
+    				<td>{{ row.title }}</td>
+                    <td>{{ row.dept }}</td>
+                    
+    				<td>
+    					{% if row.hidden == 1 %}
+    					<div class="material-switch pull-right">
+                                <input id="{{row.workshopId}}" name="hide" type="checkbox" checked />
+                                <label for="{{row.workshopId}}" class="label-default"></label>
+                        </div>
+    					{% else %}
+    					<div class="material-switch pull-right">
+                                <input id="{{row.workshopId}}" name="hide" type="checkbox" />
+                                <label for="{{row.workshopId}}" class="label-default"></label>
+                        </div>
+                        {% endif %}
+                    </td>
                     <td>
                         <form method="POST" action="{{url_for('admin.updateWorkshopView')}}">
                             <input type="hidden" name="workshop_id" value="{{row.workshopId}}">
                             <button id="{{row.workshopId}}" name="update-button" value="upload-button"> Update </button>                            
-                        </form>
+                         </form>
                     </td>
-					{% endif %}
-				</td>
-			</tr>
-		{% endfor %}
+    			</tr>
+    		{% endfor %}
 		</tbody>
 	</table>
 
@@ -149,10 +144,10 @@ Workshops
 
     	$('input[type="checkbox"][name="hide"]').change(function () {
 	     	if(this.checked) {
-	     		var data = {'id':this.workshopId, 'value':'hide'}
+	     		var data = {'id':this.id, 'value':'hide'}
 	     	}
 	     	else{
-	     		var data = {'id':this.workshopId, 'value':'unhide'}
+	     		var data = {'id':this.id, 'value':'unhide'}
 	     	}
 	     	$.post('/hideWorkshop', data, (data,status) => {console.log(status)});
  		});
