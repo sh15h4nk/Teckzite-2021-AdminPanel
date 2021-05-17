@@ -474,7 +474,7 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
     if not sponsor:
         return "Not a sponsor of the Program"
 
-    sponsor = Sponsor.query.filter(and_(Sponsor.name == data['name'], Sponsor.url == data['url'], or_(Sponsor.workshop_id == program.workshopId, Sponsor.event_id == program.eventId))).first()
+    # sponsor = Sponsor.query.filter(and_(Sponsor.name == data['name'], Sponsor.url == data['url'], or_(Sponsor.workshop_id == program.workshopId, Sponsor.event_id == program.eventId))).first()
     if sponsor:
         return "Sponsor already exists!"
     if image_url:

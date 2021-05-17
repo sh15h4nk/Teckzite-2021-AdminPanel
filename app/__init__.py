@@ -30,11 +30,20 @@ s3 = boto3.resource("s3")
 from app.admin.controllers import admin as admin_module
 app.register_blueprint(admin_module)
 
-from app.coordinate.controllers import coordinate as coordinate_module
-app.register_blueprint(coordinate_module)
+from app.event_manager.controllers import event_manager as event_manager_module
+app.register_blueprint(event_manager_module)
 
-from app.organiser.controllers import organiser as organiser_module
-app.register_blueprint(organiser_module)
+from app.event_coordinator.controllers import event_coordinator as event_coordinator_module
+app.register_blueprint(event_coordinator_module)
+
+from app.event_organiser.controllers import event_organiser as event_organiser_module
+app.register_blueprint(event_organiser_module)
+
+from app.workshop_manager.controllers import workshop_manager as workshop_manager_module
+app.register_blueprint(workshop_manager_module)
+
+from app.workshop_coordinator.controllers import workshop_coordinator as workshop_coordinator_module
+app.register_blueprint(workshop_coordinator_module)
 
 Bootstrap(app)
 

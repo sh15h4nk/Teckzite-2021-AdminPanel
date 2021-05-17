@@ -111,7 +111,7 @@ class User(UserMixin,Base):
     name = db.Column(String(128), nullable=False)
     email = db.Column(String(128), nullable=False, unique=True)
     password = db.Column(String(192), nullable=False)
-    role = db.Column(SmallInteger, nullable=False)
+    role = db.Column(String(25), nullable=False)
     dept = db.Column(String(3), nullable=False)
     phone = db.Column(String(10), unique=True)
     gender = db.Column(String(1))
@@ -223,28 +223,47 @@ class CurrentId(db.Model):
 db.create_all()
 
 us = User.query.filter_by(userId="admin").first()
-
 if not us:
-    us = User("admin","admin","admin@gmail.com",bcrypt.generate_password_hash("admin"),1,"cse", 'XXXXXXXXXX')
+    us = User("admin","admin","admin@gmail.com",bcrypt.generate_password_hash("admin"),"admin","CSE", 'XXXXXXXXXX')
     db.session.add(us)
     db.session.commit()
 
-co = User.query.filter_by(userId="coo").first()
 
-if not co:
-    co = User("coo","coo","coo@gmail.com",bcrypt.generate_password_hash("coo"),2,"cse", 'XXXXXyXXXX')
-    db.session.add(co)
+us = User.query.filter_by(userId="event_manager").first()
+if not us:
+    us = User("event_manager","event_manager","event_manager@gmail.com",bcrypt.generate_password_hash("event_manager"),"event_manager","CSE", 'XXX3XXXXXX')
+    db.session.add(us)
     db.session.commit()
 
-org = User.query.filter_by(userId="org").first()
 
-if not org:
-    org = User("org","org","org@gmail.com",bcrypt.generate_password_hash("org"),3,"cse", 'XyXXXXXXXX')
-    db.session.add(org)
+us = User.query.filter_by(userId="event_coordinator").first()
+if not us:
+    us = User("event_coordinator","event_coordinator","event_coordinator@gmail.com",bcrypt.generate_password_hash("event_coordinator"),"event_coordinator","CSE", 'XX4XXXXXXX')
+    db.session.add(us)
     db.session.commit()
+
+
+us = User.query.filter_by(userId="event_organiser").first()
+if not us:
+    us = User("event_organiser","event_organiser","event_organiser@gmail.com",bcrypt.generate_password_hash("event_organiser"),"event_organiser","CSE", 'XX4XXXX4XX')
+    db.session.add(us)
+    db.session.commit()
+
+
+us = User.query.filter_by(userId="workshop_manager").first()
+if not us:
+    us = User("workshop_manager","workshop_manager","workshop_manager@gmail.com",bcrypt.generate_password_hash("workshop_manager"),"workshop_manager","CSE", 'XX5XXXXXXX')
+    db.session.add(us)
+    db.session.commit()
+
+
+us = User.query.filter_by(userId="workshop_coordinator").first()
+if not us:
+    us = User("workshop_coordinator","workshop_coordinator","workshop_coordinator@gmail.com",bcrypt.generate_password_hash("workshop_coordinator"),"workshop_coordinator","CSE", 'XXX5XXXXXX')
+    db.session.add(us)
+    db.session.commit() 
 
 currentIds = db.session.query(CurrentId).count()
-
 if currentIds == 0:
     currentId = CurrentId()
     db.session.add(currentId)

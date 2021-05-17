@@ -9,7 +9,8 @@ from werkzeug.utils import secure_filename
 from app import app, db, bcrypt
 from app.models import User, Event, Workshop, Contact, FAQ, Sponsor
 from app.forms import ChangePassword, CreateEventForm, ResetRequest, UpdateEventForm, UpdateWorkshopForm
-from app.functions import sendMail, updateEvent, updateWorkshop
+from app.functions import *
+from app.middlewares import role_required
 import os
 # from PIL import Image
 
@@ -74,38 +75,70 @@ def resetRequest():
 @app.route('/hideUser', methods=['POST'])
 @login_required
 def hideUserView():
-	if current_user.role == 1:
+	if current_user.role == "admin":
 		user = User.query.filter_by(id=request.form['id']).first()
 		if user:
 			if request.form['value'] == 'hide':
 				user.hidden = 1
 				db.session.commit()
-				return "Success"
+				return Response(status = 200)
 			elif request.form['value'] == 'unhide':
 				user.hidden = 0
 				db.session.commit()
-				return "Success"
+				return Response(status = 200)
 			else:
 				return "Invalid operation"
 		else:
 			return "Failed"
-	elif current_user.role == 2:
-		user = User.query.filter_by(id=request.form['id'], role=3).first()
+	elif current_user.role == "event_manager":
+		# user = User.query.filter_by(id=request.form['id'], role="event_organiser").first()
+		user = User.query.filter(User.id == request.form['id'], or_(User.role == "event_organiser", User.role == "event_coordinator")).first()
 		if user:
 			if request.form['value'] == 'hide':
 				user.hidden = 1
 				db.session.commit()
-				return "Success"
+				return Response(status = 200)
 			elif request.form['value'] == 'unhide':
 				user.hidden = 0
 				db.session.commit()
-				return "Success"
+				return Response(status = 200)
 			else:
-				return "Invalid operation"
+				return Response(status = 400)
 		else:
-			return "Failed"
+			return Response(status = 400)
+	elif current_user.role == "event_coordinator":
+		user = User.query.filter_by(id=request.form['id'], role="event_organiser").first()
+		if user:
+			if request.form['value'] == 'hide':
+				user.hidden = 1
+				db.session.commit()
+				return Response(status = 200)
+			elif request.form['value'] == 'unhide':
+				user.hidden = 0
+				db.session.commit()
+				return Response(status = 200)
+			else:
+				return Response(status = 400)
+		else:
+			return Response(status = 400)
+
+	elif current_user.role == "workshop_manager":
+		user = User.query.filter_by(id=request.form['id'], role="workshop_coordinator").first()
+		if user:
+			if request.form['value'] == 'hide':
+				user.hidden = 1
+				db.session.commit()
+				return Response(status = 200)
+			elif request.form['value'] == 'unhide':
+				user.hidden = 0
+				db.session.commit()
+				return Response(status = 200)
+			else:
+				return Response(status = 400)
+		else:
+			return Response(status = 400)
 	else:
-		return "Unauthorised"
+		return Response(status = 403)
 
 @app.route('/uploadImage', methods=['POST'])
 @login_required
@@ -120,111 +153,63 @@ def uploadImageView():
 @app.route('/hideEvent', methods=['POST'])
 @login_required
 def hideEventView():
-
-	if current_user.role == 1:
-		event = Event.query.filter_by(id=request.form['id']).first()
+	# print(request.form)
+	if current_user.role in ["admin", "event_manager"]:
+		event = Event.query.filter_by(eventId=request.form['id']).first()
 		if event:
 			if request.form['value'] == 'hide':
 				event.hidden = 1
-				return "Success"
+				db.session.commit()
+				return Response(status = 200)
 			elif request.form['value'] == 'unhide':
 				event.hidden = 0
-				return "Success"
+				db.session.commit()
+				return Response(status = 200)
 			else:
-				return "Invalid operation"
+				return Response(status = 400)
 		
 		else:
-			return "Failed"
+			return Response(status = 403)
 		
-		
-	elif current_user.role == 2:
-		event = Event.query.filter_by(id=request.form['id'], dept=current_user.dept).first()
+	elif current_user.role == "event_coordinator":
+		event = Event.query.filter_by(eventId=request.form['id'], dept=current_user.dept).first()
 		if event:
 			if request.form['value'] == 'hide':
 				event.hidden = 1
-				return "Success"
+				db.session.commit()
+				return Response(status = 200)
 			elif request.form['value'] == 'unhide':
 				event.hidden = 0
-				return "Success"
+				db.session.commit()
+				return Response(status = 200)
 			else:
-				return "Invalid operation"
+				return Response(status = 400)
 		
 		else:
-			return "Failed"
+			return Response(status = 400)
 
 	else:
-		return "Unauthorised"
+		return Response(status = 403)
 
 
 @app.route('/hideWorkshop', methods=['POST'])
 @login_required
+@role_required(["admin", "workshop_manager"])
 def hideWorkshopView():
-
-	if current_user.role == 1:
-		workshop = Workshop.query.filter_by(id=request.form['id']).first()
-		if workshop:
-			if request.form['value'] == 'hide':
-				workshop.hidden = 1
-				return "Success"
-			elif request.form['value'] == 'unhide':
-				workshop.hidden = 0
-				return "Success"
-			else:
-				return "Invalid operation"
-		
+	workshop = Workshop.query.filter_by(workshopId=request.form['id']).first()
+	if workshop:
+		if request.form['value'] == 'hide':
+			workshop.hidden = 1
+			db.session.commit()
+			return Response(status = 200)
+		elif request.form['value'] == 'unhide':
+			workshop.hidden = 0
+			db.session.commit()
+			return Response(status = 200)
 		else:
-			return "Failed"
-		
-		
-	elif current_user.role == 2:
-		workshop = Workshop.query.filter_by(id=request.form['id'], dept=current_user.dept).first()
-		if workshop:
-			if request.form['value'] == 'hide':
-				workshop.hidden = 1
-				return "Success"
-			elif request.form['value'] == 'unhide':
-				workshop.hidden = 0
-				return "Success"
-			else:
-				return "Invalid operation"
-		
-		else:
-			return "Failed"
-
+			return Response(status = 400)
 	else:
-		return "Unauthorised"
-
-
-
-@app.route('/event/update', methods=['GET','POST'])
-@login_required
-def updateEventView():
-	form = UpdateEventForm(request.form)
-
-	if form.validate_on_submit():
-		status = updateEvent(form.data)
-		if status:
-			return redirect(url_for('admin.getEventsView'))
-		
-
-	eventId = request.args.get('id')
-	event = Event.query.filter_by(id = int(eventId)).first()
-	return render_template('update_event.html', form=form, event=event)
-
-@app.route('/workshop/update', methods=['GET','POST'])
-@login_required
-def updateWorkshopView():
-	form = UpdateWorkshopForm(request.form)
-
-	if form.validate_on_submit():
-		print("trigger")
-		status = updateWorkshop(form.data)		
-		if status:
-			return redirect(url_for('admin.getWorkshopsView'))
-		
-	workshopId = request.args.get('id')
-	workshop = Workshop.query.filter_by(id = int(workshopId)).first()
-	return render_template('update_workshop.html', form=form, workshop=workshop)
+		return Response(status = 400)
 
 
 @app.route('/hideContact', methods=['POST'])

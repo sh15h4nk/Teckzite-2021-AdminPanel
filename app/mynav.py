@@ -18,7 +18,7 @@ def my_nav():
 		return Navbar('Teckzite\'21',index)
 
 
-	elif current_user.role == 1:
+	elif current_user.role == "admin":
 		dashboard = View("Dashboard",'admin.dashboard')
 
 		view_admin = View("View", 'admin.getAdminsView')
@@ -61,33 +61,93 @@ def my_nav():
 		return Navbar('Teckzite\'21',dashboard,admin_menu,coord_menu,orag_menu,event_menu,workshop_menu,tz_users_menu,profile_menu,logout)
 	
 
-	elif current_user.role == 2:
+	elif current_user.role == "event_manager":
 
-		dashboard = View("Dashboard",'coordinate.dashboard')
+		dashboard = View("Dashboard",'event_manager.dashboard')
 
-
-		view_events = View("Event",'coordinate.dashboard')			
-		add_event = View("Add Event",'coordinate.dashboard')	#consider dept while extracting from database
+		view_events = View("Event",'event_manager.dashboard')		
+		add_event = View("Add Event",'event_manager.dashboard')
 		event_menu = Subgroup("Events",view_events,add_event)
 
-		profile = View("Profile",'coordinate.dashboard')
-		edit = View("Update",'coordinate.dashboard')
+		view_coord = View("View",'event_manager.dashboard')
+		add_coord = View("Add",'event_manager.dashboard')
+		coord_menu = Subgroup("Event Co-ordinators",view_coord,add_coord)
+
+		view_org = View("View",'event_manager.dashboard')
+		orag_menu = Subgroup("Event Organisers",view_org)
+
+		profile = View("Profile",'event_manager.dashboard')
+		edit = View("Update",'event_manager.dashboard')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
-		logout = View("Logout", 'coordinate.logout')
+		logout = View("Logout", 'event_manager.logout')
 
+		return Navbar('Teckzite\'21',dashboard, event_menu, coord_menu, orag_menu, profile_menu, logout)
+	
 
-		return Navbar('Teckzite\'21',dashboard,event_menu,profile_menu,logout)
-	elif current_user.role == 3:
+	elif current_user.role == "event_coordinator":
 
-		dashboard = View("Dashboard",'organiser.dashboard')
+		dashboard = View("Dashboard",'event_coordinator.dashboard')
 
+		view_events = View("Event",'event_manager.dashboard')		
+		add_event = View("Add Event",'event_manager.dashboard')
+		event_menu = Subgroup("Events",view_events,add_event)
 
-		profile = View("Profile",'organiser.dashboard')
-		edit = View("Update",'organiser.dashboard')
+		view_org = View("View",'event_manager.dashboard')
+		orag_menu = Subgroup("Event Organisers",view_org)
+
+		profile = View("Profile",'event_coordinator.dashboard')
+		edit = View("Update",'event_coordinator.dashboard')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
-		logout = View("Logout", 'organiser.logout')
+		logout = View("Logout", 'event_coordinator.logout')
 
-		return Navbar('Teckzite\'21',dashboard,profile_menu,logout)
+		return Navbar('Teckzite\'21',dashboard, event_menu, orag_menu, profile_menu, logout)
 
+	elif current_user.role == "event_organiser":
+		dashboard = View("Dashboard",'event_organiser.dashboard')
+
+		view_event = View("My Event", 'event_organiser.dashboard')
+		update_event = View("Edit Event", 'event_organiser.dashboard')
+
+		profile = View("Profile",'event_organiser.dashboard')
+		edit = View("Update",'event_organiser.dashboard')
+		profile_menu = Subgroup(current_user.userId,profile,edit)
+
+		logout = View("Logout", 'event_organiser.logout')
+
+		return Navbar('Teckzite\'21',dashboard, view_event, update_event, profile_menu, logout)
+
+
+	elif current_user.role == "workshop_manager":
+		dashboard = View("Dashboard",'workshop_manager.dashboard')
+
+		add_workshop = View("Add WorkShop",'workshop_manager.dashboard')
+		view_workshops = View("Workshops",'workshop_manager.dashboard')
+		workshop_menu = Subgroup("Workshops",view_workshops,add_workshop)
+
+		view_coord = View("View",'workshop_manager.dashboard')
+		add_coord = View("Add",'workshop_manager.dashboard')
+		coord_menu = Subgroup("Workshop Co-ordinators",view_coord,add_coord)
+
+		profile = View("Profile",'workshop_manager.dashboard')
+		edit = View("Update",'workshop_manager.dashboard')
+		profile_menu = Subgroup(current_user.userId,profile,edit)
+
+		logout = View("Logout", 'workshop_manager.logout')
+
+		return Navbar('Teckzite\'21',dashboard, workshop_menu, coord_menu, profile_menu,logout)
+
+	elif current_user.role == "workshop_coordinator":
+		dashboard = View("Dashboard",'workshop_coordinator.dashboard')
+
+		view_workshop = View("My WorkShop", 'workshop_coordinator.dashboard')
+		update_workshop = View("Edit WorkShop", 'workshop_coordinator.dashboard')
+
+		profile = View("Profile",'workshop_coordinator.dashboard')
+		edit = View("Update",'workshop_coordinator.dashboard')
+		profile_menu = Subgroup(current_user.userId,profile,edit)
+
+		logout = View("Logout", 'workshop_coordinator.logout')
+
+		return Navbar('Teckzite\'21',dashboard, view_workshop, update_workshop, profile_menu, logout)
