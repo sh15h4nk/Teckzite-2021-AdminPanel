@@ -12,7 +12,36 @@ Update Event
 <div class="container">
     <form class = 'form' method="post">
         {{ form.csrf_token }}
-        {{ wtf.quick_form(form) }}
+
+        {% if current_user.role == 1 %}
+            {{ wtf.form_field(form.title, value = event.title) }}
+        {% else %}
+            {{ wtf.form_field(form.title, value = event.title, readonly=true) }}
+        {% endif %}
+
+
+        {{ wtf.form_field(form.prize, value = event.prize) }}
+
+        <input type="hidden" id="hidden-description" name="hidden-description" value="{{ markup.description }}">
+        {{ wtf.form_field(form.description) }}
+
+        <input type="hidden" id="hidden-status" name="hidden-status" value="{{ markup.status }}">
+        {{ wtf.form_field(form.status) }}
+
+        <input type="hidden" id="hidden-brief" name="hidden-brief" value="{{ markup.brief }}">
+        {{ wtf.form_field(form.brief) }}
+
+        <input type="hidden" id="hidden-structure" name="hidden-structure" value="{{ markup.structure }}">
+        {{ wtf.form_field(form.structure) }}
+
+        <input type="hidden" id="hidden-timeline" name="hidden-timeline" value="{{ markup.timeline }}">
+        {{ wtf.form_field(form.timeline) }}
+
+        <input type="hidden" id="hidden-rules" name="hidden-rules" value="{{ markup.rules }}">
+        {{ wtf.form_field(form.rules) }}
+
+        {{ form.photo.csrf_token }}
+        {{ wtf.form_field(form.photo) }}
 
     </form>
 </div>

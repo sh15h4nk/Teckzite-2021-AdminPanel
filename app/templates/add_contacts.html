@@ -7,22 +7,37 @@ Add Contacts
 
 {% block content %}
 {{ super() }}
-{% if not hide_form %}
-    <center><h1>Add Contact {{ count }}</h1></center>
+
+<center>
+{% if contacts < 3 %}
+    <h1>Add Contact</h1>
+{% else %}
+    <h1>Contacts limit exceeded!</h1>
 {% endif %}
+</center>
 
 <div class="container">
     <form class = 'form' method="post">
-        {% if not hide_form %}
-        	{{ form.csrf_token }}
+
+        {% if contacts < 3 %}
+            {{ form.csrf_token }}
             {{ wtf.form_field(form.name) }}
             {{ wtf.form_field(form.email) }}
             {{ wtf.form_field(form.phone) }}
-            <button type="submit" class="btn btn-primary" name="add-contact-to-program" value=" add-contact-to-workshop">Submit</button>
+            <button type="submit" class="btn btn-primary" name="add-contact" value="add-contact">Submit</button>
         {% endif %}
+
         <input type="hidden" name="programId" value="{{program_id}}">
-        <button type="submit" class="btn btn-primary" name="add-faq-from" value="add-faq-from">Add FAQs</button>
-        <button type="submit" class="btn btn-primary" name="add-sponsor-from" value="add-sponsor-from">Add Sponsor's</button>
+
+        {% if faqs < 10 %}
+            <button type="submit" class="btn btn-primary" name="add-faq-form" value="add-faq-form">Add FAQs</button>
+        {% endif %}
+
+        {% if sponsors < 3 %}
+            <button type="submit" class="btn btn-primary" name="add-sponsor-form" value="add-sponsor-form">Add  Sponsor's</button>
+        {% endif %}
+
+
         {% if current_user.role == 1 %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
         {% elif current_user.role == 2 %}
