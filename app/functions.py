@@ -111,8 +111,9 @@ def crop_image(imageString, crop):
 
 
 #Creating
-def addUser(userId, name, email, password, role, dept, phone):
-    password = bcrypt.generate_password_hash(password)
+def addUser(userId, name, email, role, dept, phone):
+    random_password = str(uuid.uuid4())
+    password = bcrypt.generate_password_hash(random_password)
     user = User(userId, name, email, password, role, dept, phone)
     db.session.add(user)
     db.session.commit()
@@ -131,20 +132,48 @@ def addEvent(title, dept, coordinater_id, organiser_id):
     return event
 
 
-def updateEvent(data):
-    if not Event.query.filter_by(id = data['id']):
+def updateEvent(data, event_id, image_url):
+    if not Event.query.filter_by(id = event_id):
         return "Invalid Event ID"
-    del data['csrf_token']
-    del data['submit']
+    # return str(data)
     
+    del data['photo']
+    del data['csrf_token']
+
+    event = Event.query.filter_by(id = event_id).first()
+    markup = dict_markup({
+            "status": event.status,
+            "description": event.description,
+            "brief": event.brief,
+            "timeline": event.timeline,
+            "structure": event.structure,
+            "rules": event.rules,
+            })
+
+
     data = dict_escape(data)
     try:
-        event = Event.query.filter_by(id = data['id']).update(data)
+        
+        if image_url:
+            data['image_url'] = image_url     
+        
+        status =  Event.query.filter_by(id = event_id).update(data)
+        db.session.commit()
+
     except:
-        return "Error While updating"
-    
-    db.session.commit()
-    return event
+        return (event, markup,"Error while updating!")
+
+    event = Event.query.filter_by(id = event_id).first()
+    markup = dict_markup({
+            "status": event.status,
+            "description": event.description,
+            "brief": event.brief,
+            "timeline": event.timeline,
+            "structure": event.structure,
+            "rules": event.rules,
+            })
+
+    return (event, markup, "Event details updated successfully")
 
 def addWorkshop(title, dept, coordinator_id, organiser_id):
     workshop_id = generate_workshop_id()
@@ -156,21 +185,46 @@ def addWorkshop(title, dept, coordinator_id, organiser_id):
     
     return workshop
 
-def updateWorkshop(data, workshop_id):
+def updateWorkshop(data, workshop_id, image_url):
     if not Workshop.query.filter_by(id = workshop_id):
         return "Invalid Workshop ID"
     # return str(data)
-    del data['csrf_token']
-    del data['photo']
     
+    del data['photo']
+    del data['csrf_token']
+
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    markup = dict_markup({
+        "status": workshop.status,
+        "description": workshop.description,
+        "about": workshop.about,
+        "timeline": workshop.timeline,
+        "resources": workshop.resources,
+    })
+
+
     data = dict_escape(data)
     try:
-        workshop = Workshop.query.filter_by(id = workshop_id).update(data)
+        
+        if image_url:
+            data['image_url'] = image_url     
+        
+        status =  Workshop.query.filter_by(id = workshop_id).update(data)
+        db.session.commit()
+
     except:
-        return "Error While updating"
-    
-    db.session.commit()
-    return Workshop.query.filter_by(id = workshop_id).first()
+        return (workshop, markup,"Error while updating!")
+
+    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    markup = dict_markup({
+        "status": workshop.status,
+        "description": workshop.description,
+        "about": workshop.about,
+        "timeline": workshop.timeline,
+        "resources": workshop.resources,
+    })
+
+    return (workshop, markup, "Workshop details updated successfully")
 
 def addContact(name, email, phone, program_id):
     if program_id.startswith("WS"):
@@ -248,7 +302,6 @@ def addSponsor(name, url, program_id, image_url):
     
     if not program:
         return "Invalid program ID"
-
 
     sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).count()
     if not sponsors < 3 :

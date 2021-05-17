@@ -34,6 +34,7 @@ img {
 {{ super() }}
 <center><h1>Update Workshop</h1></center>
 <div class="container">
+    <div>
     <form class = 'form' method="post">
         
         {{ form.csrf_token }}
@@ -59,26 +60,33 @@ img {
         <input type="hidden" id="hidden-resources" name="hidden-resources" value="{{ markup.resources }}">
         {{ wtf.form_field(form.resources) }}
 
-        {{ form.photo.csrf_token }}
-        {{ wtf.form_field(form.photo) }}
         <input type="hidden" name="workshop_id" value="{{workshop.id}}">
 
-        <input type="file" id="input-image">
+        <input type="file" class="input-image">
         <div class="item">
-            <img id="image_preview" src="{{workshop.image_url}}" alt="Add your image"> 
+            <img class="image_preview" src="{{workshop.image_url}}" alt="Add your image"> 
         </div>
 
 
+        {{ form.photo.csrf_token }}
+        {{ wtf.form_field(form.photo.image, class="hide image")}}
+        {{ wtf.form_field(form.photo.cropX, class="hide cropX")}}
+        {{ wtf.form_field(form.photo.cropY, class="hide cropY")}}
+        {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
+        {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
+
         <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.id}}">Submit</button>
     </form>
+    </div>
 
+   
     <form method="POST" action="{{url_for('admin.updateDataView')}}">
             <input type="hidden" name="programId" value="{{workshop.workshopId}}">
             <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{workshop.id}}">Update contacts</button>
             <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{workshop.id}}">Update FAQs</button>
             <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{workshop.id}}">Update Sponsor</button>
     </form>
-
+    
 </div>
 
 {% block javascript %}

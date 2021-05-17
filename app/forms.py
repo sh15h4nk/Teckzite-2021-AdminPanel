@@ -62,11 +62,6 @@ class RegisterForm(FlaskForm):
     
     dept =  SelectField('Department', choices=BRANCH_CHOICES)
 
-    password = PasswordField('New Password', [
-        DataRequired(),
-        EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
     
     submit = SubmitField("submit")
 
@@ -103,6 +98,7 @@ class UpdateEventForm(FlaskForm):
     structure = CKEditorField('structure')
     timeline = CKEditorField('Timeline')
     rules = CKEditorField('Rules')
+    photo = FormField(PhotoForm)
 
     min_teamsize = IntegerField('Minimum team size', 
         [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
