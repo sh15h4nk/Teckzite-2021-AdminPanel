@@ -11,4 +11,4 @@ env/
 app.db
 
 #folders
-image_uploads/*
+image_uploads/
