@@ -60,7 +60,7 @@ img {
         <input type="hidden" id="hidden-resources" name="hidden-resources" value="{{ markup.resources }}">
         {{ wtf.form_field(form.resources) }}
 
-        <input type="hidden" name="workshop_id" value="{{workshop.id}}">
+        <input type="hidden" name="workshop_id" value="{{workshop.workshopId}}">
 
         <input type="file" class="input-image">
         <div class="item">
@@ -75,16 +75,16 @@ img {
         {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
         {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
 
-        <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.id}}">Submit</button>
+        <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.workshopId}}">Submit</button>
     </form>
     </div>
 
    
     <form method="POST" action="{{url_for('admin.updateDataView')}}">
             <input type="hidden" name="programId" value="{{workshop.workshopId}}">
-            <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{workshop.id}}">Update contacts</button>
-            <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{workshop.id}}">Update FAQs</button>
-            <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{workshop.id}}">Update Sponsor</button>
+            <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{workshop.workshopId}}">Update contacts</button>
+            <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{workshop.workshopId}}">Update FAQs</button>
+            <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{workshop.workshopId}}">Update Sponsor</button>
     </form>
     
 </div>

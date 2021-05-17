@@ -66,7 +66,7 @@ img {
         {{ wtf.form_field(form.min_teamsize, value = event.min_teamsize) }}
         {{ wtf.form_field(form.max_teamsize, value = event.max_teamsize) }}
 
-        <input type="hidden" name="event_id" value="{{event.id}}">
+        <input type="hidden" name="event_id" value="{{event.eventId}}">
 
         <input type="file" class="input-image">
         <div class="item">
@@ -81,16 +81,16 @@ img {
         {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
         {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
 
-        <button type="submit" class="btn btn-primary" name="update-event" value="{{event.id}}">Submit</button>
+        <button type="submit" class="btn btn-primary" name="update-event" value="{{event.eventId}}">Submit</button>
     </form>
     </div>
 
    
     <form method="POST" action="{{url_for('admin.updateDataView')}}">
             <input type="hidden" name="programId" value="{{event.eventId}}">
-            <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{event.id}}">Update contacts</button>
-            <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{event.id}}">Update FAQs</button>
-            <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{event.id}}">Update Sponsor</button>
+            <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{event.eventId}}">Update contacts</button>
+            <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{event.eventId}}">Update FAQs</button>
+            <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{event.eventId}}">Update Sponsor</button>
     </form>
     
 </div>

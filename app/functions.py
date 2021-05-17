@@ -133,14 +133,14 @@ def addEvent(title, dept, coordinater_id, organiser_id):
 
 
 def updateEvent(data, event_id, image_url):
-    if not Event.query.filter_by(id = event_id):
+    if not Event.query.filter_by(eventId = event_id):
         return "Invalid Event ID"
     # return str(data)
     
     del data['photo']
     del data['csrf_token']
 
-    event = Event.query.filter_by(id = event_id).first()
+    event = Event.query.filter_by(eventId = event_id).first()
     markup = dict_markup({
             "status": event.status,
             "description": event.description,
@@ -157,13 +157,13 @@ def updateEvent(data, event_id, image_url):
         if image_url:
             data['image_url'] = image_url     
         
-        status =  Event.query.filter_by(id = event_id).update(data)
+        status =  Event.query.filter_by(eventId = event_id).update(data)
         db.session.commit()
 
     except:
         return (event, markup,"Error while updating!")
 
-    event = Event.query.filter_by(id = event_id).first()
+    event = Event.query.filter_by(eventId = event_id).first()
     markup = dict_markup({
             "status": event.status,
             "description": event.description,
@@ -186,14 +186,14 @@ def addWorkshop(title, dept, coordinator_id, organiser_id):
     return workshop
 
 def updateWorkshop(data, workshop_id, image_url):
-    if not Workshop.query.filter_by(id = workshop_id):
+    if not Workshop.query.filter_by(workshopId = workshop_id):
         return "Invalid Workshop ID"
     # return str(data)
     
     del data['photo']
     del data['csrf_token']
 
-    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    workshop = Workshop.query.filter_by(workshopId = workshop_id).first()
     markup = dict_markup({
         "status": workshop.status,
         "description": workshop.description,
@@ -209,13 +209,13 @@ def updateWorkshop(data, workshop_id, image_url):
         if image_url:
             data['image_url'] = image_url     
         
-        status =  Workshop.query.filter_by(id = workshop_id).update(data)
+        status =  Workshop.query.filter_by(workshopId = workshop_id).update(data)
         db.session.commit()
 
     except:
         return (workshop, markup,"Error while updating!")
 
-    workshop = Workshop.query.filter_by(id = workshop_id).first()
+    workshop = Workshop.query.filter_by(workshopId = workshop_id).first()
     markup = dict_markup({
         "status": workshop.status,
         "description": workshop.description,
@@ -229,24 +229,26 @@ def updateWorkshop(data, workshop_id, image_url):
 def addContact(name, email, phone, program_id):
     if program_id.startswith("WS"):
         program = Workshop.query.filter_by(workshopId = program_id).first()
+        contacts = Contact.query.filter(and_(Contact.hidden == 0, Contact.workshop_id == program.workshopId)).count()
+
     elif program_id.startswith("EV"):
         program = Event.query.filter_by(eventId = program_id).first()
-    
+        contacts = Contact.query.filter(and_(Contact.hidden == 0, Contact.event_id == program.eventId)).count()
+
     if not program:
         return "Invalid program ID"
 
-    contacts = Contact.query.filter(and_(Contact.hidden == 0, or_(Contact.workshop_id == program.id, Contact.event_id == program.id))).count()
     if not contacts < 3 :
         return "Overflow"
 
     contact = Contact.query.filter_by(email = email, phone = phone).first()
     if contact:
         if program_id.startswith("WS") and not contact.workshop_id:
-            contact.workshop_id = program.id
+            contact.workshop_id = program.workshopId
             db.session.commit()
             return contact
         elif program_id.startswith("EV") and not contact.event_id:
-            contact.event_id = program.id
+            contact.event_id = program.eventId
             db.session.commit()
             return contact
         else:
@@ -256,9 +258,9 @@ def addContact(name, email, phone, program_id):
 
     contact = Contact(name, email, phone)
     if program_id.startswith("WS"):
-        contact.workshop_id = program.id
+        contact.workshop_id = program.workshopId
     else:
-        contact.event_id = program.id
+        contact.event_id = program.eventId
     db.session.add(contact)
     db.session.commit()
 
@@ -269,26 +271,34 @@ def addFaq(question, answer, program_id):
 
     if program_id.startswith("WS"):
         program = Workshop.query.filter_by(workshopId = program_id).first()
+        faqs = FAQ.query.filter(and_(FAQ.hidden == 0, FAQ.workshop_id == program.workshopId)).count()
+
     elif program_id.startswith("EV"):
         program = Event.query.filter_by(eventId = program_id).first()
+        faqs = FAQ.query.filter(and_(FAQ.hidden == 0, FAQ.event_id == program.eventId)).count()
+
     
     if not program:
         return "Invalid program ID"
 
-    faqs = FAQ.query.filter(and_(FAQ.hidden == 0, or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).count()
     if not faqs < 10 :
         return "Overflow"
 
-    faq = FAQ.query.filter(and_(FAQ.question == question, FAQ.answer == answer, or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).first()
+    if program_id.startswith("WS"):
+        faq = FAQ.query.filter(and_(FAQ.question == question, FAQ.answer == answer, FAQ.workshop_id == program.workshopId)).first()
+    elif program_id.startswith("EV"):
+        faq = FAQ.query.filter(and_(FAQ.question == question, FAQ.answer == answer, FAQ.event_id == program.eventId)).first()
+        
+
     if faq:
         return "FAQ Already exists!"
 
     
     faq = FAQ(question, answer)
     if program_id.startswith("WS"):
-        faq.workshop_id = program.id
+        faq.workshop_id = program.workshopId
     else:
-        faq.event_id = program.id
+        faq.event_id = program.eventId
     db.session.add(faq)
     db.session.commit()
 
@@ -297,26 +307,33 @@ def addFaq(question, answer, program_id):
 def addSponsor(name, url, program_id, image_url):
     if program_id.startswith("WS"):
         program = Workshop.query.filter_by(workshopId = program_id).first()
+        sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, Sponsor.workshop_id == program.workshopId)).count()
     elif program_id.startswith("EV"):
         program = Event.query.filter_by(eventId = program_id).first()
+        sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, Sponsor.event_id == program.eventId)).count()
+
     
     if not program:
         return "Invalid program ID"
 
-    sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).count()
     if not sponsors < 3 :
         return "Overflow"
 
-    sponsor = Sponsor.query.filter(and_(Sponsor.name == name, Sponsor.url == url, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).first()
+    if program_id.startswith("WS"):
+        sponsor = Sponsor.query.filter(and_(Sponsor.name == name, Sponsor.url == url, Sponsor.workshop_id == program.workshopId)).first()
+    elif program_id.startswith("EV"):
+        sponsor = Sponsor.query.filter(and_(Sponsor.name == name, Sponsor.url == url, Sponsor.event_id == program.eventId)).first()
+        
+
     if sponsor:
         return "Sponsor Already exists"
 
     sponsor = Sponsor(name, url, image_url)
     
     if program_id.startswith("WS"):
-        sponsor.workshop_id = program.id
+        sponsor.workshop_id = program.workshopId
     else:
-        sponsor.event_id = program.id
+        sponsor.event_id = program.eventId 
 
     db.session.add(sponsor)
     db.session.commit()
@@ -370,18 +387,25 @@ def updateContact(data, contact_id, program_id):
     del data['csrf_token']
     if program_id.startswith("WS"):
         program = Workshop.query.filter_by(workshopId = program_id).first()
+        contact = Contact.query.filter(and_(Contact.id == contact_id, Contact.workshop_id == program.workshopId)).first()
+
     elif program_id.startswith("EV"):
         program = Event.query.filter_by(eventId = program_id).first()
+        contact = Contact.query.filter(and_(Contact.id == contact_id, Contact.event_id == program.eventId)).first()
     
     if not program:
         return "Invalid program ID"
 
-    contact = Contact.query.filter(and_(Contact.id == contact_id, or_(Contact.workshop_id == program.id, Contact.event_id == program.id))).first()
+    
     if not contact:
         return "Not a contact of the Program"
 
+    if program_id.startswith("WS"):
+        contact = Contact.query.filter(and_(Contact.email == data['email'], Contact.phone == data['phone'], Contact.workshop_id == program.workshopId)).first()
 
-    contact = Contact.query.filter(and_(Contact.email == data['email'], Contact.phone == data['phone'], or_(Contact.workshop_id == program.id, Contact.event_id == program.id))).first()
+    elif program_id.startswith("EV"):
+        contact = Contact.query.filter(and_(Contact.email == data['email'], Contact.phone == data['phone'], Contact.event_id == program.eventId)).first()
+
     if contact:
         return "Contact Already Exists!"
 
@@ -394,19 +418,28 @@ def updateContact(data, contact_id, program_id):
 
 def updateFaq(data, faq_id, program_id):
     del data['csrf_token']
+
     if program_id.startswith("WS"):
         program = Workshop.query.filter_by(workshopId = program_id).first()
+        faq = FAQ.query.filter(and_(FAQ.id == faq_id, Contact.workshop_id == program.workshopId)).first()
+
     elif program_id.startswith("EV"):
         program = Event.query.filter_by(eventId = program_id).first()
+        faq = FAQ.query.filter(and_(FAQ.id == faq_id, Contact.event_id == program.eventId)).first()
     
     if not program:
         return "Invalid program ID"
 
-    faq = FAQ.query.filter(and_(FAQ.id == faq_id, or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).first()
     if not faq:
         return "Not a faq of the Program"
 
-    faq = FAQ.query.filter(and_(FAQ.question == data['question'], FAQ.answer == data['answer'], or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).first()
+    if program_id.startswith("WS"):
+        faq = FAQ.query.filter(and_(FAQ.question == data['question'], FAQ.answer == data['answer'], FAQ.workshop_id == program.workshopId)).first()
+
+    elif program_id.startswith("EV"):
+        faq = FAQ.query.filter(and_(FAQ.question == data['question'], FAQ.answer == data['answer'], FAQ.event_id == program.eventId)).first()
+        
+
     if faq:
         return "FAQ already exists!"
 
@@ -422,17 +455,26 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
     del data['photo']
     if program_id.startswith("WS"):
         program = Workshop.query.filter_by(workshopId = program_id).first()
+        sponsor = Sponsor.query.filter(and_(Sponsor.id == sponsor_id, Sponsor.workshop_id == program.workshopId)).first()
+
     elif program_id.startswith("EV"):
         program = Event.query.filter_by(eventId = program_id).first()
+        sponsor = Sponsor.query.filter(and_(Sponsor.id == sponsor_id, Sponsor.event_id == program.eventId)).first()
+
     
     if not program:
         return "Invalid program ID"
 
-    sponsor = Sponsor.query.filter(and_(Sponsor.id == sponsor_id, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).first()
+    if program_id.startswith("WS"):
+        sponsor = Sponsor.query.filter(and_(Sponsor.id == sponsor_id, Sponsor.workshop_id == program.workshopId)).first()
+        
+    elif program_id.startswith("EV"):
+        sponsor = Sponsor.query.filter(and_(Sponsor.id == sponsor_id, Sponsor.event_id == program.eventId)).first()
+        
     if not sponsor:
         return "Not a sponsor of the Program"
 
-    sponsor = Sponsor.query.filter(and_(Sponsor.name == data['name'], Sponsor.url == data['url'], or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).first()
+    sponsor = Sponsor.query.filter(and_(Sponsor.name == data['name'], Sponsor.url == data['url'], or_(Sponsor.workshop_id == program.workshopId, Sponsor.event_id == program.eventId))).first()
     if sponsor:
         return "Sponsor already exists!"
     if image_url:
@@ -491,7 +533,7 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
     #     contact = Contact.query.filter_by(email = data['email'], phone = data['phone']).first()
     #     workshop = Workshop.query.filter_by(id = workshop_id).first()
     #     if not contact:    
-    #         try:
+    #         try:  
     #             contact = Contact.query.filter_by(id = field_id).update(data)
     #         except:
     #             return (workshop.contacts, "Error while updating!")

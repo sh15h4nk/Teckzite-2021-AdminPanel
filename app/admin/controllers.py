@@ -1,4 +1,6 @@
+from functools import singledispatch
 from operator import add
+from typing import Any
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash, escape, get_flashed_messages, Markup, jsonify, Response
 import flask
 from flask.ctx import after_this_request
@@ -145,6 +147,7 @@ def addCoordinator():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         
+
         addUser(form.userId.data, form.name.data, form.email.data, 2, form.dept.data, form.phone.data)
 
         flash("You Registered a Coordinator Succesfully")
@@ -185,7 +188,8 @@ def updateEventView():
     if request.method == 'POST':
 
         event_id = request.form['event_id']
-        event = Event.query.filter_by(id = event_id).first()
+        event = Event.query.filter_by(eventId = event_id).first()
+        print("fucking eve#####", event.eventId)
         if not event:
             return "Invalid Event"
 
@@ -258,7 +262,7 @@ def updateWorkshopView():
     if request.method == 'POST':
 
         workshop_id = request.form['workshop_id']
-        workshop = Workshop.query.filter_by(id = workshop_id).first()
+        workshop = Workshop.query.filter_by(workshopId = workshop_id).first()
         if not workshop:
             return "Invalid Workshop"
 
@@ -313,18 +317,25 @@ def addDataView():
     program_id = request.form['programId']
 
     if program_id.startswith("EV"):
-        program = Event.query.filter_by(eventId= program_id).first()
+        contacts = Contact.query.filter(and_(Contact.hidden == 0, Contact.event_id == program_id)).count()
+        faqs = FAQ.query.filter(and_(FAQ.hidden == 0, FAQ.event_id == program_id)).count()
+        sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, Sponsor.event_id == program_id)).count()
+        # program = Event.query.filter_by(eventId= program_id).first()
+
     elif program_id.startswith("WS"):
-        program = Workshop.query.filter_by(workshopId = program_id).first()
+        contacts = Contact.query.filter(and_(Contact.hidden == 0, Contact.workshop_id == program_id)).count()
+        faqs = FAQ.query.filter(and_(FAQ.hidden == 0, FAQ.workshop_id == program_id)).count()
+        sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, Sponsor.workshop_id == program_id)).count()
+        # program = Workshop.query.filter_by(workshopId = program_id).first()
     else:
         return Response(status = 400)
 
-    if not program:
+    if not program_id:
         return Response(status = 400)
 
-    contacts = Contact.query.filter(and_(Contact.hidden == 0, or_(Contact.workshop_id == program.id, Contact.event_id == program.id))).count()
-    faqs = FAQ.query.filter(and_(FAQ.hidden == 0, or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).count()
-    sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).count()
+    # contacts = Contact.query.filter(and_(Contact.hidden == 0, or_(Contact.workshop_id == program.workshopId, Contact.event_id == program.eventId))).count()
+    # faqs = FAQ.query.filter(and_(FAQ.hidden == 0, or_(FAQ.workshop_id == program.workshopId, FAQ.event_id == program.eventId))).count()
+    # sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, or_(Sponsor.workshop_id == program.workshopId, Sponsor.event_id == program.eventId))).count()
     print("#########################", contacts)
 
     #for FORMS
@@ -414,20 +425,24 @@ def updateDataView():
 
     program_id = request.form['programId']
 
+
     if program_id.startswith("EV"):
-        program = Event.query.filter_by(eventId = program_id).first()
-        program_id = program.eventId
+        # contacts = Contact.query.filter(and_(Contact.hidden == 0, Contact.event_id == program_id)).count()
+        # faqs = FAQ.query.filter(and_(FAQ.hidden == 0, FAQ.event_id == program_id)).count()
+        # sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, Sponsor.event_id == program_id)).count()
+        program = Event.query.filter_by(eventId= program_id).first()
+
     elif program_id.startswith("WS"):
-        program = Workshop.query.filter_by(workshopId = program_id).first()
-        program_id = program.workshopId
+        # contacts = Contact.query.filter(and_(Contact.hidden == 0, Contact.event_id == program_id)).count()
+        # faqs = FAQ.query.filter(and_(FAQ.hidden == 0, FAQ.event_id == program_id)).count()
+        # sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, Sponsor.event_id == program_id)).count()
+        program = Workshop.query.filter_by(workshopId= program_id).first()
+
     else:
         return Response(status = 400)
 
     if not program:
         return Response(status = 400)
-    contacts = Contact.query.filter(and_(Contact.hidden == 0, or_(Contact.workshop_id == program.id, Contact.event_id == program.id))).count()
-    faqs = FAQ.query.filter(and_(FAQ.hidden == 0, or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).count()
-    sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).count()
 
     # return "caught"
     if request.form.get('update-contacts-form'):

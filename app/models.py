@@ -22,8 +22,8 @@ class Sponsor(db.Model):
     image_url = db.Column(String(128))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+    event_id = db.Column(Integer, ForeignKey('event.eventId'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
 
     def __init__(self, name, url, image_url):
         self.name = name
@@ -41,7 +41,7 @@ class Image(db.Model):
 
 
 class Event(Base):
-    eventId = db.Column(String(6), nullable=False, unique=True)
+    eventId = db.Column(String(7), nullable=False, unique=True)
     dept = db.Column(String(5))
     title = db.Column(String(128), nullable=False, unique=True)
     prize = db.Column(Integer)
@@ -75,7 +75,7 @@ class Event(Base):
         self.organiser_id = organiser_id
 
 class Workshop(Base):
-    workshopId = db.Column(String(6), nullable=False, unique=True)
+    workshopId = db.Column(String(7), nullable=False, unique=True)
     title = db.Column(String(128), nullable=False)
     dept = db.Column(String(5))
     description = db.Column(String(256))
@@ -160,8 +160,8 @@ class Contact(db.Model):
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+    event_id = db.Column(Integer, ForeignKey('event.eventId'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
 
     def __init__(self, name, email, phone):
         self.name = name
@@ -174,8 +174,8 @@ class FAQ(db.Model):
     answer = db.Column(String(500))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+    event_id = db.Column(Integer, ForeignKey('event.eventId'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
 
     def __init__(self, question, answer):
         self.question = question

@@ -91,28 +91,28 @@ Events
 		<tbody>
 		{% for row in data %}
 			<tr>
-				<td>EV{{ row.eventId }}</td>
+				<td>{{ row.eventId }}</td>
 				<td>{{ row.title }}</td>
                 <td>{{ row.dept }}</td>
                 
 				<td>
 					{% if row.hidden == 1 %}
 					<div class="material-switch pull-right">
-                            <input id="{{row.id}}" name="hide" type="checkbox" checked />
-                            <label for="{{row.id}}" class="label-default"></label>
+                            <input id="{{row.eventId}}" name="hide" type="checkbox" checked />
+                            <label for="{{row.eventId}}" class="label-default"></label>
                     </div>
 
 
 
 					{% else %}
 					<div class="material-switch pull-right">
-                            <input id="{{row.id}}" name="hide" type="checkbox" />
-                            <label for="{{row.id}}" class="label-default"></label>
+                            <input id="{{row.eventId}}" name="hide" type="checkbox" />
+                            <label for="{{row.eventId}}" class="label-default"></label>
                     </div>
                     <td>
                         <form method="POST" action="{{url_for('admin.updateEventView')}}">
-                            <input type="hidden" name="event_id" value="{{row.id}}">
-                            <button id="{{row.id}}" name="update-button" value="upload-button"> Update </button>                            
+                            <input type="hidden" name="event_id" value="{{row.eventId}}">
+                            <button id="{{row.eventId}}" name="update-button" value="upload-button"> Update </button>                            
                         </form>
                     </td>
 					{% endif %}
@@ -149,10 +149,10 @@ Events
 
     	$('input[type="checkbox"][name="hide"]').change(function () {
 	     	if(this.checked) {
-	     		var data = {'id':this.id, 'value':'hide'}
+	     		var data = {'id':this.eventId, 'value':'hide'}
 	     	}
 	     	else{
-	     		var data = {'id':this.id, 'value':'unhide'}
+	     		var data = {'id':this.eventId, 'value':'unhide'}
 	     	}
 	     	$.post('/hideEvent', data, (data,status) => {console.log(status)});
  		});
