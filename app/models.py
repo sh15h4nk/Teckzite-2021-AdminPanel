@@ -22,12 +22,13 @@ class Sponsor(db.Model):
     image_url = db.Column(String(128))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+    event_id = db.Column(Integer, ForeignKey('event.eventId'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
 
-    def __init__(self, name, url):
+    def __init__(self, name, url, image_url):
         self.name = name
         self.url = url
+        self.image_url = image_url
 
 
 class Image(db.Model):
@@ -40,7 +41,7 @@ class Image(db.Model):
 
 
 class Event(Base):
-    eventId = db.Column(String(6), nullable=False, unique=True)
+    eventId = db.Column(String(7), nullable=False, unique=True)
     dept = db.Column(String(5))
     title = db.Column(String(128), nullable=False, unique=True)
     prize = db.Column(Integer)
@@ -62,7 +63,6 @@ class Event(Base):
     min_teamsize = db.Column(SmallInteger)
     max_teamsize = db.Column(SmallInteger)
 
-    # organiser_id = db.Column(String(7),unique=True)
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
     organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
@@ -74,6 +74,35 @@ class Event(Base):
         self.coordinator_id = coordinater_id
         self.organiser_id = organiser_id
 
+class Workshop(Base):
+    workshopId = db.Column(String(7), nullable=False, unique=True)
+    title = db.Column(String(128), nullable=False)
+    dept = db.Column(String(5))
+    description = db.Column(String(256))
+    fee = db.Column(Integer, default = 0)
+    status = db.Column(String(100))
+    about = db.Column(String(500))
+    timeline = db.Column(String(500))
+    resources = db.Column(String(500))
+    image_url = db.Column(String(128))
+
+    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
+    organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
+    
+    hidden = db.Column(SmallInteger, default=0) # if true, workshop is inactive
+
+    contacts = db.relationship('Contact')
+    faqs = db.relationship('FAQ')
+    sponsors = db.relationship('Sponsor')
+
+    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
+
+    def __init__(self, workshop_id, title, dept, coordinator_id, organiser_id):
+        self.workshopId = workshop_id
+        self.title = title
+        self.dept = dept
+        self.coordinator_id = coordinator_id
+        self.organiser_id = organiser_id
 
 
 
@@ -89,9 +118,10 @@ class User(UserMixin,Base):
     hidden = db.Column(SmallInteger, default=0) # if true, user is inactive
 
     coordinated_events = db.relationship('Event', foreign_keys=[Event.coordinator_id])
-    organised_event = db.relationship('Event', foreign_keys=[Event.organiser_id])
+    organised_events = db.relationship('Event', foreign_keys=[Event.organiser_id])
     
-    coordinated_workshop = db.relationship('Workshop')
+    coordinated_workshops = db.relationship('Workshop', foreign_keys=[Workshop.coordinator_id])
+    organised_workshops = db.relationship('Workshop', foreign_keys = [Workshop.organiser_id])
    
     def generate_token(self, expires_sec=1800):
         serial = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -119,42 +149,6 @@ class User(UserMixin,Base):
 
     def __repr__(self):
         return '<User %r>' % (self.userId)
-
-
-
-
-class Workshop(Base):
-    workshopId = db.Column(String(6), nullable=False, unique=True)
-    title = db.Column(String(128), nullable=False)
-    dept = db.Column(String(5))
-    description = db.Column(String(256))
-    fee = db.Column(Integer, default = 0)
-    status = db.Column(String(100))
-    about = db.Column(String(500))
-    timeline = db.Column(String(500))
-    resources = db.Column(String(500))
-    image_url = db.Column(String(128))
-    
-    # hidden = db.Column(SmallInteger, default=0) # if true, workshop is inactive
-
-    contacts = db.relationship('Contact')
-    faqs = db.relationship('FAQ')
-    sponsors = db.relationship('Sponsor')
-
-    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
-
-    def __init__(self, workshop_id, title, dept, description, fee, status, about, timeline, resources, coordinator_id):
-        self.workshopId = workshop_id
-        self.title = title
-        self.dept = dept
-        self.description = description
-        self.fee = fee
-        self.status = status
-        self.about = about
-        self.timeline = timeline
-        self.resources = resources
-        self.coordinator_id = coordinator_id
-
     
     
 
@@ -166,8 +160,8 @@ class Contact(db.Model):
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+    event_id = db.Column(Integer, ForeignKey('event.eventId'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
 
     def __init__(self, name, email, phone):
         self.name = name
@@ -180,8 +174,8 @@ class FAQ(db.Model):
     answer = db.Column(String(500))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.id'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.id'))
+    event_id = db.Column(Integer, ForeignKey('event.eventId'))
+    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
 
     def __init__(self, question, answer):
         self.question = question

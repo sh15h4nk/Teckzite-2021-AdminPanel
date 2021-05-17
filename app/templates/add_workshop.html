@@ -39,48 +39,13 @@ img {
     <form id="workshopform" method="post">
         
         {{ form.csrf_token }}
-        {{ wtf.form_field(form.title) }}
-        {{ wtf.form_field(form.dept) }}
-        {{ wtf.form_field(form.fee) }}
-        {{ wtf.form_field(form.description) }}
-        {{ wtf.form_field(form.status) }}
-        {{ wtf.form_field(form.about) }}
-        {{ wtf.form_field(form.timeline) }}
-        {{ wtf.form_field(form.resources) }}
-
-        {{ form.primary_contact.csrf_token }}
-        {{ wtf.form_field(form.primary_contact) }}
-        
-        {{ form.photo.csrf_token }}
-        {{ wtf.form_field(form.photo) }}
-       
-
-        <input type="file" id="input-image">
-        <div class="item">
-            <img id="image_preview" src="/static/back.jpg" alt="Add your image"> 
-        </div>
-
-        <button type="submit" class="btn btn-primary" name="add-contact" value="Add Contact">Add contacts</button>
-        <button type="submit" class="btn btn-primary" name="add-faq" value="Add FAQs">Add FAQs</button>
-        <button type="submit" class="btn btn-primary" name="add-sponsor" value="Add Sponsor">Add Sponsors</button>
-        <button type="submit" class="btn btn-primary" name="add-workshop" value="submit">Submit</button>
-
-     
+        {{ form.workshop_organiser.csrf_token }}
+        {{ wtf.quick_form(form) }}
        
     </form>
 </div>
 
     
 {{ ckeditor.load() }}
-
-{% endblock %}
-
-
-{% block scripts %}
-{{super()}}
-
-
-<script src="/static/cropperjs-master/dist/cropper.js"></script>
-<script src="/static/imageUpload.js"></script>
 
 {% endblock %}

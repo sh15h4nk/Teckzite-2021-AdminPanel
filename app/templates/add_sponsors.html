@@ -32,31 +32,49 @@ img {
 
 {% block content %}
 {{ super() }}
-{% if not hide_form %}
-    <center><h1>Add Sponsors {{ count }}</h1></center>
+
+<center>
+{% if sponsors < 3 %}
+    <h1>Add Sponser</h1>
+{% else %}
+    <h1>Sponsors limit exceeded!</h1>
 {% endif %}
+</center>
 
 <div class="container">
     <form class = 'form' method="post">
-        {% if not hide_form %}
-        	{{ form.csrf_token }}
+
+        {% if sponsors < 3 %}
+           	{{ form.csrf_token }}
             {{ wtf.form_field(form.name) }}
             {{ wtf.form_field(form.url) }}
+            
+            <input type="file" class="input-image">
+             <div class="item">
+                <img class="image_preview" src="http://tzimageupload.s3.amazonaws.com/back.jpg" alt="Add your image"> 
+            </div> 
 
             {{ form.photo.csrf_token }}
-            {{ wtf.form_field(form.photo) }}
-       
-
-            <input type="file" id="input-image">
-            <div class="item">
-                <img id="image_preview" src="/static/back.jpg" alt="Add your image"> 
-            </div>
-            
-            <button type="submit" class="btn btn-primary" name="add-sponsor-to-program" value=" add-sponsor-to-workshop">Submit</button>
+            {{ wtf.form_field(form.photo.image, class="hide image")}}
+            {{ wtf.form_field(form.photo.cropX, class="hide cropX")}}
+            {{ wtf.form_field(form.photo.cropY, class="hide cropY")}}
+            {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
+            {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
+                
+            <button type="submit" class="btn btn-primary" name="add-sponsor" value="add-sponsor">Submit</button>
         {% endif %}
+
         <input type="hidden" name="programId" value="{{program_id}}">
-        <button type="submit" class="btn btn-primary" name="add-contact-from" value="{{program_id}}">Add Contacts</button>
-        <button type="submit" class="btn btn-primary" name="add-faq-from" value="{{program_id}}">Add FAQs</button>
+
+        {% if contacts < 3 %}
+            <button type="submit" class="btn btn-primary" name="add-contact-form" value="add-contact-form">Add Contacts</button>
+        {% endif %}
+
+        {% if faqs < 10 %}
+            <button type="submit" class="btn btn-primary" name="add-faq-form" value="add-faq-form">Add FAQs</button>
+        {% endif %}
+
+        
         {% if current_user.role == 1 %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
         {% elif current_user.role == 2 %}
