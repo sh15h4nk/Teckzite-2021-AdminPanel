@@ -48,14 +48,19 @@ img {
            	{{ form.csrf_token }}
             {{ wtf.form_field(form.name) }}
             {{ wtf.form_field(form.url) }}
-            {{ form.photo.csrf_token }}
-            {{ wtf.form_field(form.photo) }}
             
-            <input type="file" id="input-image">
+            <input type="file" class="input-image">
              <div class="item">
-                <img id="image_preview" src="/static/back.jpg" alt="Add your image"> 
+                <img class="image_preview" src="http://tzimageupload.s3.amazonaws.com/back.jpg" alt="Add your image"> 
             </div> 
-            
+
+            {{ form.photo.csrf_token }}
+            {{ wtf.form_field(form.photo.image, class="hide image")}}
+            {{ wtf.form_field(form.photo.cropX, class="hide cropX")}}
+            {{ wtf.form_field(form.photo.cropY, class="hide cropY")}}
+            {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
+            {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
+                
             <button type="submit" class="btn btn-primary" name="add-sponsor" value="add-sponsor">Submit</button>
         {% endif %}
 

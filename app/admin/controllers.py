@@ -128,7 +128,7 @@ def addAdmin():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         
-        addUser(form.userId.data, form.name.data, form.email.data, form.password.data, 1, form.dept.data, form.phone.data)
+        addUser(form.userId.data, form.name.data, form.email.data, 1, form.dept.data, form.phone.data)
 
         flash("You Registered a Admin Succesfully")
         flash("Email has been sent to reset the password")
@@ -145,8 +145,7 @@ def addCoordinator():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         
-        form.password.data
-        addUser(form.userId.data, form.name.data, form.email.data, form.password.data, 2, form.dept.data, form.phone.data)
+        addUser(form.userId.data, form.name.data, form.email.data, 2, form.dept.data, form.phone.data)
 
         flash("You Registered a Coordinator Succesfully")
         flash("Email has been sent to reset the password")
@@ -168,7 +167,7 @@ def addEventView():
             flash("No coordinator for the Dept")
             return redirect(url_for('admin.addEventView'))
         
-        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
+        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], 3, organiser['dept'], organiser['phone'])
         addEvent(form.title.data, coordinator.dept , coordinator.id, organiser.id)
 
         flash("Event added successfully")
@@ -182,28 +181,52 @@ def addEventView():
 @login_required
 @role_required([1])
 def updateEventView():
-    form = UpdateEventForm()
+    form = UpdateEventForm(request.form)
     if request.method == 'POST':
-        if request.form.get('update-button'):
-            event_id = request.form['event_id']
-            event = Event.query.filter_by(id = event_id).first()
-            if not event:
-                return "Invalid event"
 
-            if not workshop.image_url:
-                workshop.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
+        event_id = request.form['event_id']
+        event = Event.query.filter_by(id = event_id).first()
+        if not event:
+            return "Invalid Event"
 
-            markup = dict_markup({
-                "description": event.description,
-                "brief": event.brief,
-                "status": event.status,
-                "structure": event.structure,
-                "timeline": event.timeline,
-                "rules": event.rules,
+        if not event.image_url:
+            event.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
+
+        markup = dict_markup({
+            "status": event.status,
+            "description": event.description,
+            "brief": event.brief,
+            "timeline": event.timeline,
+            "structure": event.structure,
+            "rules": event.rules,
             })
+
+        if request.form.get('update-button'):                        
             return render_template('update_event.html', form = form, event = event, markup = markup)
+
         if form.validate_on_submit():
-            return request.form
+            # return request.form
+            event_id = dict(request.form).get('update-event')
+
+            #update image            
+            crop = {}
+            base64image = form.photo.image.data
+
+            image_url = ""
+            if base64image:    
+                crop['x'] = int(float(str(form.photo.cropX.data)))
+                crop['y'] = int(float(str(form.photo.cropY.data)))
+                crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                crop['height'] = int(float(str(form.photo.cropHeight.data)))
+                
+                image_url = crop_image(form.photo.image.data, crop)     
+
+            markup = updateEvent(form.data, event_id, image_url)
+
+            flash(markup[2])
+            return render_template('update_event.html', form = form, event = markup[0], markup = markup[1])
+
+    return render_template('update_event.html', form = form, event = event, markup = markup)
 
 
 @admin.route('/workshop/add', methods=['GET', 'POST'])
@@ -216,7 +239,7 @@ def addWorkshopView():
         organiser = form.workshop_organiser.data
         coordinator_id = current_user.id
 
-        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], organiser['password'], 3, organiser['dept'], organiser['phone'])
+        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], 3, organiser['dept'], organiser['phone'])
         addWorkshop(form.title.data, form.dept.data, coordinator_id, organiser.id)
 
         flash("Workshop Added Succesfully")
@@ -233,57 +256,49 @@ def addWorkshopView():
 def updateWorkshopView():
     form = UpdateWorkshopForm(request.form)
     if request.method == 'POST':
-        if request.form.get('update-button'):
-            workshop_id = request.form['workshop_id']
-            workshop = Workshop.query.filter_by(id = workshop_id).first()
-            if not workshop:
-                return "Invalid Workshop"
 
-            if not workshop.image_url:
-                workshop.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
+        workshop_id = request.form['workshop_id']
+        workshop = Workshop.query.filter_by(id = workshop_id).first()
+        if not workshop:
+            return "Invalid Workshop"
 
-            markup = dict_markup({
-                "status": workshop.status,
-                "description": workshop.description,
-                "about": workshop.about,
-                "timeline": workshop.timeline,
-                "resources": workshop.resources,
-                })
+        if not workshop.image_url:
+            workshop.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
+
+        markup = dict_markup({
+            "status": workshop.status,
+            "description": workshop.description,
+            "about": workshop.about,
+            "timeline": workshop.timeline,
+            "resources": workshop.resources,
+            })
+
+        if request.form.get('update-button'):                        
             return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup)
 
         if form.validate_on_submit():
             # return request.form
-            workshop = updateWorkshop(form.data, request.form['workshop_id'])
-            if type(workshop) == str:
-                return workshop
-            markup = dict_markup({
-                "status": workshop.status,
-                "description": workshop.description,
-                "about": workshop.about,
-                "timeline": workshop.timeline,
-                "resources": workshop.resources,
-                })
-            flash("Workshop Updated Succesfully!")
-            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup)
-
+            workshop_id = dict(request.form).get('update-workshop')
 
             #update image            
-            # crop = {}
-            # base64image = form.photo.image.data
+            crop = {}
+            base64image = form.photo.image.data
 
-            # image_url = ""
-            # if base64image:    
-            #     crop['x'] = int(float(str(form.photo.cropX.data)))
-            #     crop['y'] = int(float(str(form.photo.cropY.data)))
-            #     crop['width'] = int(float(str(form.photo.cropWidth.data)))
-            #     crop['height'] = int(float(str(form.photo.cropHeight.data)))
+            image_url = ""
+            if base64image:    
+                crop['x'] = int(float(str(form.photo.cropX.data)))
+                crop['y'] = int(float(str(form.photo.cropY.data)))
+                crop['width'] = int(float(str(form.photo.cropWidth.data)))
+                crop['height'] = int(float(str(form.photo.cropHeight.data)))
                 
-            #     image_url = crop_image(form.photo.image.data, crop)
+                image_url = crop_image(form.photo.image.data, crop)     
 
+            markup = updateWorkshop(form.data, workshop_id, image_url)
 
+            flash(markup[2])
+            return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1])
 
-
-    return redirect(url_for('admin.getWorkshopsView'))
+    return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup)
 
 
 @admin.route('/addData', methods=["POST"])
@@ -310,6 +325,7 @@ def addDataView():
     contacts = Contact.query.filter(and_(Contact.hidden == 0, or_(Contact.workshop_id == program.id, Contact.event_id == program.id))).count()
     faqs = FAQ.query.filter(and_(FAQ.hidden == 0, or_(FAQ.workshop_id == program.id, FAQ.event_id == program.id))).count()
     sponsors = Sponsor.query.filter(and_(Sponsor.hidden == 0, or_(Sponsor.workshop_id == program.id, Sponsor.event_id == program.id))).count()
+    print("#########################", contacts)
 
     #for FORMS
     if request.form.get("add-faq-form"):
@@ -358,25 +374,22 @@ def addDataView():
             # return request.form
 
             # adding image
-            image_url = ""
+            #update image            
             crop = {}
-            try:
+            base64image = form.photo.image.data
+
+            image_url = ""
+            if base64image:    
                 crop['x'] = int(float(str(form.photo.cropX.data)))
                 crop['y'] = int(float(str(form.photo.cropY.data)))
                 crop['width'] = int(float(str(form.photo.cropWidth.data)))
                 crop['height'] = int(float(str(form.photo.cropHeight.data)))
-            except:
-                flash("No image uploaded")
-                return render_template('add_sponsors.html', form = form, program_id = program_id, contacts = contacts, faqs = faqs, sponsors = sponsors)
-
-            
-            url = crop_image(form.photo.image.data, crop)
-            if not url:
-                flash("Something went wrong")
-            else:
-                image_url = url
                 
-            
+                image_url = crop_image(form.photo.image.data, crop)     
+            else: 
+                flash("Please upload an image")
+                return render_template('add_sponsors.html', form = form, program_id = program_id, contacts = contacts, faqs = faqs, sponsors = sponsors)
+        
             sponsor = addSponsor(form.name.data, form.url.data, program_id, image_url)
             if type(sponsor) == str:
                 if sponsor == "Overflow":

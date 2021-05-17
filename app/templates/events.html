@@ -77,16 +77,14 @@ Events
 
 <div class="container">
 
-	<table id="mytable" class="table">
+	<table id="eventtable" class="table">
 		<thead>
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
-            <th>Branch</th>
-            <th>Block</th>
+            <th>Branch</th>            
+			<th>Block</th>
             <th>Update</th>
-			
-            
 
 		</tr>
 		</thead>
@@ -111,15 +109,14 @@ Events
                             <input id="{{row.id}}" name="hide" type="checkbox" />
                             <label for="{{row.id}}" class="label-default"></label>
                     </div>
-
-
+                    <td>
+                        <form method="POST" action="{{url_for('admin.updateEventView')}}">
+                            <input type="hidden" name="event_id" value="{{row.id}}">
+                            <button id="{{row.id}}" name="update-button" value="upload-button"> Update </button>                            
+                        </form>
+                    </td>
 					{% endif %}
 				</td>
-
-                <td>
-                    <button id="{{row.id}}" name="update"> Update </button>
-                </td>
-                
 			</tr>
 		{% endfor %}
 		</tbody>
@@ -142,8 +139,8 @@ Events
 
 <script>
     $(document).ready(function(){
-    	$('#mytable').DataTable().destroy();
-    	$('#mytable').DataTable({
+    	$('#eventtable').DataTable().destroy();
+    	$('#eventtable').DataTable({
         	dom: 'Bfrtip',
        		buttons: [
             	'excelHtml5'
@@ -159,10 +156,6 @@ Events
 	     	}
 	     	$.post('/hideEvent', data, (data,status) => {console.log(status)});
  		});
-
-        $('button[name="update"]').click(function () {
-            window.location.replace("/event/update?id="+this.id);
-        })
 	});
 
 </script>
