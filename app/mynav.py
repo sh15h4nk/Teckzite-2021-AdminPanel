@@ -22,21 +22,32 @@ def my_nav():
 		dashboard = View("Dashboard",'admin.dashboard')
 
 		view_admin = View("View", 'admin.getAdminsView')
-		add_admin = View("Add",'admin.addAdmin')
+		add_admin = View("Add",'admin.addAdminView')
 		admin_menu = Subgroup("Admins",view_admin,add_admin)
 
 
-		view_coord = View("View",'admin.getCoordinatorsView')
-		add_coord = View("Add",'admin.addCoordinator')
-		coord_menu = Subgroup("Co-ordinators",view_coord,add_coord)
+		view_event_manager = View("View",'admin.getEventManagersView')
+		add_event_manager = View("Add",'admin.addEventManagerView')
+		event_manager_menu = Subgroup("Event Manager",view_event_manager,add_event_manager)
+
+		view_workshop_manager = View("View",'admin.getWorkshopManagersView')
+		add_workshop_manager = View("Add",'admin.addWorkshopManagerView')
+		workshop_manager_menu = Subgroup("Workshop Manager",view_workshop_manager,add_workshop_manager)
 
 
-		view_org = View("View",'admin.getOrganisersView')
-		orag_menu = Subgroup("Organisers",view_org)
+		view_event_coord = View("View",'admin.getEventCoordinatorsView')
+		add_event_coord = View("Add",'admin.dashboard')
+		event_coord_menu = Subgroup("Event Co-ordinators",view_event_coord,add_event_coord)
+
+		view_workshop_coord = View("View",'admin.getWorkshopCoordinatorsView')
+		workshop_coord_menu = Subgroup("Workshop Co-ordinators",view_workshop_coord)
+
+
+		view_org = View("View",'admin.getEventOrganisersView')
+		orag_menu = Subgroup("Event Organisers",view_org)
 
 
 		view_events = View("Event",'admin.getEventsView')
-
 		add_event = View("Add Event",'admin.addEventView')
 		event_menu = Subgroup("Events",view_events, add_event)
 
@@ -58,8 +69,7 @@ def my_nav():
 		logout = View("Logout", 'admin.logout')
 
 
-		return Navbar('Teckzite\'21',dashboard,admin_menu,coord_menu,orag_menu,event_menu,workshop_menu,tz_users_menu,profile_menu,logout)
-	
+		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users_menu,profile_menu,logout)
 
 	elif current_user.role == "event_manager":
 
@@ -69,9 +79,9 @@ def my_nav():
 		add_event = View("Add Event",'event_manager.dashboard')
 		event_menu = Subgroup("Events",view_events,add_event)
 
-		view_coord = View("View",'event_manager.dashboard')
-		add_coord = View("Add",'event_manager.dashboard')
-		coord_menu = Subgroup("Event Co-ordinators",view_coord,add_coord)
+		view_event_coord = View("View",'event_manager.dashboard')
+		add_event_coord = View("Add",'event_manager.dashboard')
+		event_coord_menu = Subgroup("Event Co-ordinators",view_event_coord,add_event_coord)
 
 		view_org = View("View",'event_manager.dashboard')
 		orag_menu = Subgroup("Event Organisers",view_org)
@@ -82,7 +92,7 @@ def my_nav():
 
 		logout = View("Logout", 'event_manager.logout')
 
-		return Navbar('Teckzite\'21',dashboard, event_menu, coord_menu, orag_menu, profile_menu, logout)
+		return Navbar('Teckzite\'21',dashboard, event_menu, event_coord_menu, orag_menu, profile_menu, logout)
 	
 
 	elif current_user.role == "event_coordinator":
@@ -128,7 +138,7 @@ def my_nav():
 
 		view_coord = View("View",'workshop_manager.dashboard')
 		add_coord = View("Add",'workshop_manager.dashboard')
-		coord_menu = Subgroup("Workshop Co-ordinators",view_coord,add_coord)
+		coord_menu = Subgroup("Workshop Co-ordinators",view_coord)
 
 		profile = View("Profile",'workshop_manager.dashboard')
 		edit = View("Update",'workshop_manager.dashboard')
