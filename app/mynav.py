@@ -36,7 +36,7 @@ def my_nav():
 
 
 		view_event_coord = View("View",'admin.getEventCoordinatorsView')
-		add_event_coord = View("Add",'admin.dashboard')
+		add_event_coord = View("Add",'admin.addEventCoordinator')
 		event_coord_menu = Subgroup("Event Co-ordinators",view_event_coord,add_event_coord)
 
 		view_workshop_coord = View("View",'admin.getWorkshopCoordinatorsView')

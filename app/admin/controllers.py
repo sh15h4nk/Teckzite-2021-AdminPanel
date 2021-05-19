@@ -194,21 +194,26 @@ def addWorkshopManagerView():
 
 
 
-# @admin.route('/event.coordinator/add', methods=['GET', 'POST'])
-# @login_required
-# @role_required("admin")
-# def eventCoordinator():
-#     form = RegisterForm(request.form)
-#     if form.validate_on_submit():
+@admin.route('/event.coordinator/add', methods=['GET', 'POST'])
+@login_required
+@role_required(["admin"])
+def addEventCoordinator():
+    form = RegisterForm(request.form)
+    if form.validate_on_submit():
+
+        user = User.query.filter_by(hidden = 0, role = "event_coordinator", dept = form.dept.data).count()
+        if user:
+            flash("Event Coordinator already exists for this Department")
+            return render_template('admin/register.html',role="Events Coordinator", form = form,current_user = current_user)
         
-#         addUser(form.userId.data, form.name.data, form.email.data, "event_coordinator", form.dept.data, form.phone.data)
+        addUser(form.userId.data, form.name.data, form.email.data, "event_coordinator", form.dept.data, form.phone.data)
 
-#         flash("You Registered a Admin Succesfully")
-#         flash("Email has been sent to reset the password")
+        flash("You Registered Event Coordinator Succesfully")
+        flash("Email has been sent to reset the password")
 
-#         return redirect(url_for('admin.eventCoordinator'))   
+        return redirect(url_for('admin.addEventCoordinator'))   
 
-#     return render_template('admin/register.html',role="Events Coordinator", form = form,current_user = current_user)
+    return render_template('admin/register.html',role="Events Coordinator", form = form,current_user = current_user)
 
 
 
@@ -240,14 +245,14 @@ def addWorkshopManagerView():
 def addEventView():
     form = CreateEventForm(request.form)
     if form.validate_on_submit():
-        organiser = form.event_organiser.data
-        coordinator = User.query.filter_by(dept=organiser['dept'], role=2).first()
-        if coordinator is None:
+        event_organiser = form.event_organiser.data
+        event_coordinator = User.query.filter_by(dept=event_organiser['dept'], role="event_coordinator").first()
+        if event_coordinator is None:
             flash("No coordinator for the Dept")
             return redirect(url_for('admin.addEventView'))
         
-        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], 3, organiser['dept'], organiser['phone'])
-        addEvent(form.title.data, coordinator.dept , coordinator.id, organiser.id)
+        organiser = addUser(event_organiser['userId'], event_organiser['name'], event_organiser['email'], "event_organiser", event_organiser['dept'], event_organiser['phone'])
+        addEvent(form.title.data, event_coordinator.dept , event_coordinator.id, organiser.id)
 
         flash("Event added successfully")
         flash("Organiser added successfully")
@@ -316,11 +321,11 @@ def addWorkshopView():
     form = CreateWorkshopForm(request.form)
     if form.validate_on_submit():
         # return request.form
-        organiser = form.workshop_organiser.data
+        workshop_coordinator = form.workshop_coordinator.data
         coordinator_id = current_user.id
 
-        organiser = addUser(organiser['userId'], organiser['name'], organiser['email'], 3, organiser['dept'], organiser['phone'])
-        addWorkshop(form.title.data, form.dept.data, coordinator_id, organiser.id)
+        workshop_coordinator = addUser(workshop_coordinator['userId'], workshop_coordinator['name'], workshop_coordinator['email'], "workshop_coordinator", workshop_coordinator['dept'], workshop_coordinator['phone'])
+        addWorkshop(form.title.data, form.dept.data, coordinator_id)
 
         flash("Workshop Added Succesfully")
         flash("Organiser Added Succesfully")

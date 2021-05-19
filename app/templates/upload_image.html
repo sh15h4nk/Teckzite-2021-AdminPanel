@@ -24,10 +24,18 @@ Upload Image
         <input type="hidden" name="programId" value="{{program_id}}">
         <button type="submit" class="btn btn-primary" name="add-contact-from" value="add-contact-from">Add Contact's</button>
         <button type="submit" class="btn btn-primary" name="add-faq-from" value="add-faq-from">Add FAQs</button>
-        {% if current_user.role == 1 %}
+        {% if current_user.role == "admin" %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
-        {% elif current_user.role == 2 %}
-            <a class="btn btn-primary" href="{{url_for('coordinate.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_manager" %}
+            <a class="btn btn-primary" href="{{url_for('event_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('event_coordinator.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_organiser" %}
+            <a class="btn btn-primary" href="{{url_for('event_organiser.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_manager" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_coordinator.dashboard')}}" role="button">Done</a>
         {% endif %}
 
         
