@@ -1,11 +1,13 @@
+from sqlalchemy.sql.expression import false
 from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
-from app.forms import LoginForm
+from app.forms import CreateEventForm, LoginForm
 from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
+from app.event_coordinator.functions import *
 mynav.init_app(app)
 
 
@@ -61,4 +63,39 @@ def dashboard():
 
 
 
+@event_coordinator.route('/event.organiser/')
+@login_required
+@role_required("event_coordinator")
+def getEventOrganisersView():
+    data = getEventOrganisersAll(dept = current_user.dept)
+    return render_template("users.html", role= "Event Organiser",data = data)
 
+
+@event_coordinator.route('/events/')
+@login_required
+@role_required("event_coordinator")
+def getEventsView():
+    data = getEventsAll(dept = current_user.dept)
+    return render_template("events.html",data = data)
+
+@event_coordinator.route('/event/add', methods=['GET', 'POST'])
+@login_required
+@role_required("event_coordinator")
+def addEventView():
+    form = CreateEventForm(request.form)
+    if form.validate_on_submit():
+        event_organiser = form.event_organiser.data
+        
+        if current_user.dept != event_organiser['dept']:
+            flash("You can only add an event under your department!")
+            return redirect(url_for('event_coordinator.addEventView'))
+
+        organiser = addUser(event_organiser['userId'], event_organiser['name'], event_organiser['email'], "event_organiser", event_organiser['dept'], event_organiser['phone'])
+        addEvent(form.title.data, current_user.dept , current_user.id, organiser.id)
+
+        flash("Event added successfully")
+        flash("Organiser added successfully")
+        # flash("Check Email to reset password")
+        return redirect(url_for('event_coordinator.addEventView'))
+
+    return render_template('add_event.html', form=form)

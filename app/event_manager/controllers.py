@@ -88,25 +88,46 @@ def getEventsView():
 
 # DATA adding routes
 
-# @event_manager.route('/event/add', methods=['GET', 'POST'])
-# @login_required
-# @role_required("event_manager")
-# def addEventView():
-#     form = CreateEventForm(request.form)
-#     if form.validate_on_submit():
-#         event_organiser = form.event_organiser.data
-#         event_coordinator = User.query.filter_by(dept=event_organiser['dept'], role="event_coordinator").first()
-#         if event_coordinator is None:
-#             flash("No coordinator for the Dept")
-#             return redirect(url_for('event_manager.addEventView'))
+@event_manager.route('/event/add', methods=['GET', 'POST'])
+@login_required
+@role_required("event_manager")
+def addEventView():
+    form = CreateEventForm(request.form)
+    if form.validate_on_submit():
+        event_organiser = form.event_organiser.data
+        event_coordinator = User.query.filter_by(dept=event_organiser['dept'], role="event_coordinator").first()
+        if event_coordinator is None:
+            flash("No coordinator for the Dept")
+            return redirect(url_for('event_manager.addEventView'))
         
-#         organiser = addUser(event_organiser['userId'], event_organiser['name'], event_organiser['email'], "event_organiser", event_organiser['dept'], event_organiser['phone'])
-#         addEvent(form.title.data, event_coordinator.dept , event_coordinator.id, organiser.id)
+        organiser = addUser(event_organiser['userId'], event_organiser['name'], event_organiser['email'], "event_organiser", event_organiser['dept'], event_organiser['phone'])
+        addEvent(form.title.data, event_coordinator.dept , event_coordinator.id, organiser.id)
 
-#         flash("Event added successfully")
-#         flash("Organiser added successfully")
-#         # flash("Check Email to reset password")
-#         return redirect(url_for('admin.addEventView'))
+        flash("Event added successfully")
+        flash("Organiser added successfully")
+        # flash("Check Email to reset password")
+        return redirect(url_for('admin.addEventView'))
 
-#     return render_template('add_event.html', form=form)
+    return render_template('add_event.html', form=form)
 
+
+@event_manager.route('/event.coordinator/add', methods=['GET', 'POST'])
+@login_required
+@role_required(["event_manager"])
+def addEventCoordinator():
+    form = RegisterForm(request.form)
+    if form.validate_on_submit():
+
+        user = User.query.filter_by(hidden = 0, role = "event_coordinator", dept = form.dept.data).count()
+        if user:
+            flash("Event Coordinator already exists for this Department")
+            return render_template('admin/register.html',role="Events Coordinator", form = form,current_user = current_user)
+        
+        addUser(form.userId.data, form.name.data, form.email.data, "event_coordinator", form.dept.data, form.phone.data)
+
+        flash("You Registered Event Coordinator Succesfully")
+        flash("Email has been sent to reset the password")
+
+        return redirect(url_for('admin.addEventCoordinator'))   
+
+    return render_template('admin/register.html',role="Events Coordinator", form = form,current_user = current_user)

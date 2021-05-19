@@ -6,6 +6,7 @@ from app.forms import LoginForm
 from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
+from app.workshop_coordinator.functions import *
 mynav.init_app(app)
 
 
@@ -60,6 +61,13 @@ def login():
 def dashboard():
     return render_template("workshop_coordinator/dashboard.html",current_user = current_user)
 
+
+@workshop_coordinator.route('/workshops/')
+@login_required
+@role_required("workshop_coordinator")
+def getWorkshopsView():
+    data = getWorkshopsAll(workshop_coordinator_id = current_user.id)
+    return render_template("workshops.html",data =data)
 
 
 
