@@ -7,6 +7,7 @@ from app.forms import LoginForm
 from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
+from app.event_organiser.functions import *
 mynav.init_app(app)
 
 
@@ -63,3 +64,9 @@ def dashboard():
 
 
 
+@event_organiser.route('/events/')
+@login_required
+@role_required("event_organiser")
+def getEventsView():
+    data = getEventsAll(event_organiser_id = current_user.id)
+    return render_template("events.html",data = data)
