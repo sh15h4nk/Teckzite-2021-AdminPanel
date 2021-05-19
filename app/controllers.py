@@ -51,7 +51,7 @@ def resetPassword(token):
 	if user is None:
 		flash('That is an invalid or expired token','warning')
 		return redirect(url_for('resetRequest'))
-	form = ChangePassword()
+	form = ChangePassword()     
 	if form.validate_on_submit():
 		hashed_password = bcrypt.generate_password_hash(form.password.data)
 		user.password = hashed_password
