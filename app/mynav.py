@@ -75,15 +75,15 @@ def my_nav():
 
 		dashboard = View("Dashboard",'event_manager.dashboard')
 
-		view_events = View("Event",'event_manager.dashboard')		
-		add_event = View("Add Event",'event_manager.dashboard')
+		view_events = View("Event",'event_manager.getEventsView')		
+		add_event = View("Add Event",'event_manager.addEventView')
 		event_menu = Subgroup("Events",view_events,add_event)
 
-		view_event_coord = View("View",'event_manager.dashboard')
-		add_event_coord = View("Add",'event_manager.dashboard')
+		view_event_coord = View("View",'event_manager.getEventCoordinatorsView')
+		add_event_coord = View("Add",'event_manager.addEventCoordinatorsView')
 		event_coord_menu = Subgroup("Event Co-ordinators",view_event_coord,add_event_coord)
 
-		view_org = View("View",'event_manager.dashboard')
+		view_org = View("View",'event_manager.getEventOrganisersView')
 		orag_menu = Subgroup("Event Organisers",view_org)
 
 		profile = View("Profile",'event_manager.dashboard')

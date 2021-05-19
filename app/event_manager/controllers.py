@@ -2,10 +2,12 @@ from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
-from app.forms import LoginForm
+from app.forms import *
 from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
+from app.event_manager.functions import *
+from app.functions import *
 mynav.init_app(app)
 
 
@@ -60,5 +62,51 @@ def dashboard():
     return render_template("event_manager/dashboard.html",current_user = current_user)
 
 
+#DATA retrival
 
+@event_manager.route('/event.coordinators/')
+@login_required
+@role_required("event_manager")
+def getEventCoordinatorsView():
+    data = getEventCoordinatorsAll()
+    return render_template("users.html", role= "Event Coordinator",data = data)
+
+@event_manager.route('/event.organiser/')
+@login_required
+@role_required("event_manager")
+def getEventOrganisersView():
+    data = getEventOrganisersAll()
+    return render_template("users.html", role= "Event Organiser",data = data)
+
+
+@event_manager.route('/events/')
+@login_required
+@role_required("event_manager")
+def getEventsView():
+    data = getEventsAll()
+    return render_template("events.html",data = data)
+
+# DATA adding routes
+
+# @event_manager.route('/event/add', methods=['GET', 'POST'])
+# @login_required
+# @role_required("event_manager")
+# def addEventView():
+#     form = CreateEventForm(request.form)
+#     if form.validate_on_submit():
+#         event_organiser = form.event_organiser.data
+#         event_coordinator = User.query.filter_by(dept=event_organiser['dept'], role="event_coordinator").first()
+#         if event_coordinator is None:
+#             flash("No coordinator for the Dept")
+#             return redirect(url_for('event_manager.addEventView'))
+        
+#         organiser = addUser(event_organiser['userId'], event_organiser['name'], event_organiser['email'], "event_organiser", event_organiser['dept'], event_organiser['phone'])
+#         addEvent(form.title.data, event_coordinator.dept , event_coordinator.id, organiser.id)
+
+#         flash("Event added successfully")
+#         flash("Organiser added successfully")
+#         # flash("Check Email to reset password")
+#         return redirect(url_for('admin.addEventView'))
+
+#     return render_template('add_event.html', form=form)
 
