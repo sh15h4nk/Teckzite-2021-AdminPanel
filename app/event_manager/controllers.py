@@ -131,3 +131,24 @@ def addEventCoordinator():
         return redirect(url_for('admin.addEventCoordinator'))   
 
     return render_template('admin/register.html',role="Events Coordinator", form = form,current_user = current_user)
+
+
+@event_manager.route('/profile', methods=['GET'])
+@login_required
+@role_required("event_manager")
+def getProfileView():
+    return render_template('profile.html', role = "Event Manager", user=current_user)
+
+@event_manager.route('/profile/update', methods=["GET", "POST"])
+@login_required
+@role_required("event_manager")
+def updateProfileView():
+    form = UpdateProfileForm(request.form)
+    if form.validate_on_submit():
+        try:
+            updateProfile(current_user.id, form.data)
+            flash("Your profile has been updated successfully!")
+        except:
+            flash("Something went wrong!")        
+        
+    return render_template('update_profile.html', role = "Event Manager", user=current_user, form=form)

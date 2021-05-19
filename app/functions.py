@@ -580,3 +580,10 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
     #         return (workshop.faqs, "Faq updated successfully")
     #     else:
     #         return (workshop.faqs, "Faq already exists")
+
+
+def updateProfile(user_id, data):
+    del data['csrf_token']
+    del data['submit']
+    User.query.filter_by(id = user_id).update(data)
+    db.session.commit()
