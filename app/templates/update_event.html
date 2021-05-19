@@ -38,12 +38,27 @@ img {
     <form class = 'form' method="post">
         
         {{ form.csrf_token }}
-        {% if current_user.role == 1 %}
-        	{{ wtf.form_field(form.title, value = event.title) }}
+        {{ wtf.form_field(form.title, value = event.title) }}
+        
+        {% if event.prize != None %}
+            {{ wtf.form_field(form.prize, value = event.prize) }}
         {% else %}
-        	{{ wtf.form_field(form.title, value = wvwnt.title, readonly=true) }}
+            {{ wtf.form_field(form.prize) }}
         {% endif %}
-        {{ wtf.form_field(form.prize, value = event.prize) }}
+
+
+        {% if event.min_teamsize != None %}
+            {{ wtf.form_field(form.min_teamsize, value = event.min_teamsize) }}
+        {% else %}
+            {{ wtf.form_field(form.min_teamsize) }}
+        {% endif %}
+
+        {% if event.max_teamsize != None %}
+            {{ wtf.form_field(form.max_teamsize, value = event.max_teamsize) }}
+        {% else %}
+            {{ wtf.form_field(form.max_teamsize) }}
+        {% endif %}
+
 
         <input type="hidden" id="hidden-status" name="hidden-status" value="{{ markup.status }}">
         {{ wtf.form_field(form.status) }}
@@ -63,8 +78,6 @@ img {
         <input type="hidden" id="hidden-rules" name="hidden-rules" value="{{ markup.rules }}">
         {{ wtf.form_field(form.rules) }}
 
-        {{ wtf.form_field(form.min_teamsize, value = event.min_teamsize) }}
-        {{ wtf.form_field(form.max_teamsize, value = event.max_teamsize) }}
 
         <input type="hidden" name="event_id" value="{{event.eventId}}">
 
@@ -86,12 +99,26 @@ img {
     </div>
 
    
-    <form method="POST" action="{{url_for('admin.updateDataView')}}">
+    <form method="POST" action="{{url_for('updateDataView')}}">
             <input type="hidden" name="programId" value="{{event.eventId}}">
             <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{event.eventId}}">Update contacts</button>
             <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{event.eventId}}">Update FAQs</button>
             <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{event.eventId}}">Update Sponsor</button>
     </form>
+
+    {% if current_user.role == "admin" %}
+        <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
+    {% elif current_user.role == "event_manager" %}
+        <a class="btn btn-primary" href="{{url_for('event_manager.dashboard')}}" role="button">Done</a>
+    {% elif current_user.role == "event_coordinator" %}
+        <a class="btn btn-primary" href="{{url_for('event_coordinator.dashboard')}}" role="button">Done</a>
+    {% elif current_user.role == "event_organiser" %}
+        <a class="btn btn-primary" href="{{url_for('event_organiser.dashboard')}}" role="button">Done</a>
+    {% elif current_user.role == "worshop_manager" %}
+        <a class="btn btn-primary" href="{{url_for('workshop_manager.dashboard')}}" role="button">Done</a>
+    {% elif current_user.role == "worshop_coordinator" %}
+        <a class="btn btn-primary" href="{{url_for('workshop_coordinator.dashboard')}}" role="button">Done</a>
+    {% endif %}
     
 </div>
 
@@ -103,12 +130,12 @@ img {
 <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
 <script>
 	$(document).ready(function () {
-		CKEDITOR.instances.status.setData( document.getElementById("hidden-status").value );
-		CKEDITOR.instances.brief.setData( document.getElementById("hidden-brief").value );        
-		CKEDITOR.instances.description.setData( document.getElementById("hidden-description").value );
-		CKEDITOR.instances.structure.setData( document.getElementById("hidden-structure").value );
-		CKEDITOR.instances.timeline.setData( document.getElementById("hidden-timeline").value );
-		CKEDITOR.instances.rules.setData( document.getElementById("hidden-rules").value );
+		(document.getElementById('hidden-status').value !== "None") ? CKEDITOR.instances.status.setData( document.getElementById("hidden-status").value ) : "";
+        document.getElementById('hidden-brief').value !== "None" ? CKEDITOR.instances.brief.setData( document.getElementById("hidden-brief").value ) : ""
+        document.getElementById('hidden-description').value !== "None" ? CKEDITOR.instances.description.setData( document.getElementById("hidden-description").value ) : ""
+        document.getElementById('hidden-structure').value !== "None" ? CKEDITOR.instances.structure.setData( document.getElementById("hidden-structure").value ) : ""
+        document.getElementById('hidden-timeline').value !== "None" ? CKEDITOR.instances.timeline.setData( document.getElementById("hidden-timeline").value ) : ""
+        document.getElementById('hidden-rules').value !== "None" ? CKEDITOR.instances.rules.setData( document.getElementById("hidden-rules").value ) : ""
 	});
    
 </script>

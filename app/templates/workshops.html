@@ -107,7 +107,7 @@ Workshops
                         {% endif %}
                     </td>
                     <td>
-                        <form method="POST" action="{{url_for('admin.updateWorkshopView')}}">
+                        <form method="POST" action="{{url_for('updateWorkshopView')}}">
                             <input type="hidden" name="workshop_id" value="{{row.workshopId}}">
                             <button id="{{row.workshopId}}" name="update-button" value="upload-button"> Update </button>                            
                          </form>
@@ -143,13 +143,25 @@ Workshops
     	});
 
     	$('input[type="checkbox"][name="hide"]').change(function () {
+            field = this.id;
 	     	if(this.checked) {
-	     		var data = {'id':this.id, 'value':'hide'}
+	     		var data = {'id':this.id, 'value':'hide'};
+                $.post('/hideWorkshop', data, (data,status) => {
+                    console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = false;
+                    });
 	     	}
 	     	else{
-	     		var data = {'id':this.id, 'value':'unhide'}
+	     		var data = {'id':this.id, 'value':'unhide'};
+                $.post('/hideWorkshop', data, (data,status) => {
+                    console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = true;
+                    });
 	     	}
-	     	$.post('/hideWorkshop', data, (data,status) => {console.log(status)});
  		});
 	});
 

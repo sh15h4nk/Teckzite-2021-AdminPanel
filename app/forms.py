@@ -4,7 +4,7 @@ from sqlalchemy.sql.sqltypes import Integer, String
 from flask_ckeditor import CKEditorField
 from flask_wtf.file import FileAllowed, FileField, FileRequired
 
-from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form
+from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form, RadioField
 from wtforms.fields.simple import HiddenField
 from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired, ValidationError, URL
 from wtforms.widgets.core import HiddenInput
@@ -101,11 +101,15 @@ class UpdateEventForm(FlaskForm):
     photo = FormField(PhotoForm)
 
     min_teamsize = IntegerField('Minimum team size', 
-        [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+        [DataRequired(message = "Enter Valid Number"), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
     max_teamsize = IntegerField('Maximum team size', 
-        [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+        [DataRequired(message = "Enter a Valid Number"), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
 
-    # submit = SubmitField('Submit')
+    def validate_max_teamsize(self, max_teamsize):
+        # print(self, max_teamsize.data)
+        if max_teamsize.data < self.min_teamsize.data:
+            raise ValidationError("Maximum size must be less than or equal Minimum size")
+    # # submit = SubmitField('Submit')
 
 class UpdateWorkshopForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
@@ -156,7 +160,7 @@ class CreateWorkshopForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
     fee = IntegerField('Fee', [NumberRange(min=0, max=99999, message="Enter a valid number")])
     dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
-    workshop_organiser = FormField(RegisterForm)
+    workshop_coordinator = FormField(RegisterForm)
 
     def validate_title(self, title):
         workshop = Workshop.query.filter_by(title=title.data).first()
@@ -184,3 +188,20 @@ class ResetRequest(FlaskForm):
         user = User.query.filter_by(email = email.data).first()
         if user is None:
             raise ValidationError("Email doesn't exists")
+
+
+class UpdateProfileForm(FlaskForm):
+    name = TextField('Student Name', [
+        Required(), Length(min=7, max=20)])
+
+    email = StringField('Email Address', [Email("provide a valid email")])
+    
+    gender =  SelectField('Gender', choices=[("male","Male"),("female","Female")])
+
+    phone = IntegerField('Phone Number',
+        [Required(), NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
+    )
+    
+    dept =  SelectField('Department', choices=BRANCH_CHOICES)
+
+    submit = SubmitField("Update")

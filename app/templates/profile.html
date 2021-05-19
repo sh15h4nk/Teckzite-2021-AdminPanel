@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+{{ role }}
+{% endblock %}
+
+{% block content %}
+	{{ super() }}
+	<div class="container">
+			<h1> Profile </h1>
+	</div>
+
+	<div class="container" align="right">
+		<img src="https://intranet.rguktn.ac.in/SMS/usrphotos/user/{{user.userId}}.jpg" alt="User photo">
+		
+	</div>
+
+	<div align="right" class="container">
+	
+            <div> <b> User Id : </b> {{ user.userId }}</div>
+            <div> <b> Name : </b> {{ user.name }}</div>		  
+            <div> <b> Email : </b> {{ user.email }}</div>
+            <div> <b> Role : </b> {{ user.role }}</div>
+            <div> <b> Gender : </b> {{ user.gender }}</div>
+            <div> <b> Department : </b> {{ user.dept }}</div>
+            <div> <b> Phone : </b> {{ user.phone }}</div>
+	
+	</div>
+
+{% endblock %}

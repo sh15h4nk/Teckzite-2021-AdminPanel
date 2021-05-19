@@ -6,15 +6,27 @@ from app.functions import *
 
 #fetching 
 def getAdminsAll():
-    rows = User.query.filter_by(role=1).all()
+    rows = User.query.filter_by(role="admin").all()
     return rows
 
-def getCoordinatorsAll():
-    rows = User.query.filter_by(role=2).all()
+def getEventManagersAll():
+    rows = User.query.filter_by(role="event_manager").all()
     return rows
-    
-def getOrganisersAll():
-    rows = User.query.filter_by(role=3).all()
+
+def getEventCoordinatorsAll():
+    rows = User.query.filter_by(role="event_coordinator").all()
+    return rows
+
+def getEventOrganisersAll():
+    rows = User.query.filter_by(role="event_organiser").all()
+    return rows
+
+def getWorkshopManagersAll():
+    rows = User.query.filter_by(role="workshop_manager").all()
+    return rows
+
+def getWorkshopCoordinatorsAll():
+    rows = User.query.filter_by(role="workshop_coordinator").all()
     return rows
 
 def getEventsAll():
