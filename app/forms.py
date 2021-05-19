@@ -4,7 +4,7 @@ from sqlalchemy.sql.sqltypes import Integer, String
 from flask_ckeditor import CKEditorField
 from flask_wtf.file import FileAllowed, FileField, FileRequired
 
-from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form
+from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form, RadioField
 from wtforms.fields.simple import HiddenField
 from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired, ValidationError, URL
 from wtforms.widgets.core import HiddenInput
@@ -189,11 +189,14 @@ class ResetRequest(FlaskForm):
         if user is None:
             raise ValidationError("Email doesn't exists")
 
+
 class UpdateProfileForm(FlaskForm):
     name = TextField('Student Name', [
         Required(), Length(min=7, max=20)])
 
     email = StringField('Email Address', [Email("provide a valid email")])
+    
+    gender =  SelectField('Gender', choices=[("male","Male"),("female","Female")])
 
     phone = IntegerField('Phone Number',
         [Required(), NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
@@ -202,4 +205,3 @@ class UpdateProfileForm(FlaskForm):
     dept =  SelectField('Department', choices=BRANCH_CHOICES)
 
     submit = SubmitField("Update")
-

@@ -129,13 +129,25 @@ Update Contacts
 <script>
     $(document).ready(function () {
         $('input[type="checkbox"][name="hide"]').change(function () {
+            field = this.id;
             if(this.checked) {
-                var data = {'id':this.id, 'program_id':this.value, 'value':'hide'}
+                var data = {'id':this.id, 'program_id':this.value, 'value':'hide'};
+                $.post('/hideContact', data, (data,status) => {
+                        console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = false;
+                    });
             }
             else{
-                var data = {'id':this.id, 'program_id':this.value, 'value':'unhide'}
+                var data = {'id':this.id, 'program_id':this.value, 'value':'unhide'};
+                $.post('/hideContact', data, (data,status) => {
+                        console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = true;
+                    });
             }
-            $.post('/hideContact', data, (data,status) => {console.log(status)});
         });
     });
 </script>
