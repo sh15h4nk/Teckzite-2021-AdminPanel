@@ -25,6 +25,51 @@ img {
     background-color: skyblue;
 }
 
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+
 </style>
 <link rel="stylesheet" href="/static/cropperjs-master/dist/cropper.css"/>
 
@@ -38,13 +83,21 @@ img {
 
 <div class="container">
     <div class="col align-self-end" align="right">
-        {% if current_user.role == 1 %}
+        {% if current_user.role == "admin" %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
-        {% elif current_user.role == 2 %}
-            <a class="btn btn-primary" href="{{url_for('coordinate.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_manager" %}
+            <a class="btn btn-primary" href="{{url_for('event_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('event_coordinator.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_organiser" %}
+            <a class="btn btn-primary" href="{{url_for('event_organiser.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_manager" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_coordinator.dashboard')}}" role="button">Done</a>
         {% endif %}
         <br><br>
-        <form method="POST" action="{{url_for('admin.updateDataView')}}">
+        <form method="POST" action="{{url_for('updateDataView')}}">
             <input type="hidden" name="programId" value="{{program_id}}">
             <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{program_id}}">Update Contacts</button>
             <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{program_id}}">Update Faqs</button>
@@ -57,6 +110,19 @@ img {
         	{{ form.csrf_token }}
             {{ wtf.form_field(form.name, value= sponsor.name ) }}
             {{ wtf.form_field(form.url, value=sponsor.url ) }}
+
+            {% if sponsor.hidden == 1 %}
+                <div class="material-switch pull-right">
+                        <input id="{{sponsor.id}}" name="hide" value="{{program_id}}"  type="checkbox" checked />
+                        <label for="{{sponsor.id}}" class="label-default"><br>Hide</label>
+                </div>
+
+                {% else %}
+                <div class="material-switch pull-right">
+                        <input id="{{sponsor.id}}" name="hide" value="{{program_id}}" type="checkbox" />
+                        <label for="{{sponsor.id}}" class="label-default"><br>Hide</label>
+                </div>
+            {% endif %}
 
             <input type="file" class="input-image">
             <div class="item">
@@ -80,7 +146,7 @@ img {
         </div>
         <br><br> <br><br>
     {% endfor %}
-    <form method="POST" action="{{url_for('admin.addDataView')}}">
+    <form method="POST" action="{{url_for('addDataView')}}">
         <input type="hidden" name="programId" value="{{program_id}}">
         <button type="submit" class="btn btn-primary" name="add-sponsor-form" value="add-sponsor-form">Add Sponsor's</button>
     </form>
@@ -95,5 +161,30 @@ img {
 
 <script src="/static/cropperjs-master/dist/cropper.js"></script>
 <script src="/static/imageUpload.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('input[type="checkbox"][name="hide"]').change(function () {
+            if(this.checked) {
+                var data = {'id':this.id, 'program_id':this.value, 'value':'hide'};
+                 $.post('/hideSponsor', data, (data,status) => {
+                        console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = false;
+                    });
+            }
+            else{
+                var data = {'id':this.id, 'program_id':this.value, 'value':'unhide'};
+                $.post('/hideSponsor', data, (data,status) => {
+                        console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = true;
+                    });
+            }
+        });
+    });
+</script>
 
 {% endblock %}

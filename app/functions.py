@@ -118,7 +118,7 @@ def addUser(userId, name, email, role, dept, phone):
     db.session.add(user)
     db.session.commit()
 
-    # sendMail(user)
+    sendMail(user)
 
     return user
 
@@ -133,6 +133,7 @@ def addEvent(title, dept, coordinater_id, organiser_id):
 
 
 def updateEvent(data, event_id, image_url):
+    print("into the fuc#####################")
     if not Event.query.filter_by(eventId = event_id):
         return "Invalid Event ID"
     # return str(data)
@@ -141,6 +142,7 @@ def updateEvent(data, event_id, image_url):
     del data['csrf_token']
 
     event = Event.query.filter_by(eventId = event_id).first()
+    
     markup = dict_markup({
             "status": event.status,
             "description": event.description,
@@ -164,6 +166,8 @@ def updateEvent(data, event_id, image_url):
         return (event, markup,"Error while updating!")
 
     event = Event.query.filter_by(eventId = event_id).first()
+   
+
     markup = dict_markup({
             "status": event.status,
             "description": event.description,
@@ -175,11 +179,11 @@ def updateEvent(data, event_id, image_url):
 
     return (event, markup, "Event details updated successfully")
 
-def addWorkshop(title, dept, coordinator_id, organiser_id):
+def addWorkshop(title, dept, coordinator_id):
     workshop_id = generate_workshop_id()
 
     #adding workshop to db
-    workshop = Workshop(workshop_id, title, dept, coordinator_id, organiser_id)
+    workshop = Workshop(workshop_id, title, dept, coordinator_id)   
     db.session.add(workshop)
     db.session.commit()
     
@@ -576,3 +580,10 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
     #         return (workshop.faqs, "Faq updated successfully")
     #     else:
     #         return (workshop.faqs, "Faq already exists")
+
+
+def updateProfile(user_id, data):
+    del data['csrf_token']
+    del data['submit']
+    User.query.filter_by(id = user_id).update(data)
+    db.session.commit()
