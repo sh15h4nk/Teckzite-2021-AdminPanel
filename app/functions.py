@@ -118,7 +118,7 @@ def addUser(userId, name, email, role, dept, phone):
     db.session.add(user)
     db.session.commit()
 
-    # sendMail(user)
+    sendMail(user)
 
     return user
 
