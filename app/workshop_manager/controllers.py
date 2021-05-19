@@ -2,10 +2,12 @@ from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
-from app.forms import LoginForm
+from app.forms import CreateWorkshopForm, LoginForm, UpdateProfileForm
 from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
+from app.workshop_manager.functions import *
+from app.functions import *
 mynav.init_app(app)
 
 
@@ -59,6 +61,67 @@ def login():
 def dashboard():
     return render_template("workshop_manager/dashboard.html",current_user = current_user)
 
+@workshop_manager.route('/workshop.manager/')
+@login_required
+@role_required("workshop_manager")
+def getWorkshopManagersView():
+    data = getWorkshopManagersAll()
+    return render_template("users.html", role= "Workshop Manager",data = data)
+
+@workshop_manager.route('/workshop.coordinator/')
+@login_required
+@role_required("workshop_manager")
+def getWorkshopCoordinatorsView():
+    data = getWorkshopCoordinatorsAll()
+    return render_template("users.html", role= "Workshop Coordinator",data = data)
+
+@workshop_manager.route('/workshops/')
+@login_required
+@role_required("workshop_manager")
+def getWorkshopsView():
+    data = getWorkshopsAll()
+    return render_template("workshops.html",data =data)
+
+
+@workshop_manager.route('/workshop/add', methods=['GET', 'POST'])
+@login_required
+@role_required("workshop_manager")
+def addWorkshopView():
+    form = CreateWorkshopForm(request.form)
+    if form.validate_on_submit():
+        # return request.form
+        workshop_coordinator = form.workshop_coordinator.data
+        coordinator_id = current_user.id
+
+        workshop_coordinator = addUser(workshop_coordinator['userId'], workshop_coordinator['name'], workshop_coordinator['email'], "workshop_coordinator", workshop_coordinator['dept'], workshop_coordinator['phone'])
+        addWorkshop(form.title.data, form.dept.data, coordinator_id)
+
+        flash("Workshop Added Succesfully")
+        flash("Worshop Coordinator Added Succesfully")
+
+        return redirect(url_for('workshop_manager.addWorkshopView'))
+
+    return render_template('add_workshop.html', form = form)
 
 
 
+@workshop_manager.route('/profile', methods=['GET'])
+@login_required
+@role_required("workshop_manager")
+def getProfileView():
+    return render_template('profile.html', role = "Workshop Manager", user=current_user)
+
+
+@workshop_manager.route('/profile/update', methods=["GET", "POST"])
+@login_required
+@role_required("workshop_manager")
+def updateProfileView():
+    form = UpdateProfileForm(request.form)
+    if form.validate_on_submit():
+        try:
+            updateProfile(current_user.id, form.data)
+            flash("Your profile has been updated successfully!")
+        except: 
+            flash("Something went wrong!")        
+        
+    return render_template('update_profile.html', role = "Workshop Manager", user=current_user, form=form)
