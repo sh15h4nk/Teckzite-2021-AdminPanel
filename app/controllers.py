@@ -216,21 +216,54 @@ def hideWorkshopView():
 @app.route('/hideContact', methods=['POST'])
 @login_required
 def hideContactView():
-	if not request.form['id'] or not request.form['value'] or not request.form['workshop_id']:
+	print(request.form)
+	if not request.form['id'] or not request.form['value'] or not request.form['program_id']:
 		return Response(status=400)
+
+	program_id = request.form['program_id']
+	#ACCESS CONTROL
+	if not current_user.role == "admin":
+		if program_id.startswith("EV") and current_user.role in ["event_manager", "event_coordinator", "event_organiser"]:
+			if current_user.role == "event_coordinator" and not Event.query.filter_by(eventId = program_id, dept = current_user.dept).first():
+				return Response(status = 400)
+			elif current_user.role == "event_organiser" and not Event.query.filter_by(eventId = program_id, organiser_id = current_user.id).first():
+				return Response(status = 400)
+		elif program_id.startswith("WS") and current_user.role in ["workshop_manager", "workshop_coordinator"]:
+			if current_user.role == "workshop_coordinator" and not Workshop.query.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
+				return Response(status = 400)
+		else:
+			return Response(status = 403)
+
 	contact = Contact.query.filter_by(id=request.form['id']).first()
 	if contact:
 		if request.form['value'] == 'hide':
-			if Contact.query.filter_by(hidden = 0, workshop_id = request.form['workshop_id']).count() >= 2:
+			if program_id.startswith("EV") and Contact.query.filter_by(hidden = 0, event_id = program_id).count() >= 2:
 				contact.hidden = 1
 				db.session.commit()
 				return Response(status=200)
+			
+			elif program_id.startswith("WS") and Contact.query.filter_by(hidden = 0, workshop_id = program_id.count() >= 2):
+				contact.hidden = 1
+				db.session.commit()
+				return Response(status=200)
+
 			else:
 				return Response(status=400)
+
 		elif request.form['value'] == 'unhide':
-			contact.hidden = 0
-			db.session.commit()
-			return Response(status=200)
+			if program_id.startswith("EV") and Contact.query.filter_by(hidden = 0, event_id = program_id).count() < 3:
+				contact.hidden = 0
+				db.session.commit()
+				return Response(status=200)
+
+			elif program_id.startswith("WS") and Contact.query.filter_by(hidden = 0, workshop_id = program_id.count() < 3):
+				contact.hidden = 0
+				db.session.commit()
+				return Response(status=200)
+
+			else:
+				return Response(status=400)
+
 		else:
 			return Response(status=400)
 	else:
@@ -239,14 +272,40 @@ def hideContactView():
 @app.route('/hideFaq', methods=['POST'])
 @login_required
 def hideFaqView():
-	if not request.form['id'] or not request.form['value'] or not request.form['workshop_id']:
+	if not request.form['id'] or not request.form['value'] or not request.form['program_id']:
 		return Response(status=400)
+
+	program_id = request.form['program_id']
+	#ACCESS CONTROL
+	if not current_user.role == "admin":
+		if program_id.startswith("EV") and current_user.role in ["event_manager", "event_coordinator", "event_organiser"]:
+			if current_user.role == "event_coordinator" and not Event.query.filter_by(eventId = program_id, dept = current_user.dept).first():
+				return Response(status = 400)
+			elif current_user.role == "event_organiser" and not Event.query.filter_by(eventId = program_id, organiser_id = current_user.id).first():
+				return Response(status = 400)
+		elif program_id.startswith("WS") and current_user.role in ["workshop_manager", "workshop_coordinator"]:
+			if current_user.role == "workshop_coordinator" and not Workshop.query.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
+				return Response(status = 400)
+		else:
+			return Response(status = 403)
+
 	faq = FAQ.query.filter_by(id=request.form['id']).first()
 	if faq:
+
 		if request.form['value'] == 'hide':
-			faq.hidden = 1
-			db.session.commit()
-			return Response(status=200)
+			if program_id.startswith("EV") and FAQ.query.filter_by(hidden = 0, event_id = program_id).count() >= 2:
+				faq.hidden = 1
+				db.session.commit()
+				return Response(status=200)
+			
+			elif program_id.startswith("WS") and FAQ.query.filter_by(hidden = 0, workshop_id = program_id.count() >= 2):
+				faq.hidden = 1
+				db.session.commit()
+				return Response(status=200)
+
+			else:
+				return Response(status=400)
+
 		elif request.form['value'] == 'unhide':
 			faq.hidden = 0
 			db.session.commit()
@@ -259,18 +318,51 @@ def hideFaqView():
 @app.route('/hideSponsor', methods=['POST'])
 @login_required
 def hideSponsorView():
-	if not request.form['id'] or not request.form['value'] or not request.form['workshop_id']:
+	if not request.form['id'] or not request.form['value'] or not request.form['program_id']:
 		return Response(status=400)
+
+	program_id = request.form["program_id"]
+	#ACCESS CONTROL
+	if not current_user.role == "admin":
+		if program_id.startswith("EV") and current_user.role in ["event_manager", "event_coordinator", "event_organiser"]:
+			if current_user.role == "event_coordinator" and not Event.query.filter_by(eventId = program_id, dept = current_user.dept).first():
+				return Response(status = 400)
+			elif current_user.role == "event_organiser" and not Event.query.filter_by(eventId = program_id, organiser_id = current_user.id).first():
+				return Response(status = 400)
+		elif program_id.startswith("WS") and current_user.role in ["workshop_manager", "workshop_coordinator"]:
+			if current_user.role == "workshop_coordinator" and not Workshop.query.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
+				return Response(status = 400)
+		else:
+			return Response(status = 403)
+
 	sponsor = Sponsor.query.filter_by(id=request.form['id']).first()
 	if sponsor:
 		if request.form['value'] == 'hide':
-			sponsor.hidden = 1
-			db.session.commit()
-			return Response(status=200)
+			if program_id.startswith("EV") and Sponsor.query.filter_by(hidden = 0, event_id = program_id).count() >= 2:
+				sponsor.hidden = 1
+				db.session.commit()
+				return Response(status=200)
+			
+			elif program_id.startswith("WS") and Sponsor.query.filter_by(hidden = 0, workshop_id = program_id.count() >= 2):
+				sponsor.hidden = 1
+				db.session.commit()
+				return Response(status=200)
+
+			else:
+				return Response(status=400)
+
 		elif request.form['value'] == 'unhide':
-			sponsor.hidden = 0
-			db.session.commit()
-			return Response(status=200)
+			if program_id.startswith("EV") and Sponsor.query.filter_by(hidden = 0, event_id = program_id).count() < 3:
+				sponsor.hidden = 0
+				db.session.commit()
+				return Response(status=200)
+
+			elif program_id.startswith("WS") and Sponsor.query.filter_by(hidden = 0, workshop_id = program_id).count() < 3:
+				sponsor.hidden = 0
+				db.session.commit()
+				return Response(status=200)
+			else:
+				return Response(starts = 400)
 		else:
 			return Response(status=400)
 	else:
@@ -528,7 +620,7 @@ def updateDataView():
 
 
 
-@app.route('/event/update', methods= ['GET', 'POST'])
+@app.route('/event/update', methods= ['POST'])
 @login_required
 def updateEventView():
     form = UpdateEventForm(request.form)
@@ -590,7 +682,7 @@ def updateEventView():
             flash(markup[2])
             return render_template('update_event.html', form = form, event = markup[0], markup = markup[1])
 
-    return form.errors
+    # return form.errors
     return render_template('update_event.html', form = form, event = event, markup = markup)
 
 
