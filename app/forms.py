@@ -188,3 +188,18 @@ class ResetRequest(FlaskForm):
         user = User.query.filter_by(email = email.data).first()
         if user is None:
             raise ValidationError("Email doesn't exists")
+
+class UpdateProfileForm(FlaskForm):
+    name = TextField('Student Name', [
+        Required(), Length(min=7, max=20)])
+
+    email = StringField('Email Address', [Email("provide a valid email")])
+
+    phone = IntegerField('Phone Number',
+        [Required(), NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
+    )
+    
+    dept =  SelectField('Department', choices=BRANCH_CHOICES)
+
+    submit = SubmitField("Update")
+

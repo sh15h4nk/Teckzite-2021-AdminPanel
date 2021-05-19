@@ -8,7 +8,7 @@ from flask.globals import current_app
 import flask_session
 from werkzeug.utils import secure_filename
 from app.models import User
-from app.forms import CreateWorkshopForm, LoginForm, CreateEventForm, PhotoForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
+from app.forms import UpdateProfileForm, CreateWorkshopForm, LoginForm, CreateEventForm, PhotoForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
 from app import db, app, bcrypt
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from app.admin import roles
@@ -75,7 +75,7 @@ def login():
 @admin.route('/dashboard/')
 @login_required
 @role_required("admin")
-def dashboard():
+def dashboard():    
     get_flashed_messages()
     return render_template("admin/dashboard.html",current_user = current_user)
 
@@ -274,3 +274,23 @@ def hideUser():
     value = request.form['value']
     return "got the request", user_id, field, value
 
+
+@admin.route('/profile', methods=['GET'])
+@login_required
+@role_required("admin")
+def getProfileView():
+    return render_template('profile.html', role = "Admin", user=current_user)
+
+@admin.route('/profile/update', methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def updateProfileView():
+    form = UpdateProfileForm(request.form)
+    if form.validate_on_submit():
+        try:
+            updateProfile(current_user.id, form.data)
+            flash("Your profile has been updated successfully!")
+        except Exception as e:
+            raise e       
+        
+    return render_template('update_profile.html', role = "Admin", user=current_user, form=form)
