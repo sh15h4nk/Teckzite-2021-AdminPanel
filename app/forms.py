@@ -101,11 +101,15 @@ class UpdateEventForm(FlaskForm):
     photo = FormField(PhotoForm)
 
     min_teamsize = IntegerField('Minimum team size', 
-        [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+        [DataRequired(message = "Enter Valid Number"), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
     max_teamsize = IntegerField('Maximum team size', 
-        [Required(), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
+        [DataRequired(message = "Enter a Valid Number"), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
 
-    # submit = SubmitField('Submit')
+    def validate_max_teamsize(self, max_teamsize):
+        # print(self, max_teamsize.data)
+        if max_teamsize.data < self.min_teamsize.data:
+            raise ValidationError("Maximum size must be less than or equal Minimum size")
+    # # submit = SubmitField('Submit')
 
 class UpdateWorkshopForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
