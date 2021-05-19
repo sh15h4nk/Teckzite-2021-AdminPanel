@@ -62,8 +62,8 @@ def my_nav():
 
 
 
-		profile = View("Profile",'admin.dashboard')
-		edit = View("Update",'admin.dashboard')
+		profile = View("Profile",'admin.getProfileView')
+		edit = View("Update",'admin.updateProfileView')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'admin.logout')
@@ -86,8 +86,8 @@ def my_nav():
 		view_org = View("View",'event_manager.getEventOrganisersView')
 		orag_menu = Subgroup("Event Organisers",view_org)
 
-		profile = View("Profile",'event_manager.dashboard')
-		edit = View("Update",'event_manager.dashboard')
+		profile = View("Profile",'event_manager.getProfileView')
+		edit = View("Update",'event_manager.updateProfileView')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'event_manager.logout')
@@ -106,8 +106,8 @@ def my_nav():
 		view_org = View("View",'event_coordinator.getEventOrganisersView')
 		orag_menu = Subgroup("Event Organisers",view_org)
 
-		profile = View("Profile",'event_coordinator.dashboard')
-		edit = View("Update",'event_coordinator.dashboard')
+		profile = View("Profile",'event_coordinator.getProfileView')
+		edit = View("Update",'event_coordinator.updateProfileView')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'event_coordinator.logout')
@@ -119,8 +119,8 @@ def my_nav():
 
 		view_event = View("My Event", 'event_organiser.getEventsView')
 
-		profile = View("Profile",'event_organiser.dashboard')
-		edit = View("Update",'event_organiser.dashboard')
+		profile = View("Profile",'event_organiser.getProfileView')
+		edit = View("Update",'event_organiser.updateProfileView')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'event_organiser.logout')
@@ -139,8 +139,8 @@ def my_nav():
 		add_coord = View("Add",'workshop_manager.addWorkshopCoordinatorView')
 		coord_menu = Subgroup("Workshop Co-ordinators",view_coord)
 
-		profile = View("Profile",'workshop_manager.dashboard')
-		edit = View("Update",'workshop_manager.dashboard')
+		profile = View("Profile",'workshop_manager.getProfileView')
+		edit = View("Update",'workshop_manager.updateProfileView')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'workshop_manager.logout')
@@ -152,8 +152,8 @@ def my_nav():
 
 		view_workshop = View("My WorkShop", 'workshop_coordinator.getWorkshopsView')
 
-		profile = View("Profile",'workshop_coordinator.dashboard')
-		edit = View("Update",'workshop_coordinator.dashboard')
+		profile = View("Profile",'workshop_coordinator.getProfileView')
+		edit = View("Update",'workshop_coordinator.updateProfileView')
 		profile_menu = Subgroup(current_user.userId,profile,edit)
 
 		logout = View("Logout", 'workshop_coordinator.logout')

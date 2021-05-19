@@ -2,11 +2,12 @@ from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
-from app.forms import LoginForm
+from app.forms import LoginForm, UpdateProfileForm
 from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
 from app.workshop_coordinator.functions import *
+from app.functions import updateProfile
 mynav.init_app(app)
 
 
@@ -71,3 +72,23 @@ def getWorkshopsView():
 
 
 
+
+@workshop_coordinator.route('/profile', methods=['GET'])
+@login_required
+@role_required("workshop_coordinator")
+def getProfileView():
+    return render_template('profile.html', role = "Workshop Coordinator", user=current_user)
+
+@workshop_coordinator.route('/profile/update', methods=["GET", "POST"])
+@login_required
+@role_required("workshop_coordinator")
+def updateProfileView():
+    form = UpdateProfileForm(request.form)
+    if form.validate_on_submit():
+        try:
+            updateProfile(current_user.id, form.data)
+            flash("Your profile has been updated successfully!")
+        except:
+            flash("Something went wrong!")        
+        
+    return render_template('update_profile.html', role = "Workshop Coordinator", user=current_user, form=form)

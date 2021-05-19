@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Update Profile
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div class="container">
+    <form class = 'form' method="post">
+        {{ form.csrf_token }}
+        
+        {{ wtf.form_field( form.name, value = user.name) }} 
+        {{ wtf.form_field( form.email, value = user.email) }} 
+        {{ wtf.form_field( form.dept, value = user.dept) }} 
+        {{ wtf.form_field( form.phone, value = user.phone) }} 
+
+        {{ wtf.form_field( form.submit) }}
+
+    </form>
+</div>
+
+{% endblock %}
