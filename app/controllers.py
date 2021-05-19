@@ -11,6 +11,7 @@ from app.models import User, Event, Workshop, Contact, FAQ, Sponsor
 from app.forms import ChangePassword, CreateEventForm, ResetRequest, UpdateEventForm, UpdateWorkshopForm
 from app.functions import *
 from app.middlewares import role_required
+from app.forms import *
 import os
 # from PIL import Image
 
@@ -535,7 +536,7 @@ def updateEventView():
 
         event_id = request.form['event_id']
         event = Event.query.filter_by(eventId = event_id).first()
-        print("fucking eve#####", event.eventId)
+        # print("fucking eve#####", event.eventId)
         if not event:
             return "Invalid Event"
 
@@ -547,7 +548,8 @@ def updateEventView():
         		return Response(status=400)
         	elif current_user.role == 'event_organiser' and not event.organiser_id == current_user.id:
         		return Response(status=400)
-        	
+        
+        print("Passed###############")
 
         if not event.image_url:
             event.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
@@ -564,10 +566,11 @@ def updateEventView():
         if request.form.get('update-button'):                        
             return render_template('update_event.html', form = form, event = event, markup = markup)
 
+        print("loveeeeee")
         if form.validate_on_submit():
             # return request.form
             event_id = dict(request.form).get('update-event')
-
+            print("validated")
             #update image            
             crop = {}
             base64image = form.photo.image.data
@@ -580,12 +583,14 @@ def updateEventView():
                 crop['height'] = int(float(str(form.photo.cropHeight.data)))
                 
                 image_url = crop_image(form.photo.image.data, crop)     
-
+            
+            print("going to update")
             markup = updateEvent(form.data, event_id, image_url)
 
             flash(markup[2])
             return render_template('update_event.html', form = form, event = markup[0], markup = markup[1])
 
+    return form.errors
     return render_template('update_event.html', form = form, event = event, markup = markup)
 
 

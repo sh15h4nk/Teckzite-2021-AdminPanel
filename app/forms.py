@@ -156,7 +156,7 @@ class CreateWorkshopForm(FlaskForm):
     title = StringField('Title', [DataRequired(), Length(min=5)])
     fee = IntegerField('Fee', [NumberRange(min=0, max=99999, message="Enter a valid number")])
     dept =  SelectField('BRACH', choices=BRANCH_CHOICES)
-    workshop_organiser = FormField(RegisterForm)
+    workshop_coordinator = FormField(RegisterForm)
 
     def validate_title(self, title):
         workshop = Workshop.query.filter_by(title=title.data).first()

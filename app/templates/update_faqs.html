@@ -71,13 +71,21 @@ Update Faq's
 
 <div class="container">
     <div class="col align-self-end" align="right">
-        {% if current_user.role == 1 %}
+        {% if current_user.role == "admin" %}
             <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
-        {% elif current_user.role == 2 %}
-            <a class="btn btn-primary" href="{{url_for('coordinate.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_manager" %}
+            <a class="btn btn-primary" href="{{url_for('event_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('event_coordinator.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_organiser" %}
+            <a class="btn btn-primary" href="{{url_for('event_organiser.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_manager" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_coordinator.dashboard')}}" role="button">Done</a>
         {% endif %}
         <br><br>
-        <form method="POST" action="{{url_for('admin.updateDataView')}}">
+        <form method="POST" action="{{url_for('updateDataView')}}">
             <input type="hidden" name="programId" value="{{program_id}}">
             <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{program_id}}">Update Contacts</button>
             <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{program_id}}">Update Sponsor</button>
@@ -106,7 +114,7 @@ Update Faq's
         </form>
         <br><br>
     {% endfor %}
-    <form method="POST" action="{{url_for('admin.addDataView')}}">
+    <form method="POST" action="{{url_for('addDataView')}}">
         <input type="hidden" name="programId" value="{{program_id}}">
         <button type="submit" class="btn btn-primary" name="add-faq-form" value="add-faq-form">Add FAQs</button>
     </form>

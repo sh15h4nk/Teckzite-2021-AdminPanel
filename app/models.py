@@ -86,8 +86,7 @@ class Workshop(Base):
     resources = db.Column(String(500))
     image_url = db.Column(String(128))
 
-    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
-    organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
+    coordinator_id = db.Column(Integer, ForeignKey('user.id'), unique=True)
     
     hidden = db.Column(SmallInteger, default=0) # if true, workshop is inactive
 
@@ -97,12 +96,11 @@ class Workshop(Base):
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
 
-    def __init__(self, workshop_id, title, dept, coordinator_id, organiser_id):
+    def __init__(self, workshop_id, title, dept, coordinator_id):
         self.workshopId = workshop_id
         self.title = title
         self.dept = dept
         self.coordinator_id = coordinator_id
-        self.organiser_id = organiser_id
 
 
 
@@ -121,7 +119,6 @@ class User(UserMixin,Base):
     organised_events = db.relationship('Event', foreign_keys=[Event.organiser_id])
     
     coordinated_workshops = db.relationship('Workshop', foreign_keys=[Workshop.coordinator_id])
-    organised_workshops = db.relationship('Workshop', foreign_keys = [Workshop.organiser_id])
    
     def generate_token(self, expires_sec=1800):
         serial = Serializer(app.config['SECRET_KEY'], expires_sec)

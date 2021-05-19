@@ -39,7 +39,7 @@ img {
     <form id="workshopform" method="post">
         
         {{ form.csrf_token }}
-        {{ form.workshop_organiser.csrf_token }}
+        {{ form.workshop_coordinator.csrf_token }}
         {{ wtf.quick_form(form) }}
        
     </form>

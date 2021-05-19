@@ -109,7 +109,7 @@ Events
                     {% endif %}
                 </td>
                 <td>
-                    <form method="POST" action="{{url_for('admin.updateEventView')}}">
+                    <form method="POST" action="{{url_for('updateEventView')}}">
                         <input type="hidden" name="event_id" value="{{row.eventId}}">
                         <button id="{{row.eventId}}" name="update-button" value="upload-button"> Update </button>
                     </form>

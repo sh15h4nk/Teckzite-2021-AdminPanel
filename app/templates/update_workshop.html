@@ -38,11 +38,7 @@ img {
     <form class = 'form' method="post">
         
         {{ form.csrf_token }}
-        {% if current_user.role == 1 %}
-        	{{ wtf.form_field(form.title, value = workshop.title) }}
-        {% else %}
-        	{{ wtf.form_field(form.title, value = workshop.title, readonly=true) }}
-        {% endif %}
+        {{ wtf.form_field(form.title, value = workshop.title) }}        
         {{ wtf.form_field(form.fee, value = workshop.fee) }}
 
         <input type="hidden" id="hidden-status" name="hidden-status" value="{{ markup.status }}">
@@ -86,13 +82,28 @@ img {
     </div>
 
    
-    <form method="POST" action="{{url_for('admin.updateDataView')}}">
+    <form method="POST" action="{{url_for('updateDataView')}}">
             <input type="hidden" name="programId" value="{{workshop.workshopId}}">
             <button type="submit" class="btn btn-primary" name="update-contacts-form" value="{{workshop.workshopId}}">Update contacts</button>
             <button type="submit" class="btn btn-primary" name="update-faqs-form" value="{{workshop.workshopId}}">Update FAQs</button>
             <button type="submit" class="btn btn-primary" name="update-sponsors-form" value="{{workshop.workshopId}}">Update Sponsor</button>
     </form>
     
+
+    {% if current_user.role == "admin" %}
+            <a class="btn btn-primary" href="{{url_for('admin.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_manager" %}
+            <a class="btn btn-primary" href="{{url_for('event_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('event_coordinator.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "event_organiser" %}
+            <a class="btn btn-primary" href="{{url_for('event_organiser.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_manager" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_manager.dashboard')}}" role="button">Done</a>
+        {% elif current_user.role == "worshop_coordinator" %}
+            <a class="btn btn-primary" href="{{url_for('workshop_coordinator.dashboard')}}" role="button">Done</a>
+    {% endif %}
+
 </div>
 
 {% block javascript %}
