@@ -14,12 +14,23 @@ Update Profile
         
         {{ wtf.form_field( form.name, value = user.name) }} 
         {{ wtf.form_field( form.email, value = user.email) }} 
-        {{ wtf.form_field( form.dept, value = user.dept) }} 
-        {{ wtf.form_field( form.gender, value = user.gender) }} 
+        {{ wtf.form_field( form.dept) }} 
+        {{ wtf.form_field( form.gender) }} 
         {{ wtf.form_field( form.phone, value = user.phone) }} 
         {{ wtf.form_field( form.submit) }}
 
     </form>
 </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+    $('[value="{{user.dept}}"]').attr('selected', 'selected');
+    $('[value="{{user.gender}}"]').attr('selected', 'selected');
+</script>
 
 {% endblock %}
