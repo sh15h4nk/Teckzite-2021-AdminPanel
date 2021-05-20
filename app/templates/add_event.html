@@ -18,3 +18,17 @@ Add Event
 </div>
 
 {% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+    if ("{{dept}}"){
+        console.log("{{dept}}")
+        $('[value="{{dept}}"]').attr('selected', 'selected');
+    }
+ 
+</script>
+
+{% endblock %}

@@ -120,7 +120,7 @@ class UpdateWorkshopForm(FlaskForm):
 class Contacts(FlaskForm):
     name = StringField('Name')
     email = StringField('Email Address', [Email("provide a valid email")])
-    phone = IntegerField('Phone Number',
+    phone = IntegerField('Phone Number',    
         [NumberRange(min=6000000000, max=9999999999, message="Enter a valid number")]
     )
 
@@ -197,5 +197,8 @@ class UpdateProfileForm(FlaskForm):
     
     dept =  SelectField('Department', choices=BRANCH_CHOICES)
 
+    gender = SelectField('Gender', choices=[('F', 'Female'), ('M', 'Male')])
+
     submit = SubmitField("Update")
+
 
