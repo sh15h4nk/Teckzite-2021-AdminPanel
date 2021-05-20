@@ -12,7 +12,7 @@ Update Faq's
 
 <style type="text/css">
         
-    .material-switch > input[type="checkbox"] {
+.material-switch > input[type="checkbox"] {
     display: none;   
 }
 
@@ -124,12 +124,23 @@ Update Faq's
     $(document).ready(function () {
         $('input[type="checkbox"][name="hide"]').change(function () {
             if(this.checked) {
-                var data = {'id':this.id, 'program_id':this.value, 'value':'hide'}
+                var data = {'id':this.id, 'program_id':this.value, 'value':'hide'};
+                 $.post('/hideFaq', data, (data,status) => {
+                        console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = false;
+                    });
             }
             else{
-                var data = {'id':this.id, 'program_id':this.value, 'value':'unhide'}
+                var data = {'id':this.id, 'program_id':this.value, 'value':'unhide'};
+                $.post('/hideFaq', data, (data,status) => {
+                        console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = true;
+                    });
             }
-            $.post('/hideFaq', data, (data,status) => {console.log(status)});
         });
     });
 </script>
