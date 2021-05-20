@@ -11,7 +11,7 @@ Events
 
 <style type="text/css">
 		
-	.material-switch > input[type="checkbox"] {
+.material-switch > input[type="checkbox"] {
     display: none;   
 }
 
@@ -146,12 +146,23 @@ Events
 
     	$('input[type="checkbox"][name="hide"]').change(function () {
 	     	if(this.checked) {
-	     		var data = {'id':this.id, 'value':'hide'}
+	     		var data = {'id':this.id, 'value':'hide'};
+                $.post('/hideEvent', data, (data,status) => {
+                    console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = false;
+                    });
 	     	}
 	     	else{
-	     		var data = {'id':this.id, 'value':'unhide'}
+	     		var data = {'id':this.id, 'value':'unhide'};
+                $.post('/hideEvent', data, (data,status) => {
+                    console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = true;
+                    });
 	     	}
-	     	$.post('/hideEvent', data, (data,status) => {console.log(status)});
  		});
 	});
 

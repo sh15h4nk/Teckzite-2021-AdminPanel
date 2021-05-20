@@ -146,13 +146,25 @@
 
 
 		$('input[type="checkbox"][name="hide"]').change(function () {
+			field = this.id;
 	     	if(this.checked) {
-	     		var data = {'id':this.id, 'value':'hide'}
+	     		var data = {'id':this.id, 'value':'hide'};
+	     		$.post('/hideUser', data, (data,status) => {
+		     		console.log(status)
+		     	})
+		     		.fail(function(response){
+		     			document.getElementById(field).checked = false;
+		     		});
 	     	}
 	     	else{
-	     		var data = {'id':this.id, 'value':'unhide'}
+	     		var data = {'id':this.id, 'value':'unhide'};
+	     		$.post('/hideUser', data, (data,status) => {
+		     		console.log(status)
+		     	})
+		     		.fail(function(response){
+		     			document.getElementById(field).checked = true;
+		     		});
 	     	}
-	     	$.post('/hideUser', data, (data,status) => {console.log(status)});
  		});
 	});
 </script>

@@ -22,8 +22,8 @@ class Sponsor(db.Model):
     image_url = db.Column(String(128))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.eventId'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
+    event_id = db.Column(String(7), ForeignKey('event.eventId'))
+    workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
 
     def __init__(self, name, url, image_url):
         self.name = name
@@ -157,8 +157,8 @@ class Contact(db.Model):
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
 
-    event_id = db.Column(Integer, ForeignKey('event.eventId'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
+    event_id = db.Column(String(7), ForeignKey('event.eventId'))
+    workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
 
     def __init__(self, name, email, phone):
         self.name = name
@@ -171,8 +171,8 @@ class FAQ(db.Model):
     answer = db.Column(String(500))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
 
-    event_id = db.Column(Integer, ForeignKey('event.eventId'))
-    workshop_id = db.Column(Integer, ForeignKey('workshop.workshopId'))
+    event_id = db.Column(String(7), ForeignKey('event.eventId'))
+    workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
 
     def __init__(self, question, answer):
         self.question = question
@@ -226,37 +226,37 @@ if not us:
     db.session.commit()
 
 
-us = User.query.filter_by(userId="event_manager").first()
+us = User.query.filter_by(userId="event_m").first()
 if not us:
-    us = User("event_manager","event_manager","event_manager@gmail.com",bcrypt.generate_password_hash("event_manager"),"event_manager","CSE", 'XXX3XXXXXX')
+    us = User("event_m","event_manager","event_manager@gmail.com",bcrypt.generate_password_hash("event_manager"),"event_manager","CSE", 'XXX3XXXXXX')
     db.session.add(us)
     db.session.commit()
 
 
-us = User.query.filter_by(userId="event_coordinator").first()
+us = User.query.filter_by(userId="event_c").first()
 if not us:
-    us = User("event_coordinator","event_coordinator","event_coordinator@gmail.com",bcrypt.generate_password_hash("event_coordinator"),"event_coordinator","CSE", 'XX4XXXXXXX')
+    us = User("event_c","event_coordinator","event_coordinator@gmail.com",bcrypt.generate_password_hash("event_coordinator"),"event_coordinator","CSE", 'XX4XXXXXXX')
     db.session.add(us)
     db.session.commit()
 
 
-us = User.query.filter_by(userId="event_organiser").first()
+us = User.query.filter_by(userId="event_o").first()
 if not us:
-    us = User("event_organiser","event_organiser","event_organiser@gmail.com",bcrypt.generate_password_hash("event_organiser"),"event_organiser","CSE", 'XX4XXXX4XX')
+    us = User("event_o","event_organiser","event_organiser@gmail.com",bcrypt.generate_password_hash("event_organiser"),"event_organiser","CSE", 'XX4XXXX4XX')
     db.session.add(us)
     db.session.commit()
 
 
-us = User.query.filter_by(userId="workshop_manager").first()
+us = User.query.filter_by(userId="wkshp_m").first()
 if not us:
-    us = User("workshop_manager","workshop_manager","workshop_manager@gmail.com",bcrypt.generate_password_hash("workshop_manager"),"workshop_manager","CSE", 'XX5XXXXXXX')
+    us = User("wkshp_m","workshop_manager","workshop_manager@gmail.com",bcrypt.generate_password_hash("workshop_manager"),"workshop_manager","CSE", 'XX5XXXXXXX')
     db.session.add(us)
     db.session.commit()
 
 
-us = User.query.filter_by(userId="workshop_coordinator").first()
+us = User.query.filter_by(userId="wkshp_c").first()
 if not us:
-    us = User("workshop_coordinator","workshop_coordinator","workshop_coordinator@gmail.com",bcrypt.generate_password_hash("workshop_coordinator"),"workshop_coordinator","CSE", 'XXX5XXXXXX')
+    us = User("wkshp_c","workshop_coordinator","workshop_coordinator@gmail.com",bcrypt.generate_password_hash("workshop_coordinator"),"workshop_coordinator","CSE", 'XXX5XXXXXX')
     db.session.add(us)
     db.session.commit() 
 
