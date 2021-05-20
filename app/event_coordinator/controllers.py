@@ -98,7 +98,7 @@ def addEventView():
         # flash("Check Email to reset password")
         return redirect(url_for('event_coordinator.addEventView'))
 
-    return render_template('add_event.html', form=form)
+    return render_template('add_event.html', form=form, dept=current_user.dept)
 
 
 @event_coordinator.route('/profile', methods=['GET'])
