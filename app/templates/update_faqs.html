@@ -123,12 +123,14 @@ Update Faq's
 <script>
     $(document).ready(function () {
         $('input[type="checkbox"][name="hide"]').change(function () {
+            field = this.id;
             if(this.checked) {
                 var data = {'id':this.id, 'program_id':this.value, 'value':'hide'};
                  $.post('/hideFaq', data, (data,status) => {
                         console.log(status)
                 })
                     .fail(function(response){
+                        alert("Operation not permitted!");
                         document.getElementById(field).checked = false;
                     });
             }
@@ -138,6 +140,7 @@ Update Faq's
                         console.log(status)
                 })
                     .fail(function(response){
+                        alert("Operation not permitted!");
                         document.getElementById(field).checked = true;
                     });
             }

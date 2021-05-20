@@ -1,3 +1,4 @@
+from app.event_manager import event_manager
 from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
@@ -7,20 +8,11 @@ from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
 from app.event_manager.functions import *
-from app.functions import *
-mynav.init_app(app)
-
-
-
-from app.event_manager import event_manager
 
 
 @event_manager.route('/')
-
 def home():
     return render_template('workshop_manager/index.html')
-
-
 
 @event_manager.route("/logout/")
 def logout():

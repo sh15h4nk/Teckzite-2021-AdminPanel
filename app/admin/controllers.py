@@ -1,30 +1,16 @@
-from functools import singledispatch
-from operator import add
-from typing import Any
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash, escape, get_flashed_messages, Markup, jsonify, Response
-import flask
 from flask.ctx import after_this_request
 from flask.globals import current_app
-import flask_session
 from werkzeug.utils import secure_filename
 from app.models import User
 from app.forms import UpdateProfileForm, CreateWorkshopForm, LoginForm, CreateEventForm, PhotoForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
-from app import db, app, bcrypt
+from app import db, app, bcrypt, ckeditor
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
-from app.admin import roles
-import cv2
-import os, asyncio
-
-import urllib
-
 from app.admin import admin
 from app.admin.functions import *
 from app.functions import *
-from app.controllers import login_manager
 from app.mynav import mynav
-
 from app.middlewares import role_required
-from app import ckeditor
 from sqlalchemy import and_, or_
 
 

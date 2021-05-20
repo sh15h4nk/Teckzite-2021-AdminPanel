@@ -1,3 +1,4 @@
+from app.event_coordinator import event_coordinator
 from sqlalchemy.sql.expression import false
 from app.middlewares import role_required
 from app import app, db, bcrypt
@@ -8,19 +9,11 @@ from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
 from app.event_coordinator.functions import *
-mynav.init_app(app)
-
-
-
-from app.event_coordinator import event_coordinator
 
 
 @event_coordinator.route('/')
-
 def home():
     return render_template('event_coordinator/index.html')
-
-
 
 @event_coordinator.route("/logout/")
 def logout():

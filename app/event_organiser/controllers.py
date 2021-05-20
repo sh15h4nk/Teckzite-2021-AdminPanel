@@ -1,4 +1,4 @@
-from types import resolve_bases
+from app.event_organiser import event_organiser
 from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
@@ -9,19 +9,11 @@ from app.controllers import login_manager
 from app.mynav import mynav
 from app.event_organiser.functions import *
 from app.functions import updateProfile
-mynav.init_app(app)
-
-
-
-from app.event_organiser import event_organiser
-
 
 
 @event_organiser.route('/')
 def home():
     return render_template('event_organiser/index.html')
-
-
 
 @event_organiser.route("/logout/")
 def logout():

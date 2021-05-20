@@ -136,6 +136,7 @@ Update Contacts
                         console.log(status)
                 })
                     .fail(function(response){
+                        alert("Operation not permitted!");
                         document.getElementById(field).checked = false;
                     });
             }
@@ -145,6 +146,7 @@ Update Contacts
                         console.log(status)
                 })
                     .fail(function(response){
+                        alert("Operation not permitted!");
                         document.getElementById(field).checked = true;
                     });
             }

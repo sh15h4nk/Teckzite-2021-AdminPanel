@@ -6,7 +6,7 @@ from flask_login import current_user,login_required
 
 
 
-mynav = Nav()
+mynav = Nav(app)
 
 @login_required
 @mynav.navigation("my_nav")

@@ -1,4 +1,4 @@
-
+from app.functions import *
 from app.models import Workshop
 
 def getWorkshopsAll(workshop_coordinator_id):

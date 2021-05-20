@@ -1,26 +1,16 @@
-from operator import contains
-from os import stat, stat_result
-
-from botocore.retries import bucket
-import flask_sqlalchemy
-from app.forms import Contacts
-import re
-from app import mail, db, app
-from flask_mail import Message 
-from flask.helpers import flash, url_for
-from flask import escape, Markup
-from app.models import User, Event, Workshop, CurrentId, Contact, FAQ, Sponsor
-import json
+import base64, cv2, uuid
 from config import *
-from app.models import Image
-
-from PIL import Image as PIL_Image
 from io import BytesIO
-import base64, cv2, uuid, numpy as np
-from app import s3, bcrypt
-import asyncio, time
-
+from app.forms import Contacts
+from flask_mail import Message 
 from sqlalchemy import and_, or_
+from flask import escape, Markup
+from PIL import Image as PIL_Image
+from botocore.retries import bucket
+from flask.helpers import flash, url_for
+from app import mail, db, app, s3, bcrypt
+from app.models import User, Event, Workshop, CurrentId, Contact, FAQ, Sponsor, Image
+
 
 def dict_escape(d:dict):
     for k,v in d.items():
@@ -117,8 +107,10 @@ def addUser(userId, name, email, role, dept, phone):
     user = User(userId, name, email, password, role, dept, phone)
     db.session.add(user)
     db.session.commit()
-
-    sendMail(user)
+    try:
+        sendMail(user)
+    except Exception as e:
+        app.logger.warning("Email cannot be send"+ str(e))
 
     return user
 
@@ -133,7 +125,6 @@ def addEvent(title, dept, coordinater_id, organiser_id):
 
 
 def updateEvent(data, event_id, image_url):
-    print("into the fuc#####################")
     if not Event.query.filter_by(eventId = event_id):
         return "Invalid Event ID"
     # return str(data)
@@ -478,7 +469,6 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
     if not sponsor:
         return "Not a sponsor of the Program"
 
-    # sponsor = Sponsor.query.filter(and_(Sponsor.name == data['name'], Sponsor.url == data['url'], or_(Sponsor.workshop_id == program.workshopId, Sponsor.event_id == program.eventId))).first()
     if sponsor:
         return "Sponsor already exists!"
     if image_url:
@@ -489,98 +479,6 @@ def updateSponsor(data, sponsor_id, program_id, image_url=""):
         return  "Error while updating"
     db.session.commit()
     return Sponsor
-
-
-# def updateWorkshop(data, workshop_id, image_url=""):
-
-#     if not Workshop.query.filter_by(id = workshop_id):
-#         return "Invalid Workshop ID"
-#     del data['photo']
-#     del data['csrf_token']
-
-#     workshop = Workshop.query.filter_by(id = workshop_id).first()
-#     # markup = dict_markup({
-#     #     "status": workshop.status,
-#     #     "description": workshop.description,
-#     #     "about": workshop.about,
-#     #     "timeline": workshop.timeline,
-#     #     "resources": workshop.resources,
-#     # })
-
-
-#     data = dict_escape(data)
-#     try:
-        
-#         if image_url:
-#             data['image_url'] = image_url     
-        
-#         status =  Workshop.query.filter_by(id = field_id).update(data)
-#         db.session.commit()
-
-#     except:
-#         return (workshop, markup,"Error while updating!")
-
-#     workshop = Workshop.query.filter_by(id = field_id).first()
-#     markup = dict_markup({
-#         "status": workshop.status,
-#         "description": workshop.description,
-#         "about": workshop.about,
-#         "timeline": workshop.timeline,
-#         "resources": workshop.resources,
-#     })
-
-#     return (workshop, markup, "Workshop details updated successfully")
-
-    
-    # elif field == "contact":
-    #     del data['csrf_token']
-    #     contact = Contact.query.filter_by(email = data['email'], phone = data['phone']).first()
-    #     workshop = Workshop.query.filter_by(id = workshop_id).first()
-    #     if not contact:    
-    #         try:  
-    #             contact = Contact.query.filter_by(id = field_id).update(data)
-    #         except:
-    #             return (workshop.contacts, "Error while updating!")
-
-    #         workshop = Workshop.query.filter_by(id = workshop_id).first()
-    #         return (workshop.contacts, "Contact updated successfully")
-    #     else:            
-    #         return (workshop.contacts, "Contact already exists")
-                  
-    
-    # elif field == "sponsor":
-    #     del data['csrf_token']
-    #     del data['photo']
-    #     sponsor = Sponsor.query.filter_by(name = data['name'], url = data['url']).first()
-    #     workshop = Workshop.query.filter_by(id = workshop_id).first()
-    #     if not sponsor:    
-    #         try:
-    #             if image_url:
-    #                 data['image_url'] = image_url 
-    #             sponsor = Sponsor.query.filter_by(id = field_id).update(data)
-    #         except:
-    #             return (workshop.contacts, "Error while updating!")
-
-    #         workshop = Workshop.query.filter_by(id = workshop_id).first()
-    #         return (workshop.sponsors, "Sponsor updated successfully")
-    #     else:
-    #         return (workshop.sponsors, "Sponsor already exists")
-
-    # elif field == "faq":
-    #     del data['csrf_token']
-    #     faq = FAQ.query.filter_by(question = data['question'], answer = data['answer']).first()
-    #     workshop = Workshop.query.filter_by(id = workshop_id).first()
-    #     if not faq:    
-    #         try:
-    #             faq = FAQ.query.filter_by(id = field_id).update(data)
-    #         except:
-    #             return (workshop.contacts, "Error while updating!")
-
-    #         workshop = Workshop.query.filter_by(id = workshop_id).first()
-    #         return (workshop.faqs, "Faq updated successfully")
-    #     else:
-    #         return (workshop.faqs, "Faq already exists")
-
 
 def updateProfile(user_id, data):
     del data['csrf_token']

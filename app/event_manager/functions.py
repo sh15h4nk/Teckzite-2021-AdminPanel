@@ -1,4 +1,6 @@
-from app.models import *
+from app.models import User, Event
+from app.functions import *
+
 
 def getEventCoordinatorsAll():
     rows = User.query.filter_by(role="event_coordinator").all()

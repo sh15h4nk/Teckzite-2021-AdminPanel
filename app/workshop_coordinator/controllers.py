@@ -1,3 +1,4 @@
+from app.workshop_coordinator import workshop_coordinator
 from app.middlewares import role_required
 from app import app, db, bcrypt
 from flask import url_for, redirect, request, render_template, Blueprint, session, flash
@@ -7,20 +8,11 @@ from app.models import User
 from app.controllers import login_manager
 from app.mynav import mynav
 from app.workshop_coordinator.functions import *
-from app.functions import updateProfile
-mynav.init_app(app)
-
-
-
-from app.workshop_coordinator import workshop_coordinator
-
 
 
 @workshop_coordinator.route('/')
-
 def home():
     return render_template('workshop_coordinator/index.html')
-
 
 
 @workshop_coordinator.route("/logout/")

@@ -1,5 +1,5 @@
 from app.models import *
-
+from app.functions import *
 
 def getWorkshopManagersAll():
     rows = User.query.filter_by(role="workshop_manager").all()

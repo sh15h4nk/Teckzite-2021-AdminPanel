@@ -1,10 +1,9 @@
-from enum import unique
-from flask_migrate import branches, current
+from app import db, app, bcrypt
 
 from sqlalchemy.orm import backref
-
-from app import db, app, bcrypt
 from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
+from enum import unique
+
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
@@ -20,7 +19,7 @@ class Sponsor(db.Model):
     name = db.Column(String(128), nullable=False)
     url = db.Column(String(128))
     image_url = db.Column(String(128))
-    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
+    hidden = db.Column(SmallInteger, default=0) # if true, sponsor is inactive
 
     event_id = db.Column(String(7), ForeignKey('event.eventId'))
     workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
@@ -34,7 +33,7 @@ class Sponsor(db.Model):
 class Image(db.Model):
     id = db.Column(Integer, primary_key=True)
     image_url = db.Column(String(128), nullable=False)
-    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
+    hidden = db.Column(SmallInteger, default=0) # if true, image is inactive
 
     def __init__(self, image_url):
         self.image_url = image_url
@@ -154,7 +153,7 @@ class Contact(db.Model):
     name = db.Column(String(128), nullable=False)
     email = db.Column(String(128), nullable=False)
     phone = db.Column(String(10))
-    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
+    hidden = db.Column(SmallInteger, default=0) # if true, contacr is inactive
 
 
     event_id = db.Column(String(7), ForeignKey('event.eventId'))
@@ -169,7 +168,7 @@ class FAQ(db.Model):
     id = db.Column(Integer, primary_key=True)
     question = db.Column(String(100))
     answer = db.Column(String(500))
-    hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
+    hidden = db.Column(SmallInteger, default=0) # if true, faq is inactive
 
     event_id = db.Column(String(7), ForeignKey('event.eventId'))
     workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
@@ -219,6 +218,8 @@ class CurrentId(db.Model):
 
 db.create_all()
 
+
+#Admins
 us = User.query.filter_by(userId="admin").first()
 if not us:
     us = User("admin","admin","admin@gmail.com",bcrypt.generate_password_hash("admin"),"admin","CSE", 'XXXXXXXXXX')
