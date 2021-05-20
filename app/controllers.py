@@ -320,6 +320,7 @@ def hideFaqView():
 @app.route('/hideSponsor', methods=['POST'])
 @login_required
 def hideSponsorView():
+	print(request.form)
 	if not request.form['id'] or not request.form['value'] or not request.form['program_id']:
 		return Response(status=406)
 
@@ -364,7 +365,7 @@ def hideSponsorView():
 				db.session.commit()
 				return Response(status=200)
 			else:
-				return Response(starts = 406)
+				return Response(status = 406)
 		else:
 			return Response(status=406)
 	else:

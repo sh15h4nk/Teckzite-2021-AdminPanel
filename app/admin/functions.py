@@ -1,6 +1,4 @@
-from flask_migrate import branches
 from app import db
-
 from app.models import User, Event, Workshop
 from app.functions import *
 

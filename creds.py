@@ -4,11 +4,19 @@
 # dbhost="localhost"
 # dbname="tz2021"
 
-email_username = "tz2021mailserver@gmail.com"
-email_passwd = "thisisf0rtz"
+#csrf
+csrf_key = "k1$$mya$$"
+
+#app
+secret_key = "w4tchmybutt"
 
 
+#Email server
+email_username = "no-reply@teckzite.org"
+email_passwd = "p41n1nth3a$$"
 
+mail_server = "smtp.googlemail.com"
+mail_port = 587
 
 
 #AWS RDS SQL CREDS
