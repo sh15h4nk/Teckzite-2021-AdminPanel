@@ -115,6 +115,7 @@ class User(UserMixin,Base):
     phone = db.Column(String(10), unique=True)
     gender = db.Column(String(1))
     hidden = db.Column(SmallInteger, default=0) # if true, user is inactive
+    # status = db.Column(SmallInteger, default=0) # if false, user is inactive # added to check migrations
 
     coordinated_events = db.relationship('Event', foreign_keys=[Event.coordinator_id])
     organised_events = db.relationship('Event', foreign_keys=[Event.organiser_id])
@@ -218,19 +219,19 @@ class CurrentId(db.Model):
 
 
 
-db.create_all()
+# db.create_all()
 
 
 #Admins
 us = User.query.filter_by(userId="N170076").first()
 if not us:
-    us = User("N170076","admin","admin@gmail.com",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9999999999')
+    us = User("N170076","admin","N170076@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9505848891')
     db.session.add(us)
     db.session.commit()
 
-us = User.query.filter_by(userId="admin").first()
+us = User.query.filter_by(userId="N170295").first()
 if not us:
-    us = User("N170295","admin","admin2@gmail.com",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8888888888')
+    us = User("N170295","admin","N170295@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8331987780')
     db.session.add(us)
     db.session.commit()
 
@@ -268,9 +269,9 @@ if not us:
 #     db.session.add(us)
 #     db.session.commit() 
 
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
  
