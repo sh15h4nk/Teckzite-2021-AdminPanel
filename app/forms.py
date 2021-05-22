@@ -100,6 +100,7 @@ class UpdateEventForm(FlaskForm):
     rules = CKEditorField('Rules')
     photo = FormField(PhotoForm)
 
+    priority = IntegerField('Priority')
     min_teamsize = IntegerField('Minimum team size', 
         [DataRequired(message = "Enter Valid Number"), NumberRange(min=1, max=6, message="Team size is must be 1 to 6")])
     max_teamsize = IntegerField('Maximum team size', 
@@ -114,6 +115,7 @@ class UpdateEventForm(FlaskForm):
 class UpdateWorkshopForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
     fee = IntegerField('Fee', [NumberRange(min=0, max=99999, message="Enter a valid number")])
+    priority = IntegerField('Priority')
     description = CKEditorField('Description', [Length(min=20)])
     status = CKEditorField('Status')
     about = CKEditorField('About')

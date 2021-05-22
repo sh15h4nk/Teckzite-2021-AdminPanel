@@ -52,7 +52,7 @@ class Event(Base):
     image_url = db.Column(String(128))
     rules = db.Column(String(2000))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
-    
+    priority = db.Column(Integer, default=0)
 
     contacts = db.relationship('Contact')
     faqs = db.relationship('FAQ')
@@ -84,6 +84,8 @@ class Workshop(Base):
     timeline = db.Column(String(500))
     resources = db.Column(String(500))
     image_url = db.Column(String(128))
+    priority = db.Column(Integer, default=0)
+
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'), unique=True)
     

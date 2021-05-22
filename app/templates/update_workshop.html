@@ -40,6 +40,10 @@ img {
         {{ wtf.form_field(form.title, value = workshop.title) }}        
         {{ wtf.form_field(form.fee, value = workshop.fee) }}
 
+        {% if role == "admin" or role == "workshop_manager"%}
+            {{ wtf.form_field(form.priority, value = workshop.priority) }}
+        {% endif %}
+
         <input type="hidden" id="hidden-status" name="hidden-status" value="{{ markup.status }}">
         {{ wtf.form_field(form.status) }}
 

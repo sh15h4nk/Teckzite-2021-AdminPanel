@@ -643,8 +643,7 @@ def updateEventView():
         		return Response(status=406)
         	elif current_user.role == 'event_organiser' and not event.organiser_id == current_user.id:
         		return Response(status=406)
-        
-        print("Passed###############")
+
 
         if not event.image_url:
             event.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"
@@ -659,16 +658,19 @@ def updateEventView():
             })
 
         if request.form.get('update-button'):                        
-            return render_template('update_event.html', form = form, event = event, markup = markup)
+            return render_template('update_event.html', form = form, event = event, markup = markup, role = current_user.role)
 
-        print("loveeeeee")
         if form.validate_on_submit():
             # return request.form
             event_id = dict(request.form).get('update-event')
             print("validated")
+
+			if current_user.role not in ['admin', 'event_manager']:
+				form.data['priority'] = 0
+
             #update image            
             crop = {}
-            base64image = form.photo.image.data
+            base64image = form.photo.image.data		
 
             image_url = ""
             if base64image:    
@@ -678,15 +680,16 @@ def updateEventView():
                 crop['height'] = int(float(str(form.photo.cropHeight.data)))
                 
                 image_url = crop_image(form.photo.image.data, crop)     
-            
-            print("going to update")
+
+		
+
             markup = updateEvent(form.data, event_id, image_url)
 
             flash(markup[2])
-            return render_template('update_event.html', form = form, event = markup[0], markup = markup[1])
+            return render_template('update_event.html', form = form, event = markup[0], markup = markup[1],role = current_user.role)
 
     # return form.errors
-    return render_template('update_event.html', form = form, event = event, markup = markup)
+    return render_template('update_event.html', form = form, event = event, markup = markup, role = current_user.role)
 
 
 
@@ -722,11 +725,14 @@ def updateWorkshopView():
             })
 
         if request.form.get('update-button'):                        
-            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup)
+            return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup, role = current_user.role)
 
         if form.validate_on_submit():
             # return request.form
             workshop_id = dict(request.form).get('update-workshop')
+
+	    if current_user.role not in ['admin', 'workshop_manager']:
+	        form.data['priority'] = 0
 
             #update image            
             crop = {}
@@ -741,9 +747,12 @@ def updateWorkshopView():
                 
                 image_url = crop_image(form.photo.image.data, crop)     
 
+			if current_user.role not in ['admin', 'workshop_manager']:
+				form.data['priority'] = 0
+
             markup = updateWorkshop(form.data, workshop_id, image_url)
 
             flash(markup[2])
-            return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1])
+            return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1], role = current_user.role)
 
-    return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup)
+    return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup, role = current_user.role)
