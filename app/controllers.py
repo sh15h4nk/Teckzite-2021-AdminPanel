@@ -664,9 +664,10 @@ def updateEventView():
             # return request.form
             event_id = dict(request.form).get('update-event')
             print("validated")
-
+		
+			data = form.data
             if current_user.role not in ['admin', 'event_manager']:
-            	form.data['priority'] = 0
+            	del data['priority']
 
             #update image            
             crop = {}
@@ -683,7 +684,7 @@ def updateEventView():
 
 		
 
-            markup = updateEvent(form.data, event_id, image_url)
+            markup = updateEvent(data, event_id, image_url)
 
             flash(markup[2])
             return render_template('update_event.html', form = form, event = markup[0], markup = markup[1],role = current_user.role)
@@ -730,9 +731,10 @@ def updateWorkshopView():
         if form.validate_on_submit():
             # return request.form
             workshop_id = dict(request.form).get('update-workshop')
-
-            if current_user.role not in ['admin', 'workshop_manager']:
-            	form.data['priority'] = 0
+			
+			data = form.data
+            if current_user.role not in ['admin', 'workshop_manager']
+				del data['priority']
 
             #update image            
             crop = {}
@@ -747,7 +749,7 @@ def updateWorkshopView():
                 
                 image_url = crop_image(form.photo.image.data, crop)     
 
-            markup = updateWorkshop(form.data, workshop_id, image_url)
+            markup = updateWorkshop(data, workshop_id, image_url)
 
             flash(markup[2])
             return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1], role = current_user.role)
