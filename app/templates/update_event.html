@@ -45,6 +45,9 @@ img {
             {{ wtf.form_field(form.prize) }}
         {% endif %}
 
+        {% if role == "admin" or role == "event_manager" %}
+            {{ wtf.form_field(form.priority, value = event.priority) }}
+        {% endif %}
 
         {% if event.min_teamsize != None %}
             {{ wtf.form_field(form.min_teamsize, value = event.min_teamsize) }}
