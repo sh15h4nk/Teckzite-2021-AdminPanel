@@ -222,46 +222,51 @@ db.create_all()
 
 
 #Admins
+us = User.query.filter_by(userId="N170076").first()
+if not us:
+    us = User("N170076","admin","admin@gmail.com",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9999999999')
+    db.session.add(us)
+    db.session.commit()
+
 us = User.query.filter_by(userId="admin").first()
 if not us:
-    us = User("admin","admin","admin@gmail.com",bcrypt.generate_password_hash("admin"),"admin","CSE", 'XXXXXXXXXX')
+    us = User("N170295","admin","admin2@gmail.com",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8888888888')
     db.session.add(us)
     db.session.commit()
 
-
-us = User.query.filter_by(userId="event_m").first()
-if not us:
-    us = User("event_m","event_manager","event_manager@gmail.com",bcrypt.generate_password_hash("event_manager"),"event_manager","CSE", 'XXX3XXXXXX')
-    db.session.add(us)
-    db.session.commit()
-
-
-us = User.query.filter_by(userId="event_c").first()
-if not us:
-    us = User("event_c","event_coordinator","event_coordinator@gmail.com",bcrypt.generate_password_hash("event_coordinator"),"event_coordinator","CSE", 'XX4XXXXXXX')
-    db.session.add(us)
-    db.session.commit()
+# us = User.query.filter_by(userId="event_m").first()
+# if not us:
+#     us = User("event_m","event_manager","event_manager@gmail.com",bcrypt.generate_password_hash("event_manager"),"event_manager","CSE", 'XXX3XXXXXX')
+#     db.session.add(us)
+#     db.session.commit()
 
 
-us = User.query.filter_by(userId="event_o").first()
-if not us:
-    us = User("event_o","event_organiser","event_organiser@gmail.com",bcrypt.generate_password_hash("event_organiser"),"event_organiser","CSE", 'XX4XXXX4XX')
-    db.session.add(us)
-    db.session.commit()
+# us = User.query.filter_by(userId="event_c").first()
+# if not us:
+#     us = User("event_c","event_coordinator","event_coordinator@gmail.com",bcrypt.generate_password_hash("event_coordinator"),"event_coordinator","CSE", 'XX4XXXXXXX')
+#     db.session.add(us)
+#     db.session.commit()
 
 
-us = User.query.filter_by(userId="wkshp_m").first()
-if not us:
-    us = User("wkshp_m","workshop_manager","workshop_manager@gmail.com",bcrypt.generate_password_hash("workshop_manager"),"workshop_manager","CSE", 'XX5XXXXXXX')
-    db.session.add(us)
-    db.session.commit()
+# us = User.query.filter_by(userId="event_o").first()
+# if not us:
+#     us = User("event_o","event_organiser","event_organiser@gmail.com",bcrypt.generate_password_hash("event_organiser"),"event_organiser","CSE", 'XX4XXXX4XX')
+#     db.session.add(us)
+#     db.session.commit()
 
 
-us = User.query.filter_by(userId="wkshp_c").first()
-if not us:
-    us = User("wkshp_c","workshop_coordinator","workshop_coordinator@gmail.com",bcrypt.generate_password_hash("workshop_coordinator"),"workshop_coordinator","CSE", 'XXX5XXXXXX')
-    db.session.add(us)
-    db.session.commit() 
+# us = User.query.filter_by(userId="wkshp_m").first()
+# if not us:
+#     us = User("wkshp_m","workshop_manager","workshop_manager@gmail.com",bcrypt.generate_password_hash("workshop_manager"),"workshop_manager","CSE", 'XX5XXXXXXX')
+#     db.session.add(us)
+#     db.session.commit()
+
+
+# us = User.query.filter_by(userId="wkshp_c").first()
+# if not us:
+#     us = User("wkshp_c","workshop_coordinator","workshop_coordinator@gmail.com",bcrypt.generate_password_hash("workshop_coordinator"),"workshop_coordinator","CSE", 'XXX5XXXXXX')
+#     db.session.add(us)
+#     db.session.commit() 
 
 currentIds = db.session.query(CurrentId).count()
 if currentIds == 0:

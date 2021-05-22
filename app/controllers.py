@@ -663,9 +663,7 @@ def updateEventView():
         if form.validate_on_submit():
             # return request.form
             event_id = dict(request.form).get('update-event')
-            print("validated")
-		
-			data = form.data
+            data = form.data
             if current_user.role not in ['admin', 'event_manager']:
             	del data['priority']
 
@@ -731,10 +729,9 @@ def updateWorkshopView():
         if form.validate_on_submit():
             # return request.form
             workshop_id = dict(request.form).get('update-workshop')
-			
-			data = form.data
-            if current_user.role not in ['admin', 'workshop_manager']
-				del data['priority']
+            data = form.data
+            if current_user.role not in ['admin', 'workshop_manager']:
+            	del data['priority']
 
             #update image            
             crop = {}
