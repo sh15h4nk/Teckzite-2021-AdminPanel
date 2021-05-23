@@ -20,7 +20,7 @@ class LoginForm(FlaskForm):
 
 
 
-BRANCH_CHOICES = [('CSE','CSE'), ('ECE','ECE'), ('MEC', 'MECH'), ('CIV','CIV'), ('CHE', 'CHEM'), ('MME','MME'), ('PUC','PUC'),]
+BRANCH_CHOICES = [('OPE','OPEN TO ALL'), ('CSE','CSE'), ('ECE','ECE'), ('MEC', 'MECH'), ('CIV','CIV'), ('CHE', 'CHEM'), ('MME','MME'), ('PUC','PUC'),]
 
 
 class PhotoForm(FlaskForm):
@@ -91,7 +91,7 @@ class CreateEventForm(FlaskForm):
 
 class UpdateEventForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
-    prize = IntegerField('Fee')
+    prize = IntegerField('Prize')
     description = CKEditorField('Description', [Length(min=20)])
     brief = CKEditorField('Brief')
     status = CKEditorField('Status')
