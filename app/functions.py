@@ -153,7 +153,8 @@ def updateEvent(data, event_id, image_url):
         status =  Event.query.filter_by(eventId = event_id).update(data)
         db.session.commit()
 
-    except:
+    except Exception as e:
+	raise e
         return (event, markup,"Error while updating!")
 
     event = Event.query.filter_by(eventId = event_id).first()
