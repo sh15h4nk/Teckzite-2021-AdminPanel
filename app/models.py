@@ -186,6 +186,11 @@ class CurrentId(db.Model):
     current_event_id = db.Column(Integer, default=10001)
     current_workshop_id = db.Column(Integer, default=10001)
 
+currentIds = db.session.query(CurrentId).count()
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
 
 
 
@@ -269,9 +274,4 @@ if not us:
 #     db.session.add(us)
 #     db.session.commit() 
 
-# currentIds = db.session.query(CurrentId).count()
-# if currentIds == 0:
-#     currentId = CurrentId()
-#     db.session.add(currentId)
-#     db.session.commit()
  
