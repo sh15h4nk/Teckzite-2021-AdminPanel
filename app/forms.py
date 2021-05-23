@@ -91,7 +91,7 @@ class CreateEventForm(FlaskForm):
 
 class UpdateEventForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
-    prize = IntegerField('Fee')
+    prize = IntegerField('Prize')
     description = CKEditorField('Description', [Length(min=20)])
     brief = CKEditorField('Brief')
     status = CKEditorField('Status')
