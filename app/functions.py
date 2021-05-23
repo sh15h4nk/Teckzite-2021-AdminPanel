@@ -146,7 +146,6 @@ def updateEvent(data, event_id, image_url):
 
     data = dict_escape(data)
     try:
-        print("hello")
         if image_url:
             data['image_url'] = image_url     
                 
