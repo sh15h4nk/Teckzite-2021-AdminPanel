@@ -1,7 +1,8 @@
 from app.functions import *
+from app import db
 
 def getEventOrganisersAll(dept):
-    rows = User.query.filter_by(role="event_organiser", dept=dept).all()
+    rows = db.session.query(User, Event).filter(User.dept==dept, User.id == Event.organiser_id).all()
     return rows
 
 def getEventsAll(dept):

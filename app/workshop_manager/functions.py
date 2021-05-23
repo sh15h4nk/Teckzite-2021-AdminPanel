@@ -6,7 +6,7 @@ def getWorkshopManagersAll():
     return rows
 
 def getWorkshopCoordinatorsAll():
-    rows = User.query.filter_by(role="workshop_coordinator").all()
+    rows = db.session.query(User, Workshop).filter(User.id == Workshop.coordinator_id).all()
     return rows
 
 def getWorkshopsAll():
