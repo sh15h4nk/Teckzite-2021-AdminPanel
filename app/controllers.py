@@ -2,6 +2,7 @@ from flask import url_for, redirect, request, render_template, Blueprint, sessio
 from flask.wrappers import Request
 from flask_login import LoginManager, login_required, current_user
 from flask_migrate import current
+from sqlalchemy.sql.expression import true
 from sqlalchemy.sql.sqltypes import Date
 from werkzeug.utils import secure_filename
 from app import app, db, bcrypt
@@ -641,7 +642,7 @@ def updateEventView():
         		return Response(status=406)
         	elif current_user.role == 'event_organiser' and not event.organiser_id == current_user.id:
         		return Response(status=406)
-
+		
 
         if not event.image_url:
             event.image_url = "http://tzimageupload.s3.amazonaws.com/back.jpg"

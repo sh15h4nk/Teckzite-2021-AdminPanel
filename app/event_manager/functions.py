@@ -1,4 +1,4 @@
-from app.models import User, Event
+from app.models import User, Event, db
 from app.functions import *
 
 
@@ -7,7 +7,7 @@ def getEventCoordinatorsAll():
     return rows
 
 def getEventOrganisersAll():
-    rows = User.query.filter_by(role="event_organiser").all()
+    rows = db.session.query(User, Event).filter(User.id == Event.organiser_id).all()
     return rows
 
 def getEventsAll():

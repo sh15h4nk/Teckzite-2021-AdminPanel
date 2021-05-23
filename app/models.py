@@ -95,8 +95,6 @@ class Workshop(Base):
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
-    coordinator_id = db.Column(Integer, ForeignKey('user.id'))
-
     def __init__(self, workshop_id, title, dept, coordinator_id):
         self.workshopId = workshop_id
         self.title = title
@@ -219,7 +217,7 @@ class CurrentId(db.Model):
 
 
 
-# db.create_all()
+db.create_all()
 
 
 #Admins
@@ -269,9 +267,9 @@ if not us:
 #     db.session.add(us)
 #     db.session.commit() 
 
-# currentIds = db.session.query(CurrentId).count()
-# if currentIds == 0:
-#     currentId = CurrentId()
-#     db.session.add(currentId)
-#     db.session.commit()
+currentIds = db.session.query(CurrentId).count()
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
  

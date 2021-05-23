@@ -16,7 +16,7 @@ def getEventCoordinatorsAll():
     return rows
 
 def getEventOrganisersAll():
-    rows = User.query.filter_by(role="event_organiser").all()
+    rows = db.session.query(User, Event).filter(User.id == Event.organiser_id).all()
     return rows
 
 def getWorkshopManagersAll():
@@ -24,7 +24,7 @@ def getWorkshopManagersAll():
     return rows
 
 def getWorkshopCoordinatorsAll():
-    rows = User.query.filter_by(role="workshop_coordinator").all()
+    rows = db.session.query(User, Workshop).filter(User.id == Workshop.coordinator_id).all()
     return rows
 
 def getEventsAll():

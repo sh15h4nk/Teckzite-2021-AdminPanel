@@ -239,7 +239,7 @@ def addWorkshopView():
         coordinator_id = current_user.id
 
         workshop_coordinator = addUser(workshop_coordinator['userId'], workshop_coordinator['name'], workshop_coordinator['email'], "workshop_coordinator", workshop_coordinator['dept'], workshop_coordinator['phone'])
-        addWorkshop(form.title.data, form.dept.data, coordinator_id)
+        addWorkshop(form.title.data, form.dept.data, workshop_coordinator.id)
 
         flash("Workshop Added Succesfully")
         flash("Organiser Added Succesfully")

@@ -83,6 +83,14 @@
 				<th>Branch</th>
 				<th>Gender</th>
 				<th>Phone</th>
+				
+				{% if role == "Event Organiser" %}
+					<th>Event</th>
+
+				{% elif role == "Workshop Coordinator" %}
+					<th>Workshop</th>
+				{% endif %}
+
 				<th>Block</th>
 
 			</tr>
@@ -90,12 +98,25 @@
 		<tbody>
 			{% for row in data %}
 			<tr>
-				<td>{{ row.id }}</td>
-				<td>{{ row.name }}</td>
-				<td>{{ row.email }}</td>
-				<td>{{ row.dept }}</td>
-				<td>{{ row.gender }}</td>
-				<td>{{ row.phone }}</td>
+
+				{% if role == "Event Organiser" or role=="Workshop Coordinator" %}
+					<td>{{ row[0].id }}</td>
+					<td>{{ row[0].name }}</td>
+					<td>{{ row[0].email }}</td>
+					<td>{{ row[0].dept }}</td>
+					<td>{{ row[0].gender }}</td>
+					<td>{{ row[0].phone }}</td>
+					<td>{{ row[1].title }}</td>
+				{% else %}
+					<td>{{ row.id }}</td>
+					<td>{{ row.name }}</td>
+					<td>{{ row.email }}</td>
+					<td>{{ row.dept }}</td>
+					<td>{{ row.gender }}</td>
+					<td>{{ row.phone }}</td>
+				{% endif %}
+
+
 				<td>
 					{% if row.hidden == 1 %}
 					<div class="material-switch pull-right">
