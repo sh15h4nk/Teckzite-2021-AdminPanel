@@ -185,8 +185,6 @@ class CurrentId(db.Model):
     current_workshop_id = db.Column(Integer, default=10001)
 
 
-
-
 # class TechUser(Base):
 #     name = db.Column(String(128), nullable=False)
 #     email = db.Column(String(128), nullable=True, unique=True)
@@ -267,9 +265,9 @@ if not us:
 #     db.session.add(us)
 #     db.session.commit() 
 
+ 
 currentIds = db.session.query(CurrentId).count()
 if currentIds == 0:
     currentId = CurrentId()
     db.session.add(currentId)
     db.session.commit()
- 
