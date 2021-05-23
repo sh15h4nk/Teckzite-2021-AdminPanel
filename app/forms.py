@@ -20,7 +20,7 @@ class LoginForm(FlaskForm):
 
 
 
-BRANCH_CHOICES = [('CSE','CSE'), ('ECE','ECE'), ('MEC', 'MECH'), ('CIV','CIV'), ('CHE', 'CHEM'), ('MME','MME'), ('PUC','PUC'),]
+BRANCH_CHOICES = [('OPE','OPEN TO ALL'), ('CSE','CSE'), ('ECE','ECE'), ('MEC', 'MECH'), ('CIV','CIV'), ('CHE', 'CHEM'), ('MME','MME'), ('PUC','PUC'),]
 
 
 class PhotoForm(FlaskForm):
