@@ -1,4 +1,4 @@
-from app import db, app, bcrypt
+from app import app, db, bcrypt
 
 from sqlalchemy.orm import backref
 from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
