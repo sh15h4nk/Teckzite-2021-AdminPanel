@@ -73,13 +73,6 @@ img {
         {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
         {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
 
-        {{ form.photo.csrf_token }}
-        {{ wtf.form_field(form.photo.image, class="hide image")}}
-        {{ wtf.form_field(form.photo.cropX, class="hide cropX")}}
-        {{ wtf.form_field(form.photo.cropY, class="hide cropY")}}
-        {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
-        {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
-
         <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.workshopId}}">Submit</button>
     </form>
     </div>
@@ -122,6 +115,7 @@ img {
         document.getElementById('hidden-about').value !== "None" ? CKEDITOR.instances.about.setData( document.getElementById("hidden-about").value ) : "";
         document.getElementById('hidden-timeline').value !== "None" ? CKEDITOR.instances.timeline.setData( document.getElementById("hidden-timeline").value ) : "";
         document.getElementById('hidden-resources').value !== "None" ? CKEDITOR.instances.resources.setData( document.getElementById("hidden-resources").value ) : "";
+    });
    
 </script>
 
