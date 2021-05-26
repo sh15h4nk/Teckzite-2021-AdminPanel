@@ -206,8 +206,12 @@ class Address(db.Model):
     state = db.Column(String(192))
     district = db.Column(String(192))
     city = db.Column(String(192))
-    collegeId = db.Column(String(20))
     t_userId = db.Column(Integer, ForeignKey('tech_user.id'), unique=True)
+
+    def __init__(self, state, district, city):
+        self.state = state
+        self.district = district
+        self.city = city
 
 class TechUser(Base, UserMixin):
     userId = db.Column(String(100), unique=True)
