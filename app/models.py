@@ -209,7 +209,7 @@ class Address(db.Model):
     collegeId = db.Column(String(20))
     t_userId = db.Column(Integer, ForeignKey('tech_user.id'), unique=True)
 
-class TechUser(Base):
+class TechUser(Base, UserMixin):
     userId = db.Column(String(100), unique=True)
     name = db.Column(String(30))
     email = db.Column(String(128), nullable=False, unique=True)
@@ -227,7 +227,8 @@ class TechUser(Base):
         self.email = email
 
 
-
+class Launch(Base):
+    launch = db.Column(Integer, default=0)
 
 
 db.create_all()
@@ -285,4 +286,10 @@ currentIds = db.session.query(CurrentId).count()
 if currentIds == 0:
     currentId = CurrentId()
     db.session.add(currentId)
+    db.session.commit()
+
+launchs = db.session.query(Launch).count()
+if launchs == 0:
+    launch = Launch()
+    db.session.add(launch)
     db.session.commit()
