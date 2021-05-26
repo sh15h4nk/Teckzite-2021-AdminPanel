@@ -206,7 +206,7 @@ class Address(db.Model):
     state = db.Column(String(192))
     district = db.Column(String(192))
     city = db.Column(String(192))
-    t_userId = db.Column(Integer, ForeignKey('tech_user.id'), unique=True)
+    t_userId = db.Column(String(), ForeignKey('tech_user.id'), unique=True)
 
     def __init__(self, state, district, city):
         self.state = state
@@ -219,8 +219,10 @@ class TechUser(Base, UserMixin):
     email = db.Column(String(128), nullable=False, unique=True)
     gender = db.Column(String())
     college = db.Column(String(200))
+    collegeId = db.Column(String(30))
     phone = db.Column(String(10), unique=True)
     registration_status = db.Column(Integer, default=0)
+    hidden = db.Column(Integer, default=0)
 
     address = db.relationship('Address')
     member_of_teams = db.relationship('Member')
