@@ -693,7 +693,7 @@ def updateEventView():
 
 
 
-@app.route('/workshop/update', methods=['GET', 'POST'])
+@app.route('/workshop/update', methods=['POST'])
 @login_required
 def updateWorkshopView():
     form = UpdateWorkshopForm(request.form)
@@ -728,6 +728,7 @@ def updateWorkshopView():
         if form.validate_on_submit():
             # return request.form
             workshop_id = dict(request.form).get('update-workshop')
+
             data = form.data
             if current_user.role not in ['admin', 'workshop_manager']:
             	del data['priority']
@@ -735,6 +736,12 @@ def updateWorkshopView():
             #update image            
             crop = {}
             base64image = form.photo.image.data
+
+            file_url = ""
+            pdf = request.files['pdf']
+            if pdf:
+            	filename = uuid.uuid4()
+            	file_url = upload_file_to_s3(pdf, filename, 'pdf')
 
             image_url = ""
             if base64image:    
@@ -744,8 +751,9 @@ def updateWorkshopView():
                 crop['height'] = int(float(str(form.photo.cropHeight.data)))
                 
                 image_url = crop_image(form.photo.image.data, crop)     
+           
 
-            markup = updateWorkshop(data, workshop_id, image_url)
+            markup = updateWorkshop(data, workshop_id, image_url, file_url)
 
             flash(markup[2])
             return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1], role = current_user.role)
