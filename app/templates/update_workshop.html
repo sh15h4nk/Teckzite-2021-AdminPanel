@@ -34,7 +34,7 @@ img {
 <center><h1>Update Workshop</h1></center>
 <div class="container">
     <div>
-    <form class = 'form' method="post">
+    <form class = 'form' method="post" enctype="multipart/form-data">
         
         {{ form.csrf_token }}
         {{ wtf.form_field(form.title, value = workshop.title) }}        
@@ -59,6 +59,13 @@ img {
         <input type="hidden" id="hidden-resources" name="hidden-resources" value="{{ markup.resources }}">
         {{ wtf.form_field(form.resources) }}
 
+        {{ wtf.form_field(form.pdf) }}
+        {% if workshop.file_url != None %}
+            <a href="{{ workshop.file_url }}">Check the PDF file you uploaded</a>
+        {% endif %}
+
+        <br><br><br>
+
         <input type="hidden" name="workshop_id" value="{{workshop.workshopId}}">
 
         <input type="file" class="input-image">
@@ -73,12 +80,7 @@ img {
         {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
         {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
 
-        {{ form.photo.csrf_token }}
-        {{ wtf.form_field(form.photo.image, class="hide image")}}
-        {{ wtf.form_field(form.photo.cropX, class="hide cropX")}}
-        {{ wtf.form_field(form.photo.cropY, class="hide cropY")}}
-        {{ wtf.form_field(form.photo.cropWidth, class="hide cropWidth")}}
-        {{ wtf.form_field(form.photo.cropHeight, class="hide cropHeight")}}
+
 
         <button type="submit" class="btn btn-primary" name="update-workshop" value="{{workshop.workshopId}}">Submit</button>
     </form>
@@ -122,7 +124,7 @@ img {
         document.getElementById('hidden-about').value !== "None" ? CKEDITOR.instances.about.setData( document.getElementById("hidden-about").value ) : "";
         document.getElementById('hidden-timeline').value !== "None" ? CKEDITOR.instances.timeline.setData( document.getElementById("hidden-timeline").value ) : "";
         document.getElementById('hidden-resources').value !== "None" ? CKEDITOR.instances.resources.setData( document.getElementById("hidden-resources").value ) : "";
-   
+   }
 </script>
 
 
