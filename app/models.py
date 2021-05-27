@@ -1,4 +1,4 @@
-from app import db, app, bcrypt
+from app import app, db, bcrypt
 
 from sqlalchemy.orm import backref
 from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
@@ -65,6 +65,8 @@ class Event(Base):
 
     coordinator_id = db.Column(Integer, ForeignKey('user.id'))
     organiser_id = db.Column(Integer, ForeignKey('user.id'),unique=True)
+
+    teams = db.relationship('Team')
 
     def __init__(self, eventId, title, dept, coordinater_id, organiser_id) -> None:
         self.eventId = eventId
@@ -186,34 +188,54 @@ class CurrentId(db.Model):
     current_workshop_id = db.Column(Integer, default=10001)
 
 
-# class TechUser(Base):
-#     name = db.Column(String(128), nullable=False)
-#     email = db.Column(String(128), nullable=True, unique=True)
-#     password = db.Column(String(192), nullable=False)
-#     dept = db.Column(String(128))
-#     payment = db.Column(Boolean, nullable=False)
-    
-#     workshops = db.relationship('Workshop', backref='techUser')
-
-#     team_id = db.Column(db.Integer, ForeignKey('team.id'))
-
-#     event_organiser_id = db.Column(db.Integer, ForeignKey('event.id'))
-#     # event_coordinator_id = db.Column(db.Integer, ForeignKey('event.id'))
-
-#     # workshop_coordinator_id = db.Column(db.Integer, ForeignKey('workshop.id'))
-#     workshop_organiser_id = db.Column(db.Integer, ForeignKey('workshop.id'))
-
-#     team_id = db.Column(db.Integer, ForeignKey('team.id'))
+class Member(db.Model):
+    id = db.Column(Integer, primary_key=True,nullable=False)
+    stauts = db.Column(Integer, default=0)
+    team_id = db.Column(Integer, ForeignKey('team.id'))
+    user_id = db.Column(Integer, ForeignKey('tech_user.id'))
 
 
+class Team(db.Model):
+    id = db.Column(Integer, primary_key= True,nullable=False)
+    teamId = db.Column(String(7), unique=True, nullable=False)
+    event_id = db.Column(Integer, ForeignKey('event.id'))
+
+    members = db.relationship('Member')
+
+class Address(db.Model):
+    id = db.Column(Integer, primary_key=True,nullable=False)
+    state = db.Column(String(192))
+    district = db.Column(String(192))
+    city = db.Column(String(192))
+    t_userId = db.Column(String(), ForeignKey('tech_user.id'), unique=True)
+
+    def __init__(self, state, district, city):
+        self.state = state
+        self.district = district
+        self.city = city
+
+class TechUser(Base, UserMixin):
+    userId = db.Column(String(100), unique=True)
+    name = db.Column(String(30))
+    email = db.Column(String(128), nullable=False, unique=True)
+    gender = db.Column(String())
+    college = db.Column(String(200))
+    collegeId = db.Column(String(30))
+    phone = db.Column(String(10), unique=True)
+    registration_status = db.Column(Integer, default=0)
+    hidden = db.Column(Integer, default=0)
+
+    address = db.relationship('Address')
+    member_of_teams = db.relationship('Member')
+
+    def __init__(self, userId, name, email):
+        self.userId = userId
+        self.name = name
+        self.email = email
 
 
-
-# class Team(Base):
-#     techUsers = db.relationship('TechUser', backref='team')
-
-#     event_id = db.Column(Integer, ForeignKey('event.id'))
-
+class Launch(Base):
+    launch = db.Column(Integer, default=0)
 
 
 db.create_all()
@@ -271,4 +293,10 @@ currentIds = db.session.query(CurrentId).count()
 if currentIds == 0:
     currentId = CurrentId()
     db.session.add(currentId)
+    db.session.commit()
+
+launchs = db.session.query(Launch).count()
+if launchs == 0:
+    launch = Launch()
+    db.session.add(launch)
     db.session.commit()
