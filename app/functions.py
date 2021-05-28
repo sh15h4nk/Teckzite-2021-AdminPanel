@@ -180,13 +180,14 @@ def addWorkshop(title, dept, coordinator_id):
     
     return workshop
 
-def updateWorkshop(data, workshop_id, image_url):
+def updateWorkshop(data, workshop_id, image_url, file_url):
     if not Workshop.query.filter_by(workshopId = workshop_id):
         return "Invalid Workshop ID"
     # return str(data)
     
     del data['photo']
     del data['csrf_token']
+    del data['pdf']
 
     workshop = Workshop.query.filter_by(workshopId = workshop_id).first()
     markup = dict_markup({
@@ -203,6 +204,9 @@ def updateWorkshop(data, workshop_id, image_url):
         
         if image_url:
             data['image_url'] = image_url     
+
+        if file_url:
+            data['file_url'] = file_url
         
         status =  Workshop.query.filter_by(workshopId = workshop_id).update(data)
         db.session.commit()
