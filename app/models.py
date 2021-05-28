@@ -85,6 +85,7 @@ class Workshop(Base):
     about = db.Column(String(500))
     timeline = db.Column(String(500))
     resources = db.Column(String(500))
+    file_url = db.Column(String(128))
     image_url = db.Column(String(128))
     priority = db.Column(Integer, default=0)
 

@@ -121,6 +121,7 @@ class UpdateWorkshopForm(FlaskForm):
     about = CKEditorField('About')
     timeline = CKEditorField('Timeline')
     resources = CKEditorField('Resources')
+    pdf = FileField('Upload Resources File')
     photo = FormField(PhotoForm)
    
 class Contacts(FlaskForm):
