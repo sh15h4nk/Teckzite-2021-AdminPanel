@@ -230,6 +230,7 @@ class TechUser(Base, UserMixin):
     branch = db.Column(String(3))
     phone = db.Column(String(10), unique=True)
     registration_status = db.Column(Integer, default=0)
+    payment_status = db.Column(Integer, default=0)
     hidden = db.Column(Integer, default=0)
 
     referral = db.Column(String(30))
