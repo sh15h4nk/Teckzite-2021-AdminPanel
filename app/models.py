@@ -225,6 +225,7 @@ class TechUser(Base, UserMixin):
     college = db.Column(String(200))
     rgukt_location = db.Column(String(50))
     collegeId = db.Column(String(30))
+    idcard_url = db.Column(String(128))
     year = db.Column(String(4))
     branch = db.Column(String(3))
     phone = db.Column(String(10), unique=True)
