@@ -207,35 +207,42 @@ class Address(db.Model):
     state = db.Column(String(192))
     district = db.Column(String(192))
     city = db.Column(String(192))
-    t_userId = db.Column(String(), ForeignKey('tech_user.id'), unique=True)
+    pin = db.Column(String(10))
+    t_userId = db.Column(String(7), ForeignKey('tech_user.id'), unique=True)
 
-    def __init__(self, state, district, city):
+    def __init__(self, state, district, city, pin):
         self.state = state
         self.district = district
         self.city = city
+        self.pin = pin
 
 class TechUser(Base, UserMixin):
-    userId = db.Column(String(100), unique=True)
+    userId = db.Column(String(7), unique=True, nullable=False)
+    gid = db.Column(String(100), unique=True)
     name = db.Column(String(30))
     email = db.Column(String(128), nullable=False, unique=True)
     gender = db.Column(String())
     college = db.Column(String(200))
+    rgukt_location = db.Column(String(50))
     collegeId = db.Column(String(30))
+    idcard_url = db.Column(String(128))
+    year = db.Column(String(4))
+    branch = db.Column(String(3))
     phone = db.Column(String(10), unique=True)
     registration_status = db.Column(Integer, default=0)
     hidden = db.Column(Integer, default=0)
 
+    referral = db.Column(String(30))
+    survey = db.Column(String(100))
+
     address = db.relationship('Address')
     member_of_teams = db.relationship('Member')
 
-    def __init__(self, userId, name, email):
+    def __init__(self, userId, gid, name, email):
         self.userId = userId
+        self.gid = gid
         self.name = name
         self.email = email
-
-
-class Launch(Base):
-    launch = db.Column(Integer, default=0)
 
 
 db.create_all()
@@ -293,10 +300,4 @@ currentIds = db.session.query(CurrentId).count()
 if currentIds == 0:
     currentId = CurrentId()
     db.session.add(currentId)
-    db.session.commit()
-
-launchs = db.session.query(Launch).count()
-if launchs == 0:
-    launch = Launch()
-    db.session.add(launch)
     db.session.commit()
