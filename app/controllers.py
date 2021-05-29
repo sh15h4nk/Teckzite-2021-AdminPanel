@@ -740,8 +740,8 @@ def updateWorkshopView():
             file_url = ""
             pdf = request.files['pdf']
             if pdf:
-            	filename = uuid.uuid4()
-            	file_url = upload_file_to_s3(pdf, filename, 'pdf')
+				filename = uuid.uuid4()
+				file_url = upload_file_to_s3(pdf, filename, 'pdf')
 
             image_url = ""
             if base64image:    
