@@ -266,6 +266,7 @@ class CA(Base, UserMixin):
         self.phone = phone
         self.gender = gender
         self.college = college
+        self.collegeId = collegeId
         self.year = year
         self.branch = phone
 
