@@ -259,7 +259,7 @@ class CA(Base, UserMixin):
     branch = db.Column(String(3))
     hidden = db.Column(Integer, default=0)
 
-    def _init_(self, caId, name, email, phone, gender, college, year, branch):
+    def _init_(self, caId, name, email, phone, gender, college, collegeId, year, branch):
         self.caId = caId
         self.name = name
         self.email = email
