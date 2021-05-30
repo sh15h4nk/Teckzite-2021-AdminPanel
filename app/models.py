@@ -254,6 +254,7 @@ class CA(Base, UserMixin):
     phone = db.Column(String(10), unique=True, nullable=False)
     gender = db.Column(String(1))
     college = db.Column(String(200))
+    collegeId = db.Column(String(30))
     year = db.Column(String(4))
     branch = db.Column(String(3))
     hidden = db.Column(Integer, default=0)
