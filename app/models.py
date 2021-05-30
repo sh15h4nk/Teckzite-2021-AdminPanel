@@ -271,7 +271,7 @@ class CA(Base, UserMixin):
         self.branch = phone
 
 
-# db.create_all()
+db.create_all()
 
 
 # Admins
@@ -289,8 +289,8 @@ class CA(Base, UserMixin):
 
 
  
-# currentIds = db.session.query(CurrentId).count()
-# if currentIds == 0:
-#     currentId = CurrentId()
-#     db.session.add(currentId)
-#     db.session.commit()
+currentIds = db.session.query(CurrentId).count()
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
