@@ -186,6 +186,7 @@ class CurrentId(db.Model):
     current_techzite_id = db.Column(Integer, default=10001, primary_key=True)
     current_event_id = db.Column(Integer, default=10001)
     current_workshop_id = db.Column(Integer, default=10001)
+    current_ca_id = db.Column(Integer, default=10001)
 
 
 class Member(db.Model):
@@ -246,26 +247,48 @@ class TechUser(Base, UserMixin):
         self.email = email
 
 
+class CA(Base, UserMixin):
+    caId = db.Column(String(7), unique=True, nullable=False)
+    name = db.Column(String(30))
+    email = db.Column(String(128), nullable=False, unique=True)
+    phone = db.Column(String(10), unique=True, nullable=False)
+    gender = db.Column(String(1))
+    college = db.Column(String(200))
+    year = db.Column(String(4))
+    branch = db.Column(String(3))
+    hidden = db.Column(Integer, default=0)
+
+    def _init_(self, caId, name, email, phone, gender, college, year, branch):
+        self.caId = caId
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.gender = gender
+        self.college = college
+        self.year = year
+        self.branch = phone
+
+
 # db.create_all()
 
 
 # Admins
-us = User.query.filter_by(userId="N170076").first()
-if not us:
-    us = User("N170076","admin","N170076@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9505848891')
-    db.session.add(us)
-    db.session.commit()
+# us = User.query.filter_by(userId="N170076").first()
+# if not us:
+#     us = User("N170076","admin","N170076@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9505848891')
+#     db.session.add(us)
+#     db.session.commit()
 
-us = User.query.filter_by(userId="N170295").first()
-if not us:
-    us = User("N170295","admin","N170295@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8331987780')
-    db.session.add(us)
-    db.session.commit()
+# us = User.query.filter_by(userId="N170295").first()
+# if not us:
+#     us = User("N170295","admin","N170295@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8331987780')
+#     db.session.add(us)
+#     db.session.commit()
 
 
  
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
