@@ -259,7 +259,7 @@ class CA(Base, UserMixin):
     branch = db.Column(String(3))
     hidden = db.Column(Integer, default=0)
 
-    def _init_(self, caId, name, email, phone, gender, college, collegeId, year, branch):
+    def __init__(self, caId, name, email, phone, gender, college, collegeId, year, branch):
         self.caId = caId
         self.name = name
         self.email = email
@@ -268,10 +268,10 @@ class CA(Base, UserMixin):
         self.college = college
         self.collegeId = collegeId
         self.year = year
-        self.branch = phone
+        self.branch = branch
 
 
-db.create_all()
+# db.create_all()
 
 
 # Admins
@@ -289,8 +289,8 @@ db.create_all()
 
 
  
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
