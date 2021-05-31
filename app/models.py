@@ -278,15 +278,15 @@ class CA(Base, UserMixin):
 
 class Payment(Base):
     tzId = db.Column(String(7), nullable=False)
-    date = db.Column(String(30))
+    time_stamp = db.Column(String(25))
     paid = db.Column(Integer, default=0)
     recipt_no = db.Column(Integer, default=0)
     tkt_type = db.Column(String(30))
     barcode_no = db.Column(Integer, default=0)
 
-    def __init__(self, tzId, date, paid, recipt_no, tkt_type, barcode_no):
+    def __init__(self, tzId, time_stamp, paid, recipt_no, tkt_type, barcode_no):
         self.tzId = tzId
-        self.date = date
+        self.time_stamp = time_stamp
         self.paid = paid
         self.recipt_no = recipt_no
         self.tkt_type = tkt_type
