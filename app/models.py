@@ -234,6 +234,7 @@ class TechUser(Base, UserMixin):
     phone = db.Column(String(10), unique=True)
     registration_status = db.Column(Integer, default=0)
     payment_status = db.Column(Integer, default=0)
+    workshop_payment_status = db.Column(Integer, default=0)
     hidden = db.Column(Integer, default=0)
 
     referral = db.Column(String(30))
@@ -275,7 +276,7 @@ class CA(Base, UserMixin):
         self.branch = branch
 
 
-db.create_all()
+# db.create_all()
 
 
 # Admins
@@ -293,8 +294,8 @@ db.create_all()
 
 
  
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
