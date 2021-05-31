@@ -276,7 +276,7 @@ class CA(Base, UserMixin):
         self.branch = branch
 
 
-def Payment(Base):
+class Payment(Base):
     tzId = db.Column(String(7), nullable=False)
     date = db.Column(String(30))
     paid = db.Column(Integer, default=0)
