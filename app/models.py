@@ -98,6 +98,8 @@ class Workshop(Base):
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
+    tech_users = db.relationship('TechUser')
+
     def __init__(self, workshop_id, title, dept, coordinator_id):
         self.workshopId = workshop_id
         self.title = title
@@ -239,6 +241,8 @@ class TechUser(Base, UserMixin):
 
     address = db.relationship('Address')
     member_of_teams = db.relationship('Member')
+
+    workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
 
     def __init__(self, userId, gid, name, email):
         self.userId = userId
