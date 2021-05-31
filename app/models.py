@@ -234,6 +234,7 @@ class TechUser(Base, UserMixin):
     phone = db.Column(String(10), unique=True)
     registration_status = db.Column(Integer, default=0)
     payment_status = db.Column(Integer, default=0)
+    workshop_payment_status = db.Column(Integer, default=0)
     hidden = db.Column(Integer, default=0)
 
     referral = db.Column(String(30))
