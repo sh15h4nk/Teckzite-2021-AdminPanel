@@ -276,6 +276,24 @@ class CA(Base, UserMixin):
         self.branch = branch
 
 
+def Payment(Base):
+    tzId = db.Column(String(7), nullable=False)
+    date = db.Column(String(30))
+    paid = db.Column(Integer, default=0)
+    recipt_no = db.Column(Integer, default=0)
+    tkt_type = db.Column(String(30))
+    barcode_no = db.Column(Integer, default=0)
+
+    def __init__(self, tzId, date, paid, recipt_no, tkt_type, barcode_no):
+        self.tzId = tzId
+        self.date = date
+        self.paid = paid
+        self.recipt_no = recipt_no
+        self.tkt_type = tkt_type
+        self.barcode_no = barcode_no
+
+
+
 # db.create_all()
 
 
