@@ -98,6 +98,8 @@ class Workshop(Base):
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
+    tech_users = db.relationship('TechUser')
+
     def __init__(self, workshop_id, title, dept, coordinator_id):
         self.workshopId = workshop_id
         self.title = title
@@ -240,6 +242,8 @@ class TechUser(Base, UserMixin):
     address = db.relationship('Address')
     member_of_teams = db.relationship('Member')
 
+    workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
+
     def __init__(self, userId, gid, name, email):
         self.userId = userId
         self.gid = gid
@@ -271,7 +275,7 @@ class CA(Base, UserMixin):
         self.branch = branch
 
 
-# db.create_all()
+db.create_all()
 
 
 # Admins
@@ -289,8 +293,8 @@ class CA(Base, UserMixin):
 
 
  
-# currentIds = db.session.query(CurrentId).count()
-# if currentIds == 0:
-#     currentId = CurrentId()
-#     db.session.add(currentId)
-#     db.session.commit()
+currentIds = db.session.query(CurrentId).count()
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
