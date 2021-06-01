@@ -415,7 +415,7 @@ def addDataView():
     		else:
     			if program_id.startswith("EV") and not Event.query.filter_by(eventId = program_id, coordinator_id = current_user.id).first():
     				return Response(status=406)
-    			elif program_id.startswith("WS") and not Workshop.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
+    			elif program_id.startswith("WS") and not Workshop.query.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
     				return Response(status=406)
     	elif current_user.role == "event_organiser":
     		if program_id.startswith("EV") and not Event.query.filter_by(eventId = program_id, organiser_id = current_user.id).first():
@@ -548,7 +548,7 @@ def updateDataView():
     		else:
     			if program_id.startswith("EV") and not Event.query.filter_by(eventId = program_id, coordinator_id = current_user.id).first():
     				return Response(status=406)
-    			elif program_id.startswith("WS") and not Workshop.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
+    			elif program_id.startswith("WS") and not Workshop.query.filter_by(workshopId = program_id, coordinator_id = current_user.id).first():
     				return Response(status=406)
     	elif current_user.role == "event_organiser":
     		if program_id.startswith("EV") and not Event.query.filter_by(eventId = program_id, organiser_id = current_user.id).first():

@@ -244,6 +244,7 @@ class TechUser(Base, UserMixin):
     member_of_teams = db.relationship('Member')
 
     workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
+    workshop_referral = db.Column(String(30))
 
     def __init__(self, userId, gid, name, email):
         self.userId = userId
