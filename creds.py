@@ -12,8 +12,8 @@ secret_key = "w4tchmybutt"
 
 
 #Email server
-email_username = "no-reply@teckzite.org"
-email_passwd = "p41n1nth3a$$"
+email_username = "info@teckzite.org"
+email_passwd = "H45H#meth;"
 
 mail_server = "smtp.googlemail.com"
 mail_port = 587
