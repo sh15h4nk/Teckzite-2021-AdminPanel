@@ -98,6 +98,8 @@ class Workshop(Base):
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
+    tech_users = db.relationship('TechUser')
+
     def __init__(self, workshop_id, title, dept, coordinator_id):
         self.workshopId = workshop_id
         self.title = title
@@ -186,6 +188,7 @@ class CurrentId(db.Model):
     current_techzite_id = db.Column(Integer, default=10001, primary_key=True)
     current_event_id = db.Column(Integer, default=10001)
     current_workshop_id = db.Column(Integer, default=10001)
+    current_ca_id = db.Column(Integer, default=10001)
 
 
 class Member(db.Model):
@@ -207,96 +210,110 @@ class Address(db.Model):
     state = db.Column(String(192))
     district = db.Column(String(192))
     city = db.Column(String(192))
-    t_userId = db.Column(String(), ForeignKey('tech_user.id'), unique=True)
+    pin = db.Column(String(10))
+    t_userId = db.Column(String(7), ForeignKey('tech_user.userId'), unique=True)
 
-    def __init__(self, state, district, city):
+    def __init__(self, state, district, city, pin):
         self.state = state
         self.district = district
         self.city = city
+        self.pin = pin
 
 class TechUser(Base, UserMixin):
-    userId = db.Column(String(100), unique=True)
+    userId = db.Column(String(7), unique=True, nullable=False)
+    gid = db.Column(String(100), unique=True)
     name = db.Column(String(30))
     email = db.Column(String(128), nullable=False, unique=True)
-    gender = db.Column(String())
+    gender = db.Column(String(1))
     college = db.Column(String(200))
+    rgukt_location = db.Column(String(50))
     collegeId = db.Column(String(30))
+    idcard_url = db.Column(String(128))
+    year = db.Column(String(4))
+    branch = db.Column(String(3))
     phone = db.Column(String(10), unique=True)
     registration_status = db.Column(Integer, default=0)
+    payment_status = db.Column(Integer, default=0)
+    workshop_payment_status = db.Column(Integer, default=0)
     hidden = db.Column(Integer, default=0)
+
+    referral = db.Column(String(30))
+    survey = db.Column(String(100))
 
     address = db.relationship('Address')
     member_of_teams = db.relationship('Member')
 
-    def __init__(self, userId, name, email):
+    workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
+
+    def __init__(self, userId, gid, name, email):
         self.userId = userId
+        self.gid = gid
         self.name = name
         self.email = email
 
 
-class Launch(Base):
-    launch = db.Column(Integer, default=0)
+class CA(Base, UserMixin):
+    caId = db.Column(String(7), unique=True, nullable=False)
+    name = db.Column(String(30))
+    email = db.Column(String(128), nullable=False, unique=True)
+    phone = db.Column(String(10), unique=True, nullable=False)
+    gender = db.Column(String(1))
+    college = db.Column(String(200))
+    collegeId = db.Column(String(30))
+    year = db.Column(String(4))
+    branch = db.Column(String(3))
+    hidden = db.Column(Integer, default=0)
+
+    def __init__(self, caId, name, email, phone, gender, college, collegeId, year, branch):
+        self.caId = caId
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.gender = gender
+        self.college = college
+        self.collegeId = collegeId
+        self.year = year
+        self.branch = branch
 
 
-db.create_all()
+class Payment(Base):
+    tzId = db.Column(String(7), nullable=False)
+    time_stamp = db.Column(String(25))
+    paid = db.Column(Integer, default=0)
+    recipt_no = db.Column(Integer, default=0)
+    tkt_type = db.Column(String(30))
+    barcode_no = db.Column(Integer, default=0)
+
+    def __init__(self, tzId, time_stamp, paid, recipt_no, tkt_type, barcode_no):
+        self.tzId = tzId
+        self.time_stamp = time_stamp
+        self.paid = paid
+        self.recipt_no = recipt_no
+        self.tkt_type = tkt_type
+        self.barcode_no = barcode_no
 
 
-#Admins
-us = User.query.filter_by(userId="N170076").first()
-if not us:
-    us = User("N170076","admin","N170076@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9505848891')
-    db.session.add(us)
-    db.session.commit()
 
-us = User.query.filter_by(userId="N170295").first()
-if not us:
-    us = User("N170295","admin","N170295@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8331987780')
-    db.session.add(us)
-    db.session.commit()
+# db.create_all()
 
-# us = User.query.filter_by(userId="event_m").first()
+
+# Admins
+# us = User.query.filter_by(userId="N170076").first()
 # if not us:
-#     us = User("event_m","event_manager","event_manager@gmail.com",bcrypt.generate_password_hash("event_manager"),"event_manager","CSE", 'XXX3XXXXXX')
+#     us = User("N170076","admin","N170076@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '9505848891')
 #     db.session.add(us)
 #     db.session.commit()
 
-
-# us = User.query.filter_by(userId="event_c").first()
+# us = User.query.filter_by(userId="N170295").first()
 # if not us:
-#     us = User("event_c","event_coordinator","event_coordinator@gmail.com",bcrypt.generate_password_hash("event_coordinator"),"event_coordinator","CSE", 'XX4XXXXXXX')
+#     us = User("N170295","admin","N170295@rguktn.ac.in",bcrypt.generate_password_hash("bCrypt#l33t"),"admin","CSE", '8331987780')
 #     db.session.add(us)
 #     db.session.commit()
 
-
-# us = User.query.filter_by(userId="event_o").first()
-# if not us:
-#     us = User("event_o","event_organiser","event_organiser@gmail.com",bcrypt.generate_password_hash("event_organiser"),"event_organiser","CSE", 'XX4XXXX4XX')
-#     db.session.add(us)
-#     db.session.commit()
-
-
-# us = User.query.filter_by(userId="wkshp_m").first()
-# if not us:
-#     us = User("wkshp_m","workshop_manager","workshop_manager@gmail.com",bcrypt.generate_password_hash("workshop_manager"),"workshop_manager","CSE", 'XX5XXXXXXX')
-#     db.session.add(us)
-#     db.session.commit()
-
-
-# us = User.query.filter_by(userId="wkshp_c").first()
-# if not us:
-#     us = User("wkshp_c","workshop_coordinator","workshop_coordinator@gmail.com",bcrypt.generate_password_hash("workshop_coordinator"),"workshop_coordinator","CSE", 'XXX5XXXXXX')
-#     db.session.add(us)
-#     db.session.commit() 
 
  
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
-
-launchs = db.session.query(Launch).count()
-if launchs == 0:
-    launch = Launch()
-    db.session.add(launch)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
