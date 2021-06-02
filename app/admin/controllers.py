@@ -280,3 +280,10 @@ def updateProfileView():
             raise e       
         
     return render_template('update_profile.html', role = "Admin", user=current_user, form=form)
+
+@admin.route('/CA/')
+@login_required
+@role_required("admin")
+def getCAsView():
+    data = getCAAll()
+    return render_template("ca.html",role = "CA",data = data)

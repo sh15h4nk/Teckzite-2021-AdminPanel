@@ -1,5 +1,5 @@
 from app import db
-from app.models import User, Event, Workshop
+from app.models import *
 from app.functions import *
 
 #fetching 
@@ -35,5 +35,6 @@ def getWorkshopsAll():
     rows = Workshop.query.filter_by().all()
     return rows
 
-
-    
+def getCAAll():
+    rows = CA.query.filter_by().all()
+    return rows
