@@ -56,7 +56,7 @@ def my_nav():
 		view_workshops = View("Workshops",'admin.getWorkshopsView')
 		workshop_menu = Subgroup("Workshops",view_workshops,add_workshop)
 
-		tz_users = View("Users",'admin.dashboard')
+		tz_users = View("TZ Users",'admin.getTzUserView')
 
 		ca = View("CA", "admin.getCAsView")
 

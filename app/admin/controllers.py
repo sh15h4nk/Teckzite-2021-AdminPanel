@@ -287,3 +287,11 @@ def updateProfileView():
 def getCAsView():
     data = getCAAll()
     return render_template("ca.html",role = "CA",data = data)
+
+
+@admin.route('/tzuser')
+@login_required
+@role_required('admin')
+def getTzUserView():
+    data = getTzUsers()
+    return render_template("tzuser.html",role = "Tz Users", data = data)

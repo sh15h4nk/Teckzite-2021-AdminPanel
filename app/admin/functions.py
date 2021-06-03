@@ -1,6 +1,7 @@
 from app import db
 from app.models import *
 from app.functions import *
+from sqlalchemy import func
 
 #fetching 
 def getAdminsAll():
@@ -37,4 +38,22 @@ def getWorkshopsAll():
 
 def getCAAll():
     rows = CA.query.filter_by().all()
+    # data = [i for i in rows]
+    # for i in data:
+    #     print(i)
+    # print(type(rows))
+    # rows = db.session.query(CA, TechUser).filter(TechUser.referral == CA.caId).all()
+    # rows = db.session.query(CA, TechUser).join(TechUser,TechUser.referral == CA.caId).all()
+    # for i in rows:
+        # print(i)
+    # users = 
+    # rows = db.session.query(CA, func.count(TechUser.referral)).filter(TechUser.referral == CA.caId).all()
+    # print(rows)
+    # for row in rows:
+    #     row.total = TechUser.query.filter_by(referral = row.caId).count()
+    #     row.paid = TechUser.query.filter_by(referral = row.caId, payment_status = 1).count()
+    return rows
+
+def getTzUsers():
+    rows = TechUser.query.filter_by(registration_status = 1).all()
     return rows
