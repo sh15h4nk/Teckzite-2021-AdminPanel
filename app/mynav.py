@@ -56,11 +56,9 @@ def my_nav():
 		view_workshops = View("Workshops",'admin.getWorkshopsView')
 		workshop_menu = Subgroup("Workshops",view_workshops,add_workshop)
 
-		view_tz_users = View("Users",'admin.dashboard')
-		add_tz_user = View("Add User",'admin.dashboard')
-		tz_users_menu = Subgroup("Tz Users",view_tz_users,add_tz_user)
+		tz_users = View("TZ Users",'admin.getTzUserView')
 
-
+		ca = View("CA", "admin.getCAsView")
 
 		profile = View("Profile",'admin.getProfileView')
 		edit = View("Update",'admin.updateProfileView')
@@ -69,7 +67,7 @@ def my_nav():
 		logout = View("Logout", 'admin.logout')
 
 
-		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users_menu,profile_menu,logout)
+		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users, ca, profile_menu,logout)
 
 	elif current_user.role == "event_manager":
 

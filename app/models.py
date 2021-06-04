@@ -192,7 +192,6 @@ class CurrentId(db.Model):
     current_team_id = db.Column(Integer, default=10001)
 
 
-
 class Member(db.Model):
     id = db.Column(Integer, primary_key=True,nullable=False)
     stauts = db.Column(Integer, default=0)
@@ -346,8 +345,9 @@ class Payment(Base):
 
 
  
-# currentIds = db.session.query(CurrentId).count()
-# if currentIds == 0:
-#     currentId = CurrentId()
-#     db.session.add(currentId)
-#     db.session.commit()
+currentIds = db.session.query(CurrentId).count()
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
+
