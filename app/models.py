@@ -189,6 +189,7 @@ class CurrentId(db.Model):
     current_event_id = db.Column(Integer, default=10001)
     current_workshop_id = db.Column(Integer, default=10001)
     current_ca_id = db.Column(Integer, default=10001)
+    current_team_id = db.Column(Integer, default=10001)
 
 
 class Member(db.Model):
@@ -197,13 +198,33 @@ class Member(db.Model):
     team_id = db.Column(Integer, ForeignKey('team.id'))
     user_id = db.Column(Integer, ForeignKey('tech_user.id'))
 
+    def __init__(self, team_id, user_id):
+        self.team_id = team_id
+        self.user_id = user_id
+
 
 class Team(db.Model):
     id = db.Column(Integer, primary_key= True,nullable=False)
     teamId = db.Column(String(7), unique=True, nullable=False)
     event_id = db.Column(Integer, ForeignKey('event.id'))
+    team_status = db.Column(Integer, default=0)
 
     members = db.relationship('Member')
+
+    def __init__(self, teamId, event_id):
+        self.teamId = teamId
+        self.event_id = event_id
+
+class TeamRequest(db.Model):
+    id = db.Column(Integer, primary_key= True,nullable=False)
+    team_id = db.Column(String(7), nullable=False)
+    event_title = db.Column(String(128))
+    user_id = db.Column(String(7), ForeignKey('tech_user.userId'))
+
+    def __init__(self, team_id, event_title, user_id):
+        self.team_id = team_id
+        self.event_title = event_title
+        self.user_id = user_id
 
 class Address(db.Model):
     id = db.Column(Integer, primary_key=True,nullable=False)
@@ -245,6 +266,8 @@ class TechUser(Base, UserMixin):
 
     workshop_id = db.Column(String(7), ForeignKey('workshop.workshopId'))
     workshop_referral = db.Column(String(30))
+
+    team_requests = db.relationship('TeamRequest')
 
     def __init__(self, userId, gid, name, email):
         self.userId = userId
@@ -313,8 +336,9 @@ class Payment(Base):
 
 
  
-# currentIds = db.session.query(CurrentId).count()
-# if currentIds == 0:
-#     currentId = CurrentId()
-#     db.session.add(currentId)
-#     db.session.commit()
+currentIds = db.session.query(CurrentId).count()
+if currentIds == 0:
+    currentId = CurrentId()
+    db.session.add(currentId)
+    db.session.commit()
+
