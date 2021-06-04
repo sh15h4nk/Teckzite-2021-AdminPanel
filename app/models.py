@@ -196,23 +196,31 @@ class Member(db.Model):
     id = db.Column(Integer, primary_key=True,nullable=False)
     stauts = db.Column(Integer, default=0)
     team_id = db.Column(Integer, ForeignKey('team.id'))
+    userId = db.Column(String(7))
+    name = db.Column(String(128))
     user_id = db.Column(Integer, ForeignKey('tech_user.id'))
 
-    def __init__(self, team_id, user_id):
+    def __init__(self, team_id, userId, name, user_id):
         self.team_id = team_id
+        self.userId = userId
+        self.name = name
         self.user_id = user_id
 
 
 class Team(db.Model):
     id = db.Column(Integer, primary_key= True,nullable=False)
     teamId = db.Column(String(7), unique=True, nullable=False)
+    eventId = db.Column(String(7))
+    event_title = db.Column(String(128))
     event_id = db.Column(Integer, ForeignKey('event.id'))
     team_status = db.Column(Integer, default=0)
 
     members = db.relationship('Member')
 
-    def __init__(self, teamId, event_id):
+    def __init__(self, teamId, eventId, event_title, event_id):
         self.teamId = teamId
+        self.eventId = eventId
+        self.event_title = event_title
         self.event_id = event_id
 
 class TeamRequest(db.Model):
@@ -336,9 +344,9 @@ class Payment(Base):
 
 
  
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
 
