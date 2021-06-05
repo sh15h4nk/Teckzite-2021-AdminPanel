@@ -331,10 +331,17 @@ class Counter(db.Model):
     addresses = db.relationship('IPAddress')
     team_id = db.Column(String(7), ForeignKey('team.teamId'), unique=True)
 
+    def __init__(self, team_id):
+        self.team_id = team_id
+
 class IPAddress(db.Model):
     id = db.Column(Integer, primary_key=True,nullable=False)
     address = db.Column(String(15))
     counter_id = db.Column(Integer, ForeignKey('counter.id'))
+
+    def __init__(self, address, counter_id):
+        self.address = address
+        self.counter_id = counter_id
 
 
 # db.create_all()
