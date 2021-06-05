@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import true
 from sqlalchemy.sql.sqltypes import Date
 from werkzeug.utils import secure_filename
 from app import app, db, bcrypt
-from app.models import User, Event, Workshop, Contact, FAQ, Sponsor
+from app.models import *
 from app.forms import ChangePassword, CreateEventForm, ResetRequest, UpdateEventForm, UpdateWorkshopForm
 from app.functions import *
 from app.middlewares import role_required
@@ -377,7 +377,7 @@ def addDataView():
     try:
         program_id = request.form['programId']
     except:
-        return Response(status = 406, message= "Missing Required parms")
+        return Response(status = 406)
 
     program_id = request.form['programId']
 
@@ -759,3 +759,40 @@ def updateWorkshopView():
             return render_template('update_workshop.html', form = form, workshop = markup[0], markup = markup[1], role = current_user.role)
 
     return render_template('update_workshop.html', form = form, workshop = workshop, markup = markup, role = current_user.role)
+
+
+@app.route("/teams", methods = ["POST"])
+def eventTeamsView():
+	if request.method == "POST":
+		try:
+			event_id = request.form["event_id"]
+		except Exception as e:
+			raise e
+			flash("No event ID")
+			return Response(status = 406)
+
+		event = Event.query.filter_by(eventId = request.form["event_id"]).first()
+		return render_template("teams.html", data = event.teams, event = event)
+
+@app.route("/deleteTeam", methods = ["POST"])
+def deleteTeamView():
+	try:
+		teamId = request.form['teamId']
+	except Exception as e:
+		raise e
+		return Response(status = 406)
+
+	team = Team.query.filter_by(teamId = teamId).first()
+	if not team:
+		return Response(status = 406)
+
+	#ACCESS CONTROL
+	if current_user.role not in ["admin", "event_manager"]:
+		if current_user.role in ["workshop_manager", "workshop_coordinator"]:
+			return Response(status = 400)
+		elif current_user.role == "event_organiser" and not team in Event.query.filter_by(organiser_id = current_user.id).first().teams:
+			return Response(status = 406)
+
+	if not delete_team(team.teamId):
+		return Response(status = 400)
+	return Response(status = 200)

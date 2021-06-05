@@ -134,6 +134,7 @@ Workshops
 
 <script>
     $(document).ready(function(){
+        var field = $('input[type="checkbox"][name="hide"]');
     	$('#workshoptable').DataTable().destroy();
     	$('#workshoptable').DataTable({
         	dom: 'Bfrtip',
@@ -142,7 +143,7 @@ Workshops
         	]
     	});
 
-    	$('input[type="checkbox"][name="hide"]').change(function () {
+    	$(field).change(function () {
             field = this.id;
 	     	if(this.checked) {
 	     		var data = {'id':this.id, 'value':'hide'};

@@ -63,7 +63,25 @@ def login():
 @role_required("admin")
 def dashboard():    
     get_flashed_messages()
-    return render_template("admin/dashboard.html",current_user = current_user)
+    rgukt_n = TechUser.query.filter_by(college = "RGUKT-N", payment_status = 1).count()
+    rgukt_sklm = TechUser.query.filter_by(college = "RGUKT-SKLM", payment_status = 1).count()
+    rgukt_ong = TechUser.query.filter_by(college = "RGUKT-ONG", payment_status = 1).count()
+    rgukt_rkv = TechUser.query.filter_by(college = "RGUKT-RKV", payment_status = 1).count()
+    other = TechUser.query.filter(and_(TechUser.college != "RGUKT-RKV", TechUser.college != "RGUKT-SKLM", TechUser.college != "RGUKT-ONG", TechUser.college != "RGUKT-N", TechUser.payment_status == 1)).count()
+    tz_users = {"rguktn": rgukt_n, "rguktsklm": rgukt_sklm, "rguktong": rgukt_ong, "rguktrkv": rgukt_rkv, "other":other}
+
+
+    cse = TechUser.query.filter_by(college = "RGUKT-N", branch = "CSE", payment_status = 1).count()
+    ece = TechUser.query.filter_by(college = "RGUKT-N", branch = "ECE", payment_status = 1).count()
+    mec = TechUser.query.filter_by(college = "RGUKT-N", branch = "MEC", payment_status = 1).count()
+    civ = TechUser.query.filter_by(college = "RGUKT-N", branch = "CIV", payment_status = 1).count()
+    che = TechUser.query.filter_by(college = "RGUKT-N", branch = "CHE", payment_status = 1).count()
+    mme = TechUser.query.filter_by(college = "RGUKT-N", branch = "MME", payment_status = 1).count()
+    puc = TechUser.query.filter_by(college = "RGUKT-N", branch = "PUC", payment_status = 1).count()
+    other = TechUser.query.filter(and_(TechUser.college == "RGUKT-N", TechUser.payment_status == 1, TechUser.branch != "CSE", TechUser.branch != "ECE", TechUser.branch != "MEC", TechUser.branch != "CHE", TechUser.branch != "MME", TechUser.branch != "CIV", TechUser.branch != "PUC")).count()
+    rguktn_data = {"cse": cse, "ece": ece, "mec": mec, "civ": civ, "che": che, "mme": mme, "puc": puc, "other": other}
+
+    return render_template("admin/dashboard.html",current_user = current_user, tz_users = tz_users, rguktn_data = rguktn_data)
 
 
 @admin.route('/admins/')

@@ -10,5 +10,6 @@ def getWorkshopCoordinatorsAll():
     return rows
 
 def getWorkshopsAll():
-    rows = Workshop.query.filter_by().all()
+    # rows = Workshop.query.filter_by().all()
+    rows = db.session.query(Workshop, func.count(TechUser.id), func.count(case([((TechUser.workshop_payment_status == 1), TechUser.id)]))).join(TechUser, Workshop.workshopId == TechUser.workshop_id).group_by(Workshop.workshopId).all()
     return rows

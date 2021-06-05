@@ -9,8 +9,7 @@ from PIL import Image as PIL_Image
 from botocore.retries import bucket
 from flask.helpers import flash, url_for
 from app import mail, db, app, s3, bcrypt
-from app.models import User, Event, Workshop, CurrentId, Contact, FAQ, Sponsor, Image
-
+from app.models import *
 
 def dict_escape(d:dict):
     for k,v in d.items():
@@ -489,3 +488,28 @@ def updateProfile(user_id, data):
     del data['submit']
     User.query.filter_by(id = user_id).update(data)
     db.session.commit()
+
+def delete_team(teamId):
+    try:
+        team = Team.query.filter_by(teamId=teamId).first()
+        if not team:
+            return False
+        
+        for mem in team.members:
+            db.session.delete(mem)
+
+        counter = Counter.query.filter_by(team_id = teamId).first()
+        print("Counter", counter)
+        if counter:
+            ips = IPAddress.query.filter_by(counter_id = counter.id).all()
+            for ip in ips:
+                db.session.delete(ip)
+            db.session.delete(counter)
+            db.session.commit()
+
+        db.session.delete(team)
+        db.session.commit()
+        return True
+    except Exception as e:
+        raise e
+        return False

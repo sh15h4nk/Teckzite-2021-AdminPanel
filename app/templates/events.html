@@ -85,6 +85,7 @@ Events
             <th>Branch</th>            
 			<th>Block</th>
             <th>Update</th>
+            <th>Teams</th>
 
 		</tr>
 		</thead>
@@ -114,6 +115,12 @@ Events
                         <button id="{{row.eventId}}" name="update-button" value="upload-button"> Update </button>
                     </form>
                 </td>
+                <td>
+                    <form method="POST" action="{{url_for('eventTeamsView')}}">
+                        <input type="hidden" name="event_id" value="{{row.eventId}}">
+                        <button id="{{row.eventId}}" name="view-team" value="view-team"> View </button>
+                    </form>
+                </td>
 			</tr>
 		{% endfor %}
 		</tbody>
@@ -136,6 +143,7 @@ Events
 
 <script>
     $(document).ready(function(){
+        var field = $('input[type="checkbox"][name="hide"]');
     	$('#eventtable').DataTable().destroy();
     	$('#eventtable').DataTable({
         	dom: 'Bfrtip',
@@ -144,7 +152,7 @@ Events
         	]
     	});
 
-    	$('input[type="checkbox"][name="hide"]').change(function () {
+    	$(field).change(function () {
 	     	if(this.checked) {
 	     		var data = {'id':this.id, 'value':'hide'};
                 $.post('/hideEvent', data, (data,status) => {

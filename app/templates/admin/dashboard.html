@@ -6,16 +6,71 @@
 Dashboard
 {% endblock %}
 
-{% block content %}
-<div class="container">
-  <!--  <h1> Welcome to the Admin Panel</h1>
-    <p>{{ current_user.id }}</p>
-    <p>{{ current_user.name }}</p>
-    <p>{{ current_user.role }}</p> -->
+{% block metas %}
+{{super()}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js" integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+{% endblock %}
+
+{% block content %}
+{{super()}}
+<div class="container">
+  <h3>Tz paid Registrations</h3>
+  <canvas id="tzusers" width="10" height="10"></canvas>
+  <br><br>
+  <h3>RGUKTN paid Registrations</h3>
+  <canvas id="tzrguktnusers" width="10" height="10"></canvas>
+  <br><br>
 
 </div>
 
+
+
+
+<script type="text/javascript">
+  var ctx = document.getElementById('tzusers');
+  var regChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['RGUKT-N', 'RGUKT-ONG', 'RGUKT-SKLM', 'RGUKT-RKV', 'OTHER'],
+        datasets: [{
+            label: 'Tz Registrations',
+            data: [{{ tz_users.rguktn }}, {{ tz_users.rguktong }}, {{ tz_users.rguktsklm }}, {{ tz_users.rguktrkv }}, {{ tz_users.other }} ],
+            backgroundColor: [
+                'rgba(255, 99, 132)',
+                'rgba(54, 162, 235)',
+                'rgba(255, 206, 86)',
+                'rgba(75, 192, 192)',
+                'rgba(153, 102, 255)',
+            ],
+            hoverOffset: 4
+        }]
+    }
+  });
+
+var ctx = document.getElementById('tzrguktnusers');
+  var rguktnChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['CSE', 'ECE', 'MME', 'CIV', 'MEC', 'CHE', 'PUC','OTHER'],
+        datasets: [{
+            label: 'RGUKTN Registrations',
+            data: [{{ rguktn_data.cse }}, {{ rguktn_data.ece }}, {{ rguktn_data.mme }}, {{ rguktn_data.civ }}, {{ rguktn_data.mec }}, {{ rguktn_data.che }}, {{ rguktn_data.puc }} , {{ rguktn_data.other }} ],
+            backgroundColor: [
+                'rgba(255, 99, 132)',
+                'rgba(54, 162, 235)',
+                'rgba(255, 206, 86)',
+                'rgba(75, 192, 192)',
+                'rgba(153, 102, 255)',
+            ],
+            hoverOffset: 4
+        }]
+    }
+  });
+
+
+
+</script>
 
 
 

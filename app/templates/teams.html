@@ -68,72 +68,60 @@
 {{ super() }}
 <div>
 	<center>
-		<h1>{{ role }}'s</h1>
+		<h1>{{ event.eventId }}: {{ event.title }}</h1>
 	</center>
 </div>
 
 <div class="container">
 
-	<table id='usertable' class="table">
+	<table id='teamtable' class="table">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>E-mail</th>
-				<th>Branch</th>
-				<th>Gender</th>
-				<th>Phone</th>
-				
-				{% if role == "Event Organiser" %}
-					<th>Event</th>
-
-				{% elif role == "Workshop Coordinator" %}
-					<th>Workshop</th>
-				{% endif %}
-
-				<th>Block</th>
-
+				<th>TEAM ID</th>
+				<th>Members</th>
+				<th>Status</th>
+				<th>Delete</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for row in data %}
-			<tr>
-
-				{% if role == "Event Organiser" or role=="Workshop Coordinator" %}
-					<td>{{ row[0].id }}</td>
-					<td>{{ row[0].name }}</td>
-					<td>{{ row[0].email }}</td>
-					<td>{{ row[0].dept }}</td>
-					<td>{{ row[0].gender }}</td>
-					<td>{{ row[0].phone }}</td>
-					<td>{{ row[1].title }}</td>
-				{% else %}
-					<td>{{ row.id }}</td>
-					<td>{{ row.name }}</td>
-					<td>{{ row.email }}</td>
-					<td>{{ row.dept }}</td>
-					<td>{{ row.gender }}</td>
-					<td>{{ row.phone }}</td>
-				{% endif %}
-
-
+			<tr id="{{row.teamId}}">
+				<td>{{ row.teamId }}</td>
 				<td>
-					{% if row.hidden == 1 %}
-					<div class="material-switch pull-right">
-                            <input id="{{row.id}}" name="hide" type="checkbox" checked />
-                            <label for="{{row.id}}" class="label-default"></label>
-                    </div>
-
-
-
+					<table>
+						<thead>
+							<tr>
+								<th>Tz Id</th>
+								<th>Name</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for mem in row.members %}
+							<tr>
+								<td>{{mem.userId}}</td>
+								<td>{{mem.name}}</td>
+								<td>
+									{% if mem.stauts %}
+										True
+									{% else %}
+										False
+									{% endif %}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</td>
+				<td>
+					{% if row.team_status %}
+						Active
 					{% else %}
-					<div class="material-switch pull-right">
-                            <input id="{{row.id}}" name="hide" type="checkbox" />
-                            <label for="{{row.id}}" class="label-default"></label>
-                    </div>
-
-
+						Inactive
 					{% endif %}
+				</td>
+				<td>
+					<button type="button" class="btn btn-danger" value="{{row.teamId}}" name='delete'>Delete</button>
 				</td>
 			</tr>
 			{% endfor %}
@@ -158,36 +146,24 @@
 
 <script>
 	$(document).ready(function () {
-		var field = $('input[type="checkbox"][name="hide"]');
-		$('#usertable').DataTable({
+		var field = $("[name='delete']");
+		$('#teamtable').DataTable({
 			dom: 'Bfrtip',
 			buttons: [
 				'excelHtml5'
 			]
 		});
 
-
-		$(field).change(function () {
-			field = this.id;
-	     	if(this.checked) {
-	     		var data = {'id':this.id, 'value':'hide'};
-	     		$.post('/hideUser', data, (data,status) => {
-		     		console.log(status)
-		     	})
-		     		.fail(function(response){
-		     			document.getElementById(field).checked = false;
-		     		});
-	     	}
-	     	else{
-	     		var data = {'id':this.id, 'value':'unhide'};
-	     		$.post('/hideUser', data, (data,status) => {
-		     		console.log(status)
-		     	})
-		     		.fail(function(response){
-		     			document.getElementById(field).checked = true;
-		     		});
-	     	}
- 		});
+		$(field).click(function (event) {
+			var data = {'teamId': this.value}
+			console.log(data);
+			$.post('/deleteTeam', data, (data,response) => {
+				console.log(response);
+				if (response ===  'success') {}
+				var row = document.getElementById(this.value);
+				row.style.display = "none";
+			});
+		});
 	});
 </script>
 

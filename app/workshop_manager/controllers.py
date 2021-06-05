@@ -72,7 +72,7 @@ def getWorkshopCoordinatorsView():
 @role_required("workshop_manager")
 def getWorkshopsView():
     data = getWorkshopsAll()
-    return render_template("workshops.html",data =data)
+    return render_template("workshop_stats.html",data =data)
 
 
 @workshop_manager.route('/workshop/add', methods=['GET', 'POST'])
