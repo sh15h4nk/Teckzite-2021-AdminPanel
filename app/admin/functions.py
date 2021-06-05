@@ -1,7 +1,7 @@
 from app import db
 from app.models import *
 from app.functions import *
-from sqlalchemy import func
+from sqlalchemy import func, case
 
 #fetching 
 def getAdminsAll():
@@ -33,27 +33,20 @@ def getEventsAll():
     return rows
 
 def getWorkshopsAll():
-    rows = Workshop.query.filter_by().all()
+    # rows = Workshop.query.filter_by().all()
+    rows = db.session.query(Workshop, func.count(TechUser.id), func.count(case([((TechUser.workshop_payment_status == 1), TechUser.id)]))).join(TechUser, Workshop.workshopId == TechUser.workshop_id).group_by(Workshop.workshopId).all()
     return rows
 
 def getCAAll():
-    rows = CA.query.filter_by().all()
-    # data = [i for i in rows]
-    # for i in data:
-    #     print(i)
-    # print(type(rows))
-    # rows = db.session.query(CA, TechUser).filter(TechUser.referral == CA.caId).all()
-    # rows = db.session.query(CA, TechUser).join(TechUser,TechUser.referral == CA.caId).all()
-    # for i in rows:
-        # print(i)
-    # users = 
-    # rows = db.session.query(CA, func.count(TechUser.referral)).filter(TechUser.referral == CA.caId).all()
-    # print(rows)
-    # for row in rows:
-    #     row.total = TechUser.query.filter_by(referral = row.caId).count()
-    #     row.paid = TechUser.query.filter_by(referral = row.caId, payment_status = 1).count()
+    rows = db.session.query(CA, func.count(TechUser.id), func.count(case([((TechUser.payment_status == 1), TechUser.id)]))).join(TechUser, CA.caId == TechUser.referral).group_by(CA.caId).all()
     return rows
 
 def getTzUsers():
     rows = TechUser.query.filter_by(registration_status = 1).all()
     return rows
+
+# def getWorkshopReg():
+#     rows = TechUser.query.filter(workshop_id != None)
+#     for i in rows:
+#         print(i)
+#     return rows

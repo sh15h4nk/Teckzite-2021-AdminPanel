@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Workshops
+{% endblock %}
+
+
+{% block styles %}
+{{ super() }}
+
+
+<style type="text/css">
+		
+	.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+
+
+</style>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css">
+{% endblock %}
+
+
+{% block content %}
+{{ super() }}
+
+<div>
+    <h1>
+        <center>Workshops's</center>
+    </h1>
+</div>
+
+<div class="container">
+    <h3 style="text-align: right;">Payments: {{ payment }}</h3>
+	<table id="workshoptable" class="table">
+		<thead>
+    		<tr>
+    			<th>ID</th>
+    			<th>Name</th>
+                <th>Branch</th>            
+                <th>Total Reg</th>
+                <th>Paid</th>
+    			<th>Block</th>
+                <th>Update</th>
+
+    		</tr>
+		</thead>
+		<tbody>
+    		{% for row in data %}
+    			<tr>
+    				<td>{{ row[0].workshopId }}</td>
+    				<td>{{ row[0].title }}</td>
+                    <td>{{ row[0].dept }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    
+    				<td>
+    					{% if row[0].hidden == 1 %}
+    					<div class="material-switch pull-right">
+                                <input id="{{row[0].workshopId}}" name="hide" type="checkbox" checked />
+                                <label for="{{row[0].workshopId}}" class="label-default"></label>
+                        </div>
+    					{% else %}
+    					<div class="material-switch pull-right">
+                                <input id="{{row[0].workshopId}}" name="hide" type="checkbox" />
+                                <label for="{{row[0].workshopId}}" class="label-default"></label>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{{url_for('updateWorkshopView')}}">
+                            <input type="hidden" name="workshop_id" value="{{row[0].workshopId}}">
+                            <button id="{{row[0].workshopId}}" name="update-button" value="upload-button"> Update </button>                            
+                         </form>
+                    </td>
+    			</tr>
+    		{% endfor %}
+		</tbody>
+	</table>
+
+
+</div>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.html5.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+    	$('#workshoptable').DataTable().destroy();
+    	$('#workshoptable').DataTable({
+        	dom: 'Bfrtip',
+       		buttons: [
+            	'excelHtml5'
+        	]
+    	});
+
+    	$('input[type="checkbox"][name="hide"]').change(function () {
+            field = this.id;
+	     	if(this.checked) {
+	     		var data = {'id':this.id, 'value':'hide'};
+                $.post('/hideWorkshop', data, (data,status) => {
+                    console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = false;
+                    });
+	     	}
+	     	else{
+	     		var data = {'id':this.id, 'value':'unhide'};
+                $.post('/hideWorkshop', data, (data,status) => {
+                    console.log(status)
+                })
+                    .fail(function(response){
+                        document.getElementById(field).checked = true;
+                    });
+	     	}
+ 		});
+	});
+
+</script>
+
+
+
+{% endblock %}
