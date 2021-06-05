@@ -345,9 +345,9 @@ class Payment(Base):
 
 
  
-currentIds = db.session.query(CurrentId).count()
-if currentIds == 0:
-    currentId = CurrentId()
-    db.session.add(currentId)
-    db.session.commit()
+# currentIds = db.session.query(CurrentId).count()
+# if currentIds == 0:
+#     currentId = CurrentId()
+#     db.session.add(currentId)
+#     db.session.commit()
 
