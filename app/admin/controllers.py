@@ -123,7 +123,8 @@ def getEventsView():
 @role_required("admin")
 def getWorkshopsView():
     data = getWorkshopsAll()
-    return render_template("workshops.html",data =data)
+    payments = TechUser.query.filter_by(workshop_payment_status = 1).count()
+    return render_template("workshop_stats.html",data =data, payment = payments)
 
 
 
@@ -294,4 +295,12 @@ def getCAsView():
 @role_required('admin')
 def getTzUserView():
     data = getTzUsers()
-    return render_template("tzuser.html",role = "Tz Users", data = data)
+    tz_payment = TechUser.query.filter_by(payment_status = 1).count()
+    wksp_payment = TechUser.query.filter_by(workshop_payment_status = 1).count()
+    return render_template("tzuser.html",role = "Tz Users", data = data, tz_payment = tz_payment, wksp_payment = wksp_payment)
+
+@admin.route("/workshopReg/")
+@login_required
+@role_required("admin")
+def workshopReg():
+    data = getWorkshopReg()

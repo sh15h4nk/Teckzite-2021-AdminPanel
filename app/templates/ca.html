@@ -87,22 +87,26 @@
 				<th>Gender</th>
 				<th>Branch</th>
 				<th>Year</th>
+				<th>Total Ref</th>
+				<th>Paid Ref</th>
 
 			</tr>
 		</thead>
 		<tbody>
 			{% for row in data %}
 			<tr>
-				<td>{{ row.id }}</td>
-				<td>{{ row.caId }}</td>
-				<td>{{ row.name }}</td>
-				<td>{{ row.email }}</td>
-				<td>{{ row.phone }}</td>
-				<td>{{ row.college }}</td>
-				<td>{{ row.collegeId }}</td>
-				<td>{{ row.gender }}</td>
-				<td>{{ row.branch }}</td>
-				<td>{{ row.year }}</td>
+				<td>{{ row[0].id }}</td>
+				<td>{{ row[0].caId }}</td>
+				<td>{{ row[0].name }}</td>
+				<td>{{ row[0].email }}</td>
+				<td>{{ row[0].phone }}</td>
+				<td>{{ row[0].college }}</td>
+				<td>{{ row[0].collegeId }}</td>
+				<td>{{ row[0].gender }}</td>
+				<td>{{ row[0].branch }}</td>
+				<td>{{ row[0].year }}</td>
+				<td>{{ row[1] }}</td>
+				<td>{{ row[2] }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
