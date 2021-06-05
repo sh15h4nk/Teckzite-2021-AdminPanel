@@ -328,9 +328,13 @@ class Payment(Base):
 class Counter(db.Model):
     id = db.Column(Integer, primary_key=True,nullable=False)
     count = db.Column(Integer, default=0)
+    addresses = db.relationship('IPAddress')
     team_id = db.Column(String(7), ForeignKey('team.teamId'), unique=True)
 
-
+class IPAddress(db.Model):
+    id = db.Column(Integer, primary_key=True,nullable=False)
+    address = db.Column(String(15))
+    counter_id = db.Column(Integer, ForeignKey('counter.id'))
 
 
 # db.create_all()
