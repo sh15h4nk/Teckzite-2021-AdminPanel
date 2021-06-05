@@ -325,6 +325,12 @@ class Payment(Base):
         self.tkt_type = tkt_type
         self.barcode_no = barcode_no
 
+class Counter(db.Model):
+    id = db.Column(Integer, primary_key=True,nullable=False)
+    count = db.Column(Integer, default=0)
+    team_id = db.Column(String(7), ForeignKey('team.teamId'), unique=True)
+
+
 
 
 # db.create_all()
