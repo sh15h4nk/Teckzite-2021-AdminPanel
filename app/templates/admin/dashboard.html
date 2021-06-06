@@ -18,8 +18,16 @@ Dashboard
   <h3>Tz paid Registrations</h3>
   <canvas id="tzusers" width="10" height="10"></canvas>
   <br><br>
-  <h3>RGUKTN paid Registrations</h3>
-  <canvas id="tzrguktnusers" width="10" height="10"></canvas>
+    <div class="container">
+        <h3>RGUKTN paid Registrations</h3>
+        <canvas id="tzrguktnusers" width="10" height="10"></canvas>
+        <br><br>
+        <h3>RGUKTN  Year wise paid registrations</h3>
+        <canvas id="tzrguktnyear" width="10" height="10"></canvas>
+        <br><br>
+    </div>
+  <h3>Workshops paid Registrations</h3>
+  <canvas id="workshops" width="10" height="10"></canvas>
   <br><br>
 
 </div>
@@ -62,11 +70,83 @@ var ctx = document.getElementById('tzrguktnusers');
                 'rgba(255, 206, 86)',
                 'rgba(75, 192, 192)',
                 'rgba(153, 102, 255)',
+                'rgba(200, 102, 255)',
+                'rgba(153, 102, 62)',
+                'rgba(54, 190, 255)',
             ],
             hoverOffset: 4
         }]
     }
   });
+
+
+var ctx = document.getElementById('tzrguktnyear');
+  var rguktnChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['PUC1', 'PUC2', 'E1', 'E2', 'E3', 'E4'],
+        datasets: [{
+            label: 'RGUKTN Year wise Registrations',
+            data: [
+            {{ rguktn_year.puc1 }},
+            {{ rguktn_year.puc2 }},
+            {{ rguktn_year.e1 }},
+            {{ rguktn_year.e2 }},
+            {{ rguktn_year.e3 }},
+            {{ rguktn_year.e4 }} 
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132)',
+                'rgba(54, 162, 235)',
+                'rgba(255, 206, 86)',
+                'rgba(75, 192, 192)',
+                'rgba(153, 102, 255)',
+                'rgba(200, 102, 255)',
+                'rgba(153, 102, 62)',
+                'rgba(54, 190, 255)',
+            ],
+            hoverOffset: 4
+        }]
+    }
+  });
+
+
+
+var ctx = document.getElementById('workshops');
+  var rguktnChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: [
+        {% for workshop in workshops %}
+        "{{workshop[0].title}}",
+        {% endfor %}
+        ],
+        datasets: [{
+            label: 'Workshops Registrations',
+            data: [
+            {% for workshop in workshops %}
+                {{workshop[2]}},
+            {% endfor %}
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132)',
+                'rgba(54, 62, 235)',
+                'rgba(255, 26, 86)',
+                'rgba(75, 192, 192)',
+                'rgba(153, 102, 255)',
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)',
+                'rgba(200, 102, 255)',
+                'rgba(153, 102, 62)',
+            ],
+            hoverOffset: 4
+        }]
+    }
+  });
+
+
+
 
 
 

@@ -81,7 +81,19 @@ def dashboard():
     other = TechUser.query.filter(and_(TechUser.college == "RGUKT-N", TechUser.payment_status == 1, TechUser.branch != "CSE", TechUser.branch != "ECE", TechUser.branch != "MEC", TechUser.branch != "CHE", TechUser.branch != "MME", TechUser.branch != "CIV", TechUser.branch != "PUC")).count()
     rguktn_data = {"cse": cse, "ece": ece, "mec": mec, "civ": civ, "che": che, "mme": mme, "puc": puc, "other": other}
 
-    return render_template("admin/dashboard.html",current_user = current_user, tz_users = tz_users, rguktn_data = rguktn_data)
+
+    workshops = db.session.query(Workshop, func.count(TechUser.id), func.count(case([((TechUser.workshop_payment_status == 1), TechUser.id)]))).join(TechUser, Workshop.workshopId == TechUser.workshop_id).group_by(Workshop.title).all()
+
+
+    puc1 = TechUser.query.filter( TechUser.collegeId.like("N2%"), TechUser.college == "RGUKT-N", TechUser.payment_status == 1).count()
+    puc2 = TechUser.query.filter( TechUser.collegeId.like("N19%"), TechUser.college == "RGUKT-N", TechUser.payment_status == 1).count()
+    e1 = TechUser.query.filter( TechUser.collegeId.like("N18%"), TechUser.college == "RGUKT-N", TechUser.payment_status == 1).count()
+    e2 = TechUser.query.filter( TechUser.collegeId.like("N17%"), TechUser.college == "RGUKT-N", TechUser.payment_status == 1).count()
+    e3 = TechUser.query.filter( TechUser.collegeId.like("N16%"), TechUser.college == "RGUKT-N", TechUser.payment_status == 1).count()
+    e4 = TechUser.query.filter( TechUser.collegeId.like("N15%"), TechUser.college == "RGUKT-N", TechUser.payment_status == 1).count()
+    rguktn_year  = {"puc1": puc1, "puc2": puc2, "e1": e1, "e2": e2, "e3": e3, "e4": e4}
+
+    return render_template("admin/dashboard.html",current_user = current_user, tz_users = tz_users, rguktn_data = rguktn_data, workshops = workshops, rguktn_year = rguktn_year)
 
 
 @admin.route('/admins/')
