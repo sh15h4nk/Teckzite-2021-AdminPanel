@@ -345,7 +345,7 @@ class IPAddress(db.Model):
         self.counter_id = counter_id
 
 class PaymentIssue(Base):
-    user_id = db.Column(String(7), ForeignKey('tech_user.userId'), unique=True)
+    user_id = db.Column(String(7), ForeignKey('tech_user.userId'))
     payment_type = db.Column(String(10))
 
     def __init__(self, user_id, payment_type):
