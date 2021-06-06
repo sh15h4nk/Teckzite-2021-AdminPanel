@@ -347,6 +347,9 @@ class IPAddress(db.Model):
 class PaymentIssue(Base):
     user_id = db.Column(String(7), ForeignKey('tech_user.userId'), unique=True)
 
+    def __init__(self, user_id):
+        self.user_id = user_id
+
 
 # db.create_all()
 
