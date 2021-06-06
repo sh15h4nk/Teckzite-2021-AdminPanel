@@ -371,6 +371,29 @@ def hideSponsorView():
 		return Response(status=406)
 
 
+@app.route('/stopReg', methods=['POST'])
+def stop_registration():
+	try:
+		eventId = request.form['id'].split('-')[0]
+	except:
+		return Response(status = 406)
+	event = Event.query.filter_by(eventId=eventId).first()
+	if event:
+		if request.form['value'] == 'stop':
+			event.stop_reg = 1
+			db.session.commit()
+			return Response(status = 200)
+		elif request.form['value'] == 'open':
+			event.stop_reg = 0
+			db.session.commit()
+			return Response(status = 200)
+		else:
+			return Response(status = 406)
+	else:
+		return Response(status = 406)
+
+
+
 @app.route('/addData', methods=["POST"])
 @login_required
 def addDataView():

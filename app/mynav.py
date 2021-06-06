@@ -66,8 +66,10 @@ def my_nav():
 
 		logout = View("Logout", 'admin.logout')
 
+		payment_issue = View("Payment Issues", 'admin.payment_issue')
 
-		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users, ca, profile_menu,logout)
+
+		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users, ca, profile_menu,logout, payment_issue)
 
 	elif current_user.role == "event_manager":
 
