@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-{{event.title}}|Teams
+Workshop Registrations
 {% endblock %}
 
 {% block styles %}
@@ -68,7 +68,6 @@
 {{ super() }}
 <div>
 	<center>
-		<h1>{{ event.eventId }}: {{ event.title }}</h1>
 	</center>
 </div>
 
@@ -77,52 +76,27 @@
 	<table id='teamtable' class="table">
 		<thead>
 			<tr>
-				<th>TEAM ID</th>
-				<th>Members</th>
-				<th>Status</th>
-				<th>Delete</th>
+				<th>TZ ID</th>
+				<th>Name</th>
+				<th>Phone</th>
+				<th>Email</th>
+				<th>Gender</th>
+				<th>Year</th>
+				<th>Branch</th>
+				<th>Referral</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% for row in data %}
-			<tr id="{{row.teamId}}">
-				<td>{{ row.teamId }}</td>
-				<td>
-					<table>
-						<thead>
-							<tr>
-								<th>Tz Id</th>
-								<th>Name</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for mem in row.members %}
-							<tr>
-								<td>{{mem.userId}}</td>
-								<td>{{mem.name}}</td>
-								<td>
-									{% if mem.stauts %}
-										True
-									{% else %}
-										False
-									{% endif %}
-								</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</td>
-				<td>
-					{% if row.team_status %}
-						Active
-					{% else %}
-						Inactive
-					{% endif %}
-				</td>
-				<td>
-					<button type="button" class="btn btn-danger" value="{{row.teamId}}" name='delete'>Delete</button>
-				</td>
+			{% for row in users %}
+			<tr>
+				<td>{{ row.userId }}</td>
+				<td>{{ row.name }}</td>
+				<td>{{ row.phone }}</td>
+				<td>{{ row.email }}</td>
+				<td>{{ row.gender }}</td>
+				<td>{{ row.year }}</td>
+				<td>{{ row.branch }}</td>
+				<td>{{ row.workshop_referral }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -146,7 +120,7 @@
 
 <script>
 	$(document).ready(function () {
-		var field = $("[name='delete']");
+		// var field = $("[name='delete']");
 		$('#teamtable').DataTable({
 			dom: 'Bfrtip',
 			buttons: [
@@ -154,16 +128,16 @@
 			]
 		});
 
-		$(field).click(function (event) {
-			var data = {'teamId': this.value}
-			console.log(data);
-			$.post('/deleteTeam', data, (data,response) => {
-				console.log(response);
-				if (response ===  'success') {}
-				var row = document.getElementById(this.value);
-				row.style.display = "none";
-			});
-		});
+		// $(field).click(function (event) {
+		// 	var data = {'teamId': this.value}
+		// 	console.log(data);
+		// 	$.post('/deleteTeam', data, (data,response) => {
+		// 		console.log(response);
+		// 		if (response ===  'success') {}
+		// 		var row = document.getElementById(this.value);
+		// 		row.style.display = "none";
+		// 	});
+		// });
 	});
 </script>
 

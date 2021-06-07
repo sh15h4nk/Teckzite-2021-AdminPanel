@@ -85,6 +85,7 @@ Workshops
                 <th>Paid</th>
     			<th>Block</th>
                 <th>Update</th>
+                <th>Registrations</th>
 
     		</tr>
 		</thead>
@@ -115,6 +116,12 @@ Workshops
                             <input type="hidden" name="workshop_id" value="{{row[0].workshopId}}">
                             <button id="{{row[0].workshopId}}" name="update-button" value="upload-button"> Update </button>                            
                          </form>
+                    </td>
+                    <td>
+                        <form method="POST" action="{{url_for('wkspRegView')}}">
+                            <input type="hidden" name="workshop_id" value="{{row[0].workshopId}}">
+                            <button id="{{row[0].workshopId}}" name="view-reg" value="view-reg"> View </button>
+                        </form>
                     </td>
     			</tr>
     		{% endfor %}
