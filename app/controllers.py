@@ -795,25 +795,7 @@ def eventTeamsView():
 			raise e
 			flash("No event ID")
 			return Response(status = 406)
-
 		event = Event.query.filter_by(eventId = request.form["event_id"]).first()
-		# teams = Team.query.filter_by(eventId = request.form["event_id"]).all()
-		# for i in teams:
-		# 	print(i)
-		# 	for j in i.members:
-		# 		print(j)
-		# team = db.session.query(TechUser).select_from(Team).join(Team.members, aliased=True).filter(Member.user_id = ).all()
-		# team = db.session.query(Team, func.array_agg(Member.id)).filter(Team.eventId == request.form["event_id"]).join(Member,Team.id == Member.team_id).group_by(Team.id).all()
-		# print(team)
-		# for i in team:
-		# 	print(i)
-		# 	for j in i:
-		# 		print(j)
-		print("Started")
-		for team in event.teams:
-			for mem in team.members:
-				mem.phone = TechUser.query.filter_by(id = mem.user_id).first().phone
-		print("DONe")
 		return render_template("teams.html", data = event.teams, event = event)
 
 @app.route("/deleteTeam", methods = ["POST"])

@@ -3,6 +3,7 @@ from app import app, db, bcrypt
 from sqlalchemy.orm import backref
 from sqlalchemy import Column, String, SmallInteger, DateTime, ForeignKey, Boolean, Integer
 from enum import unique
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -53,7 +54,6 @@ class Event(Base):
     rules = db.Column(String(2000))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
     priority = db.Column(Integer, default=0)
-    stop_reg = db.Column(Integer, default=0)
 
     contacts = db.relationship('Contact')
     faqs = db.relationship('FAQ')
@@ -207,6 +207,14 @@ class Member(db.Model):
         self.name = name
         self.user_id = user_id
 
+    @hybrid_property
+    def phone(self):
+        return TechUser.query.get(self.user_id).phone
+
+    @hybrid_property
+    def email(self):
+        return TechUser.query.get(self.user_id).email
+
 
 class Team(db.Model):
     id = db.Column(Integer, primary_key= True,nullable=False)
@@ -343,14 +351,6 @@ class IPAddress(db.Model):
     def __init__(self, address, counter_id):
         self.address = address
         self.counter_id = counter_id
-
-class PaymentIssue(Base):
-    user_id = db.Column(String(7), ForeignKey('tech_user.userId'))
-    payment_type = db.Column(String(10))
-
-    def __init__(self, user_id, payment_type):
-        self.user_id = user_id
-        self.payment_type = payment_type
 
 
 # db.create_all()
