@@ -2,7 +2,7 @@ from flask import url_for, redirect, request, render_template, Blueprint, sessio
 from flask.ctx import after_this_request
 from flask.globals import current_app
 from werkzeug.utils import secure_filename
-from app.models import User
+from app.models import *
 from app.forms import UpdateProfileForm, CreateWorkshopForm, LoginForm, CreateEventForm, PhotoForm, RegisterForm, Contacts, FAQs, Sponsors, UpdateEventForm, UpdateWorkshopForm
 from app import db, app, bcrypt, ckeditor
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
