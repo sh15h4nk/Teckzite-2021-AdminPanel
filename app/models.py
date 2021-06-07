@@ -53,6 +53,7 @@ class Event(Base):
     rules = db.Column(String(2000))
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
     priority = db.Column(Integer, default=0)
+    stop_reg = db.Column(Integer, default=0)
 
     contacts = db.relationship('Contact')
     faqs = db.relationship('FAQ')
@@ -342,6 +343,14 @@ class IPAddress(db.Model):
     def __init__(self, address, counter_id):
         self.address = address
         self.counter_id = counter_id
+
+class PaymentIssue(Base):
+    user_id = db.Column(String(7), ForeignKey('tech_user.userId'))
+    payment_type = db.Column(String(10))
+
+    def __init__(self, user_id, payment_type):
+        self.user_id = user_id
+        self.payment_type = payment_type
 
 
 # db.create_all()

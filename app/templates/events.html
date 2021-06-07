@@ -85,6 +85,7 @@ Events
             <th>Branch</th>            
 			<th>Block</th>
             <th>Update</th>
+            <th>Stop Registration</th>
             <th>Teams</th>
 
 		</tr>
@@ -115,6 +116,21 @@ Events
                         <button id="{{row.eventId}}" name="update-button" value="upload-button"> Update </button>
                     </form>
                 </td>
+
+                <td>
+                    {% if row.stop_reg == 1 %}
+                    <div class="material-switch pull-right">
+                            <input id="{{row.eventId}}-stop" name="stop" type="checkbox" checked />
+                            <label for="{{row.eventId}}-stop" class="label-default"></label>
+                    </div>
+                    {% else %}
+                    <div class="material-switch pull-right">
+                            <input id="{{row.eventId}}-stop" name="stop" type="checkbox" />
+                            <label for="{{row.eventId}}-stop" class="label-default"></label>
+                    </div>
+                    {% endif %}
+                </td>
+
                 <td>
                     <form method="POST" action="{{url_for('eventTeamsView')}}">
                         <input type="hidden" name="event_id" value="{{row.eventId}}">
@@ -172,7 +188,34 @@ Events
                     });
 	     	}
  		});
+
+
+
 	});
+
+
+    var field2 = $('input[type="checkbox"][name="stop"]');
+        console.log(field2);
+        $(field2).change(function () {
+            if(this.checked) {
+                var data = {'id':this.id, 'value':'stop'};
+                $.post('/stopReg', data, (data,status) => {
+                    console.log(status)
+                })
+                .fail(function(response){
+                        document.getElementById(field2).checked = false;
+                });
+            }
+            else{
+                var data = {'id':this.id, 'value':'open'};
+                $.post('/stopReg', data, (data,status) => {
+                    console.log(status)
+                })
+                .fail(function(response){
+                        document.getElementById(field2).checked = true;
+            });
+        }
+    });
 
 </script>
 

@@ -334,3 +334,10 @@ def getTzUserView():
 @role_required("admin")
 def workshopReg():
     data = getWorkshopReg()
+
+@admin.route('/paymentIssues')
+@login_required
+@role_required("admin")
+def payment_issue():
+    issues = db.session.query(PaymentIssue, TechUser).filter(PaymentIssue.user_id==TechUser.userId).all()
+    return render_template('payment_issue.html', issues=issues)
