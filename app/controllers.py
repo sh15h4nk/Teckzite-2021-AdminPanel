@@ -864,3 +864,10 @@ def wkspRegView():
 		return Response(status = 406)
 	users = TechUser.query.filter_by(workshop_id = request.form['workshop_id'], workshop_payment_status = 1).all()
 	return render_template("wksp_reg.html", users = users)
+
+
+@app.route('/notAddedwksp',  methods=['GET'])
+@login_required
+def notAddedwkspView():
+	users = TechUser.query.filter_by(workshop_payment_status=1).all()
+	return render_template('not_added_wksp.html', users=users)
