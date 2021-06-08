@@ -207,6 +207,14 @@ class Member(db.Model):
         self.name = name
         self.user_id = user_id
 
+    @hybrid_property
+    def phone(self):
+        return TechUser.query.get(self.user_id).phone
+
+    @hybrid_property
+    def email(self):
+        return TechUser.query.get(self.user_id).email
+
 
 class Team(db.Model):
     id = db.Column(Integer, primary_key= True,nullable=False)
