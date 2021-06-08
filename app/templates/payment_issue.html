@@ -85,6 +85,7 @@ Payment issues
             <th>Email</th>            
 			<th>Phone</th>
             <th>Payment type</th>
+            <th> Update </th>
            
 
 		</tr>
@@ -98,6 +99,37 @@ Payment issues
                 <td>{{ row[1].phone}}</td>
 
                 <td>{{ row[0].payment_type}}</td>
+                <td>
+                    {% if row[0].payment_type == "teckzite" %}
+                        {% if row[1].payment_status == 1 %}
+                        <div class="material-switch pull-right">
+                                <input id="{{row[1].userId}}-{{row[0].payment_type}}" name="payment" type="checkbox" checked />
+                                <label for="{{row[1].userId}}-{{row[0].payment_type}}" class="label-default"></label>
+                        </div>
+                        {% else %}
+                        <div class="material-switch pull-right">
+                                <input id="{{row[1].userId}}-{{row[0].payment_type}}" data={{row[0].payment_type}} name="payment" type="checkbox" />
+                                <label for="{{row[1].userId}}-{{row[0].payment_type}}" class="label-default"></label>
+                        </div>
+                        {% endif %}
+
+                    {% else %}
+
+                        {% if row[1].workshop_payment_status == 1 %}
+                        <div class="material-switch pull-right">
+                                <input id="{{row[1].userId}}-{{row[0].payment_type}}" name="payment" type="checkbox" checked />
+                                <label for="{{row[1].userId}}-{{row[0].payment_type}}" class="label-default"></label>
+                        </div>
+                        {% else %}
+                        <div class="material-switch pull-right">
+                                <input id="{{row[1].userId}}-{{row[0].payment_type}}" data={{row[0].payment_type}} name="payment" type="checkbox" />
+                                <label for="{{row[1].userId}}-{{row[0].payment_type}}" class="label-default"></label>
+                        </div>
+                        {% endif %}
+
+                    {% endif %}
+                </td>
+
 
                 
             
@@ -134,6 +166,29 @@ Payment issues
 
     	
 	});
+
+    var field2 = $('input[type="checkbox"][name="payment"]');
+        $(field2).change(function () {
+            if(this.checked) {
+                var data = {'id':this.id, 'value':'pay', 'type':this.data};
+                $.post('/togglePayment', data, (data,status) => {
+                    console.log(status)
+                })
+                .fail(function(response){
+                        document.getElementById(field2).checked = false;
+                });
+            }
+            else{
+                var data = {'id':this.id, 'value':'unpay', 'type':this.data};
+                $.post('/togglePayment', data, (data,status) => {
+                    console.log(status)
+                })
+                .fail(function(response){
+                        document.getElementById(field2).checked = true;
+            });
+        }
+    });
+
 
 </script>
 

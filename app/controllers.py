@@ -394,6 +394,37 @@ def stop_registration():
 		return Response(status = 406)
 
 
+@app.route('/togglePayment', methods=['POST'])
+@login_required
+@role_required(["admin"])
+def togglePaymentView():
+	try:
+		userId, payment_type = request.form['id'].split('-')
+	except:
+		return Response(status = 406)
+
+	user = TechUser.query.filter_by(userId=userId).first()
+	if user:
+		if request.form['value'] == 'pay':
+			if payment_type == 'teckzite':
+				user.payment_status = 1
+			else:
+				user.workshop_payment_status = 1
+			db.session.commit()
+			return Response(status = 200)
+		elif request.form['value'] == 'unpay':
+			if payment_type == 'teckzite':
+				user.payment_status = 0
+			else:
+				user.workshop_payment_status = 0
+			db.session.commit()
+			return Response(status = 200)
+		else:
+			return Response(status = 406)
+	else:
+		return Response(status = 406)
+
+
 
 @app.route('/addData', methods=["POST"])
 @login_required
