@@ -6,6 +6,7 @@ from enum import unique
 
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Base(db.Model):
