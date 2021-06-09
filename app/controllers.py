@@ -869,7 +869,7 @@ def wkspRegView():
 @app.route('/notAddedwksp',  methods=['GET'])
 @login_required
 def notAddedwkspView():
-	users = TechUser.query.filter_by(workshop_payment_status=1).all()
+	users = TechUser.query.filter(TechUser.workshop_payment_status == 1, TechUser.workshop_id.is_(None)).all()
 	return render_template('not_added_wksp.html', users=users)
 
 

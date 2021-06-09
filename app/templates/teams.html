@@ -88,7 +88,7 @@
 			<tr id="{{row.teamId}}">
 				<td>{{ row.teamId }}</td>
 				<td>
-					<table>
+					<table class="member">
 						<thead>
 							<tr>
 								<th>Tz Id</th>
@@ -157,6 +157,7 @@
 				'excelHtml5'
 			]
 		});
+		$( row.child() ).DataTable();
 
 		$(field).click(function (event) {
 			var data = {'teamId': this.value}
