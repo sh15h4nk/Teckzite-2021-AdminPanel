@@ -87,6 +87,7 @@ Events
             <th>Update</th>
             <th>Stop Registration</th>
             <th>Teams</th>
+            <th>Contacts</th>
 
 		</tr>
 		</thead>
@@ -136,6 +137,10 @@ Events
                         <input type="hidden" name="event_id" value="{{row.eventId}}">
                         <button id="{{row.eventId}}" name="view-team" value="view-team"> View </button>
                     </form>
+                </td>
+                <td>
+                    <button> <a href="/contacts/{{row.eventId}}"> List </a></button>
+
                 </td>
 			</tr>
 		{% endfor %}
