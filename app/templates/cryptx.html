@@ -77,7 +77,7 @@
 	<table id='teamtable' class="table">
 		<thead>
 			<tr>
-				<th>
+				<th> Team Id </th>
 				<th>TZ ID</th>
 				<th>Name</th>
 				<th>Phone</th>
@@ -87,11 +87,13 @@
 		</thead>
 		<tbody>
 			{% for row in data %}
-			<tr>
+			
 				
 				
 					
 							{% for mem in row.members %}
+
+							<tr>
 							
 								<td>{{ row.teamId }}</td>
 								<td>{{mem.userId}}</td>
@@ -99,10 +101,12 @@
 								<td>{{mem.phone}}</td>
 								<td>{{mem.email}}</td>
 
+							</tr>
+
 							{% endfor %}
 								
 				
-			</tr>
+			
 			{% endfor %}
 							
 		</tbody>
