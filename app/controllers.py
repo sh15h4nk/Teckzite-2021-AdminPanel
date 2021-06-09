@@ -871,3 +871,13 @@ def wkspRegView():
 def notAddedwkspView():
 	users = TechUser.query.filter_by(workshop_payment_status=1).all()
 	return render_template('not_added_wksp.html', users=users)
+
+
+@app.route("/contacts/<eventId>", methods = ["GET"])
+@login_required
+def contactsView(eventId):
+	if request.method == "GET":
+		print(eventId)
+		event = Event.query.filter_by(eventId = eventId).first()
+		print("eeee", event)
+		return render_template("cryptx.html", data = event.teams, event = event)
