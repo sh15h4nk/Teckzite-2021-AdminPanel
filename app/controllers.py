@@ -908,3 +908,61 @@ def contactsView(eventId):
 		event = Event.query.filter_by(eventId = eventId).first()
 		print("eeee", event)
 		return render_template("cryptx.html", data = event.teams, event = event)
+
+
+@app.route("/images/<eventId>", methods = ["GET", "POST"])
+@login_required
+def imagesView(eventId):
+	
+	#ACCESS CONTROL
+	if current_user.role not in ["admin", "event_manager"]:
+		if current_user.role in ["workshop_manager", "workshop_coordinator"]:
+			return Response(status = 400)
+		elif current_user.role == "event_organiser" and eventId != Event.query.filter_by(organiser_id = current_user.id).first().eventId:
+			return Response(status = 406)
+
+	if request.method == "GET":
+
+		# buckets_dict = s3.buckets.all()
+		
+		bucket = s3.Bucket(S3_BUCKET)
+		    	
+
+		images = []
+		for image in bucket.objects.all():
+			if image.key.startswith(eventId):
+				images.append(image.key)
+		
+
+		return render_template('upload_event_image.html', images=images)
+
+	else:
+
+		try:
+			image = request.files['image']
+		except:
+			flash("Something went wrong")
+			return redirect(url_for('imagesView', eventId=eventId))
+
+		file_ext = ""
+
+		try:
+			file_ext = image.filename.split('.')[1]
+		except:
+			pass
+
+		filename = "{}-{}".format(eventId, uuid.uuid4())
+		image_url = upload_file_to_s3(image, filename, file_ext)
+		if not image_url:
+			flash("Something went wrong")
+			return redirect(url_for('imagesView', eventId=eventId))
+		else:
+			flash("Image upload Successfully")
+			return redirect(url_for('imagesView', eventId=eventId))
+
+
+
+
+	
+
+
