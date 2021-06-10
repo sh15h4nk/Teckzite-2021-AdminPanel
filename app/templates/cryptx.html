@@ -88,7 +88,7 @@
 		<tbody>
 			{% for row in data %}
 			
-				
+				{% if row.team_status == 1%}
 				
 					
 							{% for mem in row.members %}
@@ -104,6 +104,8 @@
 							</tr>
 
 							{% endfor %}
+
+				{% endif %}
 								
 				
 			
