@@ -931,7 +931,7 @@ def imagesView(eventId):
 		images = []
 		for image in bucket.objects.all():
 			if image.key.startswith(eventId):
-				images.append(image.key)
+				images.append(S3_LOCATION + image.key)
 		
 
 		return render_template('upload_event_image.html', images=images)
