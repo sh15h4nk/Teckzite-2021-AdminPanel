@@ -827,7 +827,10 @@ def eventTeamsView():
 			flash("No event ID")
 			return Response(status = 406)
 		event = Event.query.filter_by(eventId = request.form["event_id"]).first()
-		return render_template("teams.html", data = event.teams, event = event)
+		accepted_count = Team.query.filter_by(event_id=event.id, team_status=1).count()
+		awaited_count = Team.query.filter_by(event_id=event.id, team_status=0).count()
+
+		return render_template("teams.html", data = event.teams, event = event, accepted_count=accepted_count,awaited_count=awaited_count)
 
 @app.route("/deleteTeam", methods = ["POST"])
 @login_required
