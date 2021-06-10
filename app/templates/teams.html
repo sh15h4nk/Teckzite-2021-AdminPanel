@@ -130,6 +130,16 @@
 					{% endif %}
 				</td>
 				<td>
+
+					{% if not row.team_status %}
+						<!-- <form action="{{url_for('acceptTeamView')}}" method="POST">
+							<button type="submit" class="btn btn-info" value="{{row.teamId}}" name="teamId"> Accept </button>
+						</form> -->
+
+						<button type="button" class="btn btn-info" value="{{row.teamId}}" name='accept'>Accept</button>
+
+					{% endif %}
+
 					<button type="button" class="btn btn-danger" value="{{row.teamId}}" name='delete'>Delete</button>
 				</td>
 			</tr>
@@ -162,7 +172,7 @@
 				'excelHtml5'
 			]
 		});
-		$( row.child() ).DataTable();
+		// $( row.child() ).DataTable();
 
 		$(field).click(function (event) {
 			var data = {'teamId': this.value}
@@ -173,6 +183,21 @@
 				var row = document.getElementById(this.value);
 				row.style.display = "none";
 			});
+		});
+
+
+
+
+	});
+
+	var field2 = $("[name='accept']");
+
+	$(field2).click(function (event) {
+		var data = {'teamId': this.value}
+		console.log(data);
+		$.post('/acceptTeam', data, (data,response) => {
+			if (response ===  'success') {}
+			alert(data);
 		});
 	});
 </script>

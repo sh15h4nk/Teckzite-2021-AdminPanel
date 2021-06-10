@@ -513,3 +513,62 @@ def delete_team(teamId):
     except Exception as e:
         raise e
         return False
+
+def accept_team(teamId):
+    try:
+        team = Team.query.filter_by(teamId=teamId).first()
+        if not team:
+            return "No team exists"
+        
+        # gather team members
+        team_members = []
+        for mem in team.members:
+            team_members.append(mem.userId)
+
+        if not is_valid_team_request(team_members, team.eventId):
+            return "Team alreay exists with one of the user"
+
+        for mem in team.members:
+            mem.stauts = 1
+        db.session.commit()
+
+        update_team_status(team.id)
+
+        #delete team reqs
+        team_requests = TeamRequest.query.filter_by(team_id=teamId).all()
+        if not team_requests:
+            return "No team requests exist"
+        for req in team_requests:
+            db.session.delete(req)
+        db.session.commit()
+
+        return "Team added successfully"
+    except Exception as e:
+        raise e
+        return "Some Exception"
+
+
+def is_valid_team_request(team_members, eventId):
+
+    event = Event.query.filter_by(eventId=eventId).first()
+
+    # teams = Team.query.filter_by(event_id=event.id, team_status=1)
+
+    for team in event.teams:
+        if team.team_status == 1:
+            for member in team.members:
+                user = TechUser.query.filter_by(id=member.user_id).first()
+                if user.userId in team_members and member.stauts == 1:
+                    return False
+    else:
+        return True 
+
+def update_team_status(team_id):
+    team = Team.query.filter_by(id=team_id).first()
+    for member in team.members:
+        if member.stauts == 0:
+            return False
+    else:
+        Team.query.filter_by(id=team_id).update({'team_status': 1})
+        db.session.commit()
+        return True

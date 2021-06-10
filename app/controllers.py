@@ -856,6 +856,30 @@ def deleteTeamView():
 		return Response(status = 400)
 	return Response(status = 200)
 
+
+@app.route("/acceptTeam", methods = ["POST"])
+@login_required
+def acceptTeamView():
+	try:
+		teamId = request.form['teamId']
+	except Exception as e:
+		raise e
+		return Response(status = 406)
+
+	team = Team.query.filter_by(teamId = teamId).first()
+	if not team:
+		return Response(status = 406)
+
+	#ACCESS CONTROL
+	if current_user.role not in ["admin", "event_manager"]:
+		if current_user.role in ["workshop_manager", "workshop_coordinator"]:
+			return Response(status = 400)
+		elif current_user.role == "event_organiser" and not team in Event.query.filter_by(organiser_id = current_user.id).first().teams:
+			return Response(status = 406)
+
+	res = accept_team(team.teamId)
+	return Response(res, 200)
+
 @app.route("/wkspReg", methods = ['POST'])
 @login_required
 def wkspRegView():
