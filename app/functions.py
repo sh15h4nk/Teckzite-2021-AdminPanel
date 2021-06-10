@@ -523,6 +523,9 @@ def accept_team(teamId):
         # gather team members
         team_members = []
         for mem in team.members:
+            user = TechUser.query.filter_by(id=mem.user_id).first();
+            if user.payment_status == 0:
+                return "Some one has not paid in this team"
             team_members.append(mem.userId)
 
         if not is_valid_team_request(team_members, team.eventId):
