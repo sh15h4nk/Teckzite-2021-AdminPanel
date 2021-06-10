@@ -38,7 +38,7 @@ def getWorkshopsAll():
     return rows
 
 def getCAAll():
-    rows = db.session.query(CA, func.count(TechUser.id), func.count(case([((TechUser.payment_status == 1), TechUser.id)]))).join(TechUser, CA.caId == TechUser.referral).group_by(CA.caId).all()
+    rows = db.session.query(CA, func.count(TechUser.id), func.count(case([((or_(TechUser.payment_status == 1, TechUser.workshop_payment_status == 1)), TechUser.id)]))).join(TechUser, or_(CA.caId == TechUser.referral, CA.caId == TechUser.workshop_referral)).group_by(CA.caId).all()
     return rows
 
 def getTzUsers():
