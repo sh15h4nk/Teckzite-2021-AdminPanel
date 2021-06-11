@@ -57,7 +57,7 @@ class Event(Base):
     stop_reg = db.Column(Integer, default=0)
     event_url = db.Column(String(128))
 
-    contacts = db.relationship('Contact')
+    contacts = db.relationship('Contact')   
     faqs = db.relationship('FAQ')
     sponsors = db.relationship('Sponsor')
 
@@ -77,6 +77,7 @@ class Event(Base):
         self.dept = dept
         self.coordinator_id = coordinater_id
         self.organiser_id = organiser_id
+
 
 class Workshop(Base):
     workshopId = db.Column(String(7), nullable=False, unique=True)
@@ -234,6 +235,10 @@ class Team(db.Model):
         self.eventId = eventId
         self.event_title = event_title
         self.event_id = event_id
+
+    @hybrid_property
+    def event_url(self):
+        return Event.query.get(self.event_id).event_url
 
 class TeamRequest(db.Model):
     id = db.Column(Integer, primary_key= True,nullable=False)
