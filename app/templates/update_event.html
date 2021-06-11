@@ -38,6 +38,14 @@ img {
         
         {{ form.csrf_token }}
         {{ wtf.form_field(form.title, value = event.title) }}
+
+
+        {% if event.event_url != None %}
+            {{ wtf.form_field(form.event_url, value = event.event_url) }}
+        {% else %}
+            {{ wtf.form_field(form.event_url) }}
+        {% endif %}
+
         
         {% if event.prize != None %}
             {{ wtf.form_field(form.prize, value = event.prize) }}

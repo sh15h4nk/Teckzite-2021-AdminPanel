@@ -91,6 +91,7 @@ class CreateEventForm(FlaskForm):
 
 class UpdateEventForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
+    event_url = TextField('Exam Link', [URL(message="Must be a valid URL")])
     prize = IntegerField('Prize')
     description = CKEditorField('Description', [Length(min=20)])
     brief = CKEditorField('Brief')

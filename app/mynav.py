@@ -71,7 +71,7 @@ def my_nav():
 		social_media_stats = View("Social Media Event", "socialEventView")
 
 
-		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users, ca, profile_menu, payment_issue, pending_workshop, social_media_stats, logout)
+		return Navbar('Teckzite\'21',dashboard, admin_menu, event_manager_menu, event_coord_menu, orag_menu, event_menu, workshop_manager_menu, workshop_coord_menu, workshop_menu, tz_users, ca, profile_menu, payment_issue, pending_workshop, logout)
 
 	elif current_user.role == "event_manager":
 

@@ -85,7 +85,10 @@
 				<th>TEAM ID</th>
 				<th>Members</th>
 				<th>Status</th>
-				<th>Delete</th>
+				{% if event.eventId == "EV10050" %}
+					<th>Hits</th>
+				{% endif %}
+				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -129,6 +132,9 @@
 						Inactive
 					{% endif %}
 				</td>
+				{% if row.count %}
+					<td>{{row.count}}</td>
+				{% endif %}
 				<td>
 
 					{% if not row.team_status %}
