@@ -904,7 +904,13 @@ def notAddedwkspView():
 @login_required
 def contactsView(eventId):
 	if request.method == "GET":
-		print(eventId)
+		# print(eventId)
 		event = Event.query.filter_by(eventId = eventId).first()
-		print("eeee", event)
+		# print("eeee", event)
 		return render_template("cryptx.html", data = event.teams, event = event)
+
+@app.route('/social')
+@login_required
+def socialEventView():
+	data = Counter.query.all()
+	return data
