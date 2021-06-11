@@ -55,6 +55,7 @@ class Event(Base):
     hidden = db.Column(SmallInteger, default=0) # if true, event is inactive
     priority = db.Column(Integer, default=0)
     stop_reg = db.Column(Integer, default=0)
+    event_url = db.Column(String(128))
 
     contacts = db.relationship('Contact')
     faqs = db.relationship('FAQ')
