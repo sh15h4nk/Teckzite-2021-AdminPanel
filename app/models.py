@@ -242,7 +242,8 @@ class Team(db.Model):
 
     @hybrid_property
     def counter(self):
-        return Counter.query.filter_by(team_id = self.team_id).first().count
+        count =  Counter.query.filter_by(team_id = self.team_id).first()
+        return count.count
 
 class TeamRequest(db.Model):
     id = db.Column(Integer, primary_key= True,nullable=False)
