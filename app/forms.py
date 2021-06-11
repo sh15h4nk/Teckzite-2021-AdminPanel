@@ -6,7 +6,7 @@ from flask_wtf.file import FileAllowed, FileField, FileRequired
 
 from wtforms import TextField, StringField, PasswordField, IntegerField, SubmitField, SelectField, FieldList, FormField, Form, RadioField
 from wtforms.fields.simple import HiddenField
-from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired, ValidationError, URL
+from wtforms.validators import NumberRange, Required, Email, EqualTo, Length, DataRequired, ValidationError, URL, Optional
 from wtforms.widgets.core import HiddenInput
 
 from app.models import Event, Image, User, Workshop
@@ -91,7 +91,7 @@ class CreateEventForm(FlaskForm):
 
 class UpdateEventForm(FlaskForm):
     title = StringField('Title', [Length(min=5)])
-    event_url = TextField('Exam Link', [URL(message="Must be a valid URL")])
+    event_url = TextField('Exam Link', [URL(message="Must be a valid URL"),Optional() ])
     prize = IntegerField('Prize')
     description = CKEditorField('Description', [Length(min=20)])
     brief = CKEditorField('Brief')
